@@ -2,28 +2,42 @@ import InitOption from "./types/InitOption";
 import Utils from "./utils";
 
 class BuyWithCrypto{
-    appId: string;
-    appKey: string;
-    logoUrl: string;
-    targetAddr: string;
+    static appId: string;
+    static appKey: string;
+    static logoUrl: string;
+    static targetAddr: string;
     //.. other configs
 
-    constructor(option: InitOption, forceReInit:boolean = false){
+    static async init(option: InitOption){
         if(!option.appId || !option.appKey){
             Utils.throwError('No appId or appKey provided');
         }
-        if(!(window as any).buyWithCrypto || forceReInit){
-            this.appId = option.appId;
-            this.appKey = option.appKey;
-            // TODO: get config with appId & appKey
-            this.logoUrl='';
-            this.targetAddr='0x6978De6532Cd2C94D47430C22B1bCddb53fB23aa';
-        }
-        else{
-            return (window as any).buyWithCrypto;
-        }
+        BuyWithCrypto.appId = option.appId;
+        BuyWithCrypto.appKey = option.appKey;
+        // TODO: get config with appId & appKey
+        BuyWithCrypto.logoUrl='';
+        BuyWithCrypto.targetAddr='0x6978De6532Cd2C94D47430C22B1bCddb53fB23aa';
+        
     }
 
+    static isReady(): boolean {
+        if(!BuyWithCrypto.appId || !BuyWithCrypto.appKey){
+            Utils.throwError('No appId or appKey provided');
+            return false;
+        }
+
+        return true;
+    }
+
+    static showConnectWalletUI() {
+    }
+
+    static connectWallet() {
+        if(!BuyWithCrypto.isReady()){
+            return;
+        }
+        //
+    }
 
 }
 

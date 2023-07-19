@@ -2,7 +2,7 @@
     "name": "buy-with-crypto-sdk",
     "version": "0.0.1",
     "description": "buy with crypto sdk",
-    "main": "index.js",
+    "main": "index.ts",
     "scripts": {
         "localBuild": "webpack --mode=production",
         "prepublishOnly": "webpack --mode=production",
@@ -18,10 +18,11 @@
     "author": "caipei",
     "license": "MIT",
     "dependencies": {
-        "ethers": "^5.7.1",
-        "events": "^3.3.0"
+        "ethers": "^5.7.1"
     },
     "devDependencies": {
+        "ts-loader": "^9.4.4",
+        "typescript": "^5.1.6",
         "webpack-cli": "^4.10.0"
     }
 }
