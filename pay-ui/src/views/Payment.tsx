@@ -1,5 +1,6 @@
 import { Button, Input, Select } from "antd";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 
 const AvailableCurrencyTypes = [
@@ -30,20 +31,43 @@ const AvailableCurrencyTypes = [
 ];
 
 const PaymentPage = () => {
-    const [currencyTypeCode, setCurrencyTypeCode] = useState("eth");
+    const navigate = useNavigate();
+    const params = useParams();
+
+    const [targetAddress, setTargetAddress] = useState();
+
+    const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.currencyCode ?? "eth");
     const onCurrencyTypeChange = useCallback((selectCode: string) => {
         console.log(selectCode);
         setCurrencyTypeCode(selectCode);
     }, []);
 
-    const [sendValue, setSendValue] = useState();
+    const [sendValue, setSendValue] = useState(params?.value);
     const onSendValueChange = useCallback((event: any) => {
         console.log(event);
         setSendValue(event?.target?.value);
     }, []);
 
+    const pay = useCallback(() => {
+        const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
+        if (!currentProvider) {
+            // TODO: nav to connect wallet with params
+            return;
+        }
+    }, []);
+
+    useEffect(() => {
+        const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
+        if (!currentProvider) {
+            // nav to connect wallet with params
+            navigate("/connect-wallet", { replace: true, state: params });
+        }
+        setTargetAddress((window as any).buyWithCrypto.targetAddr);
+    }, [navigate, params]);
+
     return (
         <StyledContainer>
+            <div>{targetAddress}</div>
             <Select
                 defaultValue={currencyTypeCode}
                 style={{ width: 120 }}
@@ -56,7 +80,9 @@ const PaymentPage = () => {
             <Input placeholder="Send value" type="number" value={sendValue} onChange={onSendValueChange} />
             <div className="btn-line">
                 <Button>Cancel</Button>
-                <Button type="primary">Pay</Button>
+                <Button type="primary" onClick={pay}>
+                    Pay
+                </Button>
             </div>
         </StyledContainer>
     );
