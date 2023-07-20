@@ -1,4 +1,6 @@
 import ConnectWallet from "../../views/ConnectWallet";
+import NotFoundPage from "../../views/NotFound";
+import PaymentPage from "../../views/Payment";
 
 const routeConfig = [
     // {
@@ -7,6 +9,8 @@ const routeConfig = [
     //     noToken: true,
     // },
     { path: "/connect-wallet", Component: ConnectWallet },
+    { path: "/payment", Component: PaymentPage },
+    { path: "*", Component: NotFoundPage },
 ];
 
 export default routeConfig;
