@@ -1,8 +1,8 @@
-import WalletTypes from "./types/WalletTypes"
+import WalletTypes from "./types/WalletTypes";
 
-const EthereumProvider:{
-    detectProviders: () => WalletTypes,
-    getCurrentConnectedProvider: () => any
+const EthereumProvider: {
+    detectProviders: () => WalletTypes;
+    getCurrentConnectedProvider: () => any;
 } = {
     detectProviders: (): WalletTypes => {
         if ((window as any).ethereum?.providerMap) {
@@ -15,7 +15,7 @@ const EthereumProvider:{
             // only metamask case
             return {
                 metamask: (window as any).ethereum,
-                coinbase: null
+                coinbase: null,
             };
         } else if ((window as any).ethereum?.isCoinbaseWallet) {
             // only coinbase case
@@ -26,25 +26,25 @@ const EthereumProvider:{
         } else {
             return {
                 metamask: null,
-                coinbase: null
+                coinbase: null,
             };
         }
     },
     getCurrentConnectedProvider: () => {
-        const connectedProviderType = localStorage.getItem('buywithcrypto-provider-type');
-        if(!connectedProviderType){
+        const connectedProviderType = localStorage.getItem("buywithcrypto-provider-type");
+        if (!connectedProviderType) {
             return null;
         }
         const availableProviders = EthereumProvider.detectProviders();
         switch (connectedProviderType) {
-            case 'metamask':
+            case "metamask":
                 return availableProviders.metamask;
-            case 'coinbase':
+            case "coinbase":
                 return availableProviders.coinbase;
             default:
                 return null;
         }
-    }
-}
+    },
+};
 
-export default EthereumProvider
+export default EthereumProvider;

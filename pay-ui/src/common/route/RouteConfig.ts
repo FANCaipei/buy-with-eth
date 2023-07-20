@@ -6,7 +6,7 @@ const routeConfig = [
     //     element: <Login />,
     //     noToken: true,
     // },
-    { path: "/connect-wallet", element: ConnectWallet() },
+    { path: "/connect-wallet", Component: ConnectWallet },
 ];
 
 export default routeConfig;

@@ -1,48 +1,52 @@
+import EthereumProvider from "./EthereumProvider";
+import WalletManager from "./WalletManager";
 import { IframeOrigin } from "./constant";
 import InitOption from "./types/InitOption";
 import Utils from "./utils";
 
-class BuyWithCrypto{
+class BuyWithCrypto {
     static appId: string;
     static appKey: string;
     static logoUrl: string;
     static targetAddr: string;
     static iframeEle: HTMLIFrameElement;
+    static utils: {
+        walletManager: typeof WalletManager;
+        ethereumProvider: typeof EthereumProvider;
+    };
     //.. other configs
 
-    static async init(option: InitOption){
-        if(!option.appId || !option.appKey){
-            Utils.throwError('No appId or appKey provided');
+    static async init(option: InitOption) {
+        if (!option.appId || !option.appKey) {
+            Utils.throwError("No appId or appKey provided");
         }
         BuyWithCrypto.appId = option.appId;
         BuyWithCrypto.appKey = option.appKey;
         // TODO: get config with appId & appKey
-        BuyWithCrypto.logoUrl='';
-        BuyWithCrypto.targetAddr='0x6978De6532Cd2C94D47430C22B1bCddb53fB23aa';
-        
+        BuyWithCrypto.logoUrl = "";
+        BuyWithCrypto.targetAddr = "0x6978De6532Cd2C94D47430C22B1bCddb53fB23aa";
     }
 
     static isReady(): boolean {
-        if(!BuyWithCrypto.appId || !BuyWithCrypto.appKey){
-            Utils.throwError('No appId or appKey provided');
+        if (!BuyWithCrypto.appId || !BuyWithCrypto.appKey) {
+            Utils.throwError("No appId or appKey provided");
             return false;
         }
 
         return true;
     }
 
-    static connectWallet() {
-        if(!BuyWithCrypto.isReady()){
+    static connectWallet(walletType: "metamask" | "coinbase") {
+        if (!BuyWithCrypto.isReady()) {
             return;
         }
         //
     }
 
     static initUI() {
-        if(BuyWithCrypto.iframeEle){
+        if (BuyWithCrypto.iframeEle) {
             return;
-        }
-        else{
+        } else {
             const animationStyle = document.createElement("style");
             animationStyle.innerText = `
                 @keyframes paymentIframeShow {
@@ -67,14 +71,14 @@ class BuyWithCrypto{
 
             const paymentIframe = document.createElement("iframe");
             paymentIframe.src = `${IframeOrigin}?from=${encodeURIComponent(window.location.origin)}`;
-            paymentIframe.style.position = 'fixed';
-            paymentIframe.style.left = '0';
-            paymentIframe.style.top = '0';
-            paymentIframe.style.width = '0';
-            paymentIframe.style.height = '0';
-            paymentIframe.style.zIndex = '9999';
-            paymentIframe.style.border = 'none';
-            paymentIframe.style.borderWidth = '0';
+            paymentIframe.style.position = "fixed";
+            paymentIframe.style.left = "0";
+            paymentIframe.style.top = "0";
+            paymentIframe.style.width = "0";
+            paymentIframe.style.height = "0";
+            paymentIframe.style.zIndex = "9999";
+            paymentIframe.style.border = "none";
+            paymentIframe.style.borderWidth = "0";
 
             document.body.appendChild(paymentIframe);
             BuyWithCrypto.iframeEle = paymentIframe;
@@ -92,7 +96,6 @@ class BuyWithCrypto{
             BuyWithCrypto.iframeEle.style.width = "0";
         }, 300);
     }
-
 }
 
 export default BuyWithCrypto;
