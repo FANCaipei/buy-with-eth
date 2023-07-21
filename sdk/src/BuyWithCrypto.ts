@@ -3,6 +3,7 @@ import WalletManager from "./WalletManager";
 import { IframeOrigin } from "./constant";
 import InitOption from "./types/InitOption";
 import Utils from "./utils";
+import MessageIdManager from "./messageHandlers/MessageIdManager";
 
 const BuyWithCrypto: {
     appId?: string;
@@ -20,6 +21,7 @@ const BuyWithCrypto: {
     initUI: () => void;
     showPayUI: () => void;
     hidePayUI: () => void;
+    request: ({ method, params }: { method: string; params: any }) => Promise<any>;
 } = {
     utils: {
         walletManager: WalletManager,
@@ -105,6 +107,50 @@ const BuyWithCrypto: {
             BuyWithCrypto.iframeEle.style.height = "0";
             BuyWithCrypto.iframeEle.style.width = "0";
         }, 300);
+    },
+    request({ method, params }): Promise<any> {
+        if (!BuyWithCrypto.iframeEle) {
+            return Promise.reject("No payment ui init, please init ui first");
+        }
+        if (BuyWithCrypto.iframeEle.contentWindow) {
+            const currentMsgId = MessageIdManager.id;
+
+            const result = new Promise((resolve, reject) => {
+                const responseHandler = event => {
+                    if (event?.origin === IframeOrigin && event?.data?.type === "buy-with-crypto") {
+                        if (
+                            event?.data?.subType === "buy-with-crypto-response" &&
+                            event?.data?.respTo === currentMsgId
+                        ) {
+                            // console.warn("received cambrian-wallet response: ", event?.data?.data);
+                            if (event?.data?.data?.error) {
+                                reject(event?.data?.data?.error);
+                            } else {
+                                resolve(event?.data?.data);
+                            }
+                            // remove current event listener
+                            window.removeEventListener("message", responseHandler);
+                        }
+                    }
+                };
+                window.addEventListener("message", responseHandler);
+            });
+
+            BuyWithCrypto.iframeEle.contentWindow.postMessage(
+                {
+                    type: "buy-with-crypto",
+                    subType: "buy-with-crypto-request",
+                    requestId: currentMsgId,
+                    data: {
+                        method: method,
+                        params: params,
+                    },
+                },
+                IframeOrigin
+            );
+
+            return result;
+        }
     },
 };
 

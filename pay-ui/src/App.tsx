@@ -5,6 +5,7 @@ import styled from "styled-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import routeConfig from "./common/route/RouteConfig";
 import GlobalNavObj from "./common/GlobalNavObj";
+import HandleRequests from "./messageManager/requestHandlers/HandleRequests";
 
 type WrapperProps = {
     children: ReactNode;
@@ -32,17 +33,17 @@ function Index() {
     const element = useRoutes(routeConfig);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const messageHandler = event => {
-    //         console.log("request message listener: ", event);
-    //         HandleRequests(event, navigate);
-    //     };
+    useEffect(() => {
+        const messageHandler = (event: any) => {
+            console.log("request message listener: ", event);
+            HandleRequests(event, navigate);
+        };
 
-    //     window.addEventListener("message", messageHandler);
-    //     return () => {
-    //         window.removeEventListener("message", messageHandler);
-    //     };
-    // }, [navigate]);
+        window.addEventListener("message", messageHandler);
+        return () => {
+            window.removeEventListener("message", messageHandler);
+        };
+    }, [navigate]);
 
     useEffect(() => {
         GlobalNavObj.navigate = navigate;

@@ -1,6 +1,6 @@
 import { Button, Input, Select } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 
 const AvailableCurrencyTypes = [
@@ -32,17 +32,19 @@ const AvailableCurrencyTypes = [
 
 const PaymentPage = () => {
     const navigate = useNavigate();
-    const params = useParams();
+    const { state: params } = useLocation();
+    const [responseToOrigin] = useState(params?.responseToOrigin);
+    const [responseToId] = useState(params?.responseToId);
 
     const [targetAddress, setTargetAddress] = useState();
 
-    const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.currencyCode ?? "eth");
+    const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.currencyCode ?? "eth");
     const onCurrencyTypeChange = useCallback((selectCode: string) => {
         console.log(selectCode);
         setCurrencyTypeCode(selectCode);
     }, []);
 
-    const [sendValue, setSendValue] = useState(params?.value);
+    const [sendValue, setSendValue] = useState(params?.params?.value);
     const onSendValueChange = useCallback((event: any) => {
         console.log(event);
         setSendValue(event?.target?.value);
@@ -57,6 +59,7 @@ const PaymentPage = () => {
     }, []);
 
     useEffect(() => {
+        console.log("payment params: ", params);
         const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
             // nav to connect wallet with params

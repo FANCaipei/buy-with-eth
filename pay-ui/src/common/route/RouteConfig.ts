@@ -1,3 +1,4 @@
+import BufferPage from "../../views/BufferPage";
 import ConnectWallet from "../../views/ConnectWallet";
 import NotFoundPage from "../../views/NotFound";
 import PaymentPage from "../../views/Payment";
@@ -10,6 +11,7 @@ const routeConfig = [
     // },
     { path: "/connect-wallet", Component: ConnectWallet },
     { path: "/payment", Component: PaymentPage },
+    { path: "/buffer", Component: BufferPage },
     { path: "*", Component: NotFoundPage },
 ];
 
