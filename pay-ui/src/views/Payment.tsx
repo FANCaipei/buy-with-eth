@@ -2,6 +2,8 @@ import { Button, Input, Select } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
+import { send } from "../messageManager/MessageManager";
+import { Utils, ResponseErrorType } from "../common/Utils";
 
 const AvailableCurrencyTypes = [
     {
@@ -56,6 +58,11 @@ const PaymentPage = () => {
             // TODO: nav to connect wallet with params
             return;
         }
+    }, []);
+    const cancel = useCallback(() => {
+        send("buy-with-crypto-response", responseToId, {
+            error: Utils.generateErrorMsg(ResponseErrorType.UserDenyPayment),
+        });
     }, []);
 
     useEffect(() => {
