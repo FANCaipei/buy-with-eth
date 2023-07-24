@@ -1,6 +1,6 @@
 import { Button, Input, Select } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
@@ -52,18 +52,55 @@ const PaymentPage = () => {
         setSendValue(event?.target?.value);
     }, []);
 
-    const pay = useCallback(() => {
-        const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
-        if (!currentProvider) {
-            // TODO: nav to connect wallet with params
-            return;
+    const pay = useCallback(async () => {
+        // const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
+        // console.log(currentProvider);
+        const goConnectWallet = () => {
+            navigate("/connect-wallet", {
+                replace: true,
+                state: params,
+            });
+        };
+        let fromAddr: string | null = null;
+        try {
+            fromAddr = await (window as any).buyWithCrypto.utils.walletManager.getAccountWithCurrentProvider();
+        } catch (error) {
+            goConnectWallet();
         }
-    }, []);
+
+        if (!fromAddr) {
+            goConnectWallet();
+        } else {
+            try {
+                const tx = await (window as any).buyWithCrypto.utils.walletManager.requestTransfer(
+                    sendValue,
+                    fromAddr,
+                    targetAddress
+                );
+                console.log("request transfer ok: ", tx);
+                send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
+            } catch (error) {
+                send(
+                    "buy-with-crypto-response",
+                    responseToId,
+                    {
+                        error: Utils.generateErrorMsg(ResponseErrorType.PaymentError, (error as any)?.message),
+                    },
+                    responseToOrigin
+                );
+            }
+        }
+    }, [navigate, params, targetAddress, sendValue]);
     const cancel = useCallback(() => {
-        send("buy-with-crypto-response", responseToId, {
-            error: Utils.generateErrorMsg(ResponseErrorType.UserDenyPayment),
-        });
-    }, []);
+        send(
+            "buy-with-crypto-response",
+            responseToId,
+            {
+                error: Utils.generateErrorMsg(ResponseErrorType.UserDenyPayment),
+            },
+            responseToOrigin
+        );
+    }, [responseToId, responseToOrigin]);
 
     useEffect(() => {
         console.log("payment params: ", params);
@@ -89,7 +126,7 @@ const PaymentPage = () => {
             />
             <Input placeholder="Send value" type="number" value={sendValue} onChange={onSendValueChange} />
             <div className="btn-line">
-                <Button>Cancel</Button>
+                <Button onClick={cancel}>Cancel</Button>
                 <Button type="primary" onClick={pay}>
                     Pay
                 </Button>

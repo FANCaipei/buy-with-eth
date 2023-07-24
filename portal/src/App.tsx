@@ -1,11 +1,27 @@
 import React, { useCallback, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { Button } from "antd";
+import { Button, notification } from "antd";
 
 function App() {
-    const requestPay = useCallback(() => {
-        (window as any).buyWithCrypto.request({ method: "request_payment", params: { value: 1 } });
+    const [notifyApi, contextHolder] = notification.useNotification();
+
+    const requestPay = useCallback(async () => {
+        try {
+            (window as any).buyWithCrypto.showPayUI();
+            const resp = await (window as any).buyWithCrypto.request({
+                method: "request_payment",
+                params: { value: 1 },
+            });
+            console.log("payment response: ", resp);
+        } catch (error) {
+            console.log("user canceled: ", error);
+            notifyApi["error"]({
+                message: (error as any)?.errorMsg,
+                description: (error as any)?.errorDetail,
+            });
+            (window as any).buyWithCrypto.hidePayUI();
+        }
     }, []);
     // const requestTransfer = useCallback(() => {
     //     (window as any).walletManager.requestTransfer(
@@ -22,6 +38,7 @@ function App() {
 
     return (
         <div className="App">
+            {contextHolder}
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
                 <p>

@@ -1,7 +1,7 @@
 import TargetManager from "./TargetManager";
 
-const send = (subType: string, responseId: string | number | null, params: any) => {
-    if (!TargetManager.getCurrentTargetOrigin()) {
+const send = (subType: string, responseId: string | number | null, params: any, responseOrigin?: string) => {
+    if (!responseOrigin && !TargetManager.getCurrentTargetOrigin()) {
         console.error("no specific target");
         return;
     } else {
@@ -12,7 +12,7 @@ const send = (subType: string, responseId: string | number | null, params: any) 
                 respTo: responseId,
                 data: params,
             },
-            TargetManager.getCurrentTargetOrigin()
+            responseOrigin ?? TargetManager.getCurrentTargetOrigin()
         );
     }
 };
