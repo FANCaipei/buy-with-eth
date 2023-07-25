@@ -18,34 +18,37 @@ const WalletManager = {
             return Promise.reject("get account failed");
         }
     },
-    async requestTransfer(value: number /**in eth */, fromAddr: string, toAddr: string): Promise<any> {
+    async requestTransfer(
+        chainId: string /**in hex format */,
+        value: number /**in eth */,
+        fromAddr: string,
+        toAddr: string
+    ): Promise<any> {
         const currentProvider = EthereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
             return Promise.reject("no selected provider");
         }
+        // check & switch chain
+        const currentChainId = await currentProvider.request({
+            method: "eth_chainId",
+            params: [],
+        });
+        if (currentChainId != chainId) {
+            // switch chain
+            await currentProvider.request({
+                method: "wallet_switchEthereumChain",
+                params: [
+                    {
+                        chainId: chainId,
+                    },
+                ],
+            });
+        }
+        //
         const valueInWei = ethers.utils.parseEther(`${value}`);
-        console.log("send value: ", valueInWei);
-        // const params = [
-        //     {
-        //         from: fromAddr,
-        //         to: toAddr,
-        //         //   gas: '0x76c0', // 30400
-        //         //   gasPrice: '0x9184e72a000', // 10000000000000
-        //         value: valueInWei,
-        //         data: null,
-        //     },
-        // ];
-        // const tx = await currentProvider.request({
-        //     method: "eth_sendTransaction",
-        //     params,
-        // });
-        // console.log(tx);
-
         const txParams = {
             from: fromAddr,
             to: toAddr,
-            //   gas: '0x76c0', // 30400
-            //   gasPrice: '0x9184e72a000', // 10000000000000
             value: valueInWei,
             data: null,
         };

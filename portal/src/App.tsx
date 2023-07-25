@@ -11,7 +11,7 @@ function App() {
             (window as any).buyWithCrypto.showPayUI();
             const resp = await (window as any).buyWithCrypto.request({
                 method: "request_payment",
-                params: { value: 1 },
+                params: { value: 1, currencyCode: "sepolia-eth" },
             });
             console.log("payment response: ", resp);
         } catch (error) {
@@ -22,7 +22,7 @@ function App() {
             });
             (window as any).buyWithCrypto.hidePayUI();
         }
-    }, []);
+    }, [notifyApi]);
     // const requestTransfer = useCallback(() => {
     //     (window as any).walletManager.requestTransfer(
     //         0.01,

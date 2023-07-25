@@ -11,6 +11,7 @@ const AvailableCurrencyTypes = [
         type: "origin", // 'origin' or 'erc20'
         symbol: "ETH",
         code: "eth",
+        isDefault: true,
     },
     {
         chainId: "0x89",
@@ -23,12 +24,20 @@ const AvailableCurrencyTypes = [
         type: "erc20", // 'origin' or 'erc20'
         symbol: "USDT-ETH",
         code: "usdt-eth",
+        contractAddr: "",
     },
     {
         chainId: "0x89",
         type: "origin", // 'origin' or 'erc20'
         symbol: "USDT-Polygon",
         code: "usdt-polygon",
+        contractAddr: "",
+    },
+    {
+        chainId: "0xaa36a7",
+        type: "origin", // 'origin' or 'erc20'
+        symbol: "SepoliaETH",
+        code: "sepolia-eth",
     },
 ];
 
@@ -41,9 +50,11 @@ const PaymentPage = () => {
     const [targetAddress, setTargetAddress] = useState();
 
     const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.currencyCode ?? "eth");
+    const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
     const onCurrencyTypeChange = useCallback((selectCode: string) => {
         console.log(selectCode);
         setCurrencyTypeCode(selectCode);
+        setCurrencyPaymentConfig(AvailableCurrencyTypes.find(item => item.code === selectCode));
     }, []);
 
     const [sendValue, setSendValue] = useState(params?.params?.value);
@@ -53,8 +64,10 @@ const PaymentPage = () => {
     }, []);
 
     const pay = useCallback(async () => {
-        // const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
-        // console.log(currentProvider);
+        if (!currencyPaymentConfig) {
+            console.error("not payment config: TODO: send error back");
+            return;
+        }
         const goConnectWallet = () => {
             navigate("/connect-wallet", {
                 replace: true,
@@ -71,8 +84,10 @@ const PaymentPage = () => {
         if (!fromAddr) {
             goConnectWallet();
         } else {
+            // transaction
             try {
                 const tx = await (window as any).buyWithCrypto.utils.walletManager.requestTransfer(
+                    currencyPaymentConfig.chainId,
                     sendValue,
                     fromAddr,
                     targetAddress
@@ -90,7 +105,7 @@ const PaymentPage = () => {
                 );
             }
         }
-    }, [navigate, params, targetAddress, sendValue]);
+    }, [navigate, params, targetAddress, sendValue, responseToId, responseToOrigin, currencyPaymentConfig]);
     const cancel = useCallback(() => {
         send(
             "buy-with-crypto-response",
@@ -110,6 +125,15 @@ const PaymentPage = () => {
             navigate("/connect-wallet", { replace: true, state: params });
         }
         setTargetAddress((window as any).buyWithCrypto.targetAddr);
+
+        if (params?.params?.currencyCode) {
+            const currencyConfig =
+                AvailableCurrencyTypes.find(item => item.code === params.params.currencyCode) ??
+                AvailableCurrencyTypes.find(item => item.isDefault) ??
+                AvailableCurrencyTypes[0];
+            setCurrencyPaymentConfig(currencyConfig);
+            setCurrencyTypeCode(currencyConfig.code);
+        }
     }, [navigate, params]);
 
     return (
