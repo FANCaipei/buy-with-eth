@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
+import RestService from "../common/restService/RestService";
 
 const AvailableCurrencyTypes = [
     {
@@ -11,6 +12,8 @@ const AvailableCurrencyTypes = [
         type: "origin", // 'origin' or 'erc20'
         symbol: "ETH",
         code: "eth",
+        priceRequestSymbol: "ETH",
+        needRequestPrice: true, // if needRequestPrice, priceRequestSymbol must not be null
         isDefault: true,
     },
     {
@@ -18,6 +21,8 @@ const AvailableCurrencyTypes = [
         type: "origin", // 'origin' or 'erc20'
         symbol: "MATIC",
         code: "matic",
+        priceRequestSymbol: "MATIC",
+        needRequestPrice: true, // if needRequestPrice, priceRequestSymbol must not be null
     },
     {
         chainId: "0x1",
@@ -51,11 +56,28 @@ const PaymentPage = () => {
 
     const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.currencyCode ?? "eth");
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
-    const onCurrencyTypeChange = useCallback((selectCode: string) => {
-        console.log(selectCode);
-        setCurrencyTypeCode(selectCode);
-        setCurrencyPaymentConfig(AvailableCurrencyTypes.find(item => item.code === selectCode));
+
+    const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState();
+    const getCurrentCurrencyPrice = useCallback((currencyConfig: any) => {
+        if (currencyConfig?.priceRequestSymbol) {
+            RestService.getCryptoPrice(currencyConfig.priceRequestSymbol).then((res: any) => {
+                if (res?.data?.price) {
+                    setCurrentCurrencyPrice(res.data.price);
+                }
+            });
+        }
     }, []);
+
+    const onCurrencyTypeChange = useCallback(
+        (selectCode: string) => {
+            console.log(selectCode);
+            setCurrencyTypeCode(selectCode);
+            const currencyConfig = AvailableCurrencyTypes.find(item => item.code === selectCode);
+            setCurrencyPaymentConfig(currencyConfig);
+            getCurrentCurrencyPrice(currencyConfig);
+        },
+        [getCurrentCurrencyPrice]
+    );
 
     const [sendValue, setSendValue] = useState(params?.params?.value);
     const onSendValueChange = useCallback((event: any) => {
@@ -126,19 +148,19 @@ const PaymentPage = () => {
         }
         setTargetAddress((window as any).buyWithCrypto.targetAddr);
 
-        if (params?.params?.currencyCode) {
-            const currencyConfig =
-                AvailableCurrencyTypes.find(item => item.code === params.params.currencyCode) ??
-                AvailableCurrencyTypes.find(item => item.isDefault) ??
-                AvailableCurrencyTypes[0];
-            setCurrencyPaymentConfig(currencyConfig);
-            setCurrencyTypeCode(currencyConfig.code);
-        }
-    }, [navigate, params]);
+        const currencyConfig =
+            AvailableCurrencyTypes.find(item => item.code === params?.params?.currencyCode) ??
+            AvailableCurrencyTypes.find(item => item.isDefault) ??
+            AvailableCurrencyTypes[0];
+        setCurrencyPaymentConfig(currencyConfig);
+        setCurrencyTypeCode(currencyConfig.code);
+        getCurrentCurrencyPrice(currencyConfig);
+    }, [navigate, params, getCurrentCurrencyPrice]);
 
     return (
         <StyledContainer>
             <div>{targetAddress}</div>
+            <div>current price: ~{currentCurrencyPrice} USD</div>
             <Select
                 defaultValue={currencyTypeCode}
                 style={{ width: 120 }}
