@@ -23,12 +23,12 @@ const nativeTokenSymbols: { [key: string]: string } = {
 };
 
 const getTokenPrice = async (cryptoSymbol: string): Promise<number | null> => {
-    const { data } = await axios.get<any>(`https://api.binance.com/api/v3/ticker/price?symbol=${cryptoSymbol}USDT`, {
+    const { data } = await axios.get<any>(`https://api.coinbase.com/v2/prices/${cryptoSymbol}-USD/buy`, {
         headers: {
             Accept: "application/json",
         },
     });
-    const p = parseFloat(data.price);
+    const p = parseFloat(data?.data?.amount);
     return isNaN(p) ? null : p;
 };
 

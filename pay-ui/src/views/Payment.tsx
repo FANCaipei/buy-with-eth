@@ -61,8 +61,8 @@ const PaymentPage = () => {
     const getCurrentCurrencyPrice = useCallback((currencyConfig: any) => {
         if (currencyConfig?.priceRequestSymbol) {
             RestService.getCryptoPrice(currencyConfig.priceRequestSymbol).then((res: any) => {
-                if (res?.data?.price) {
-                    setCurrentCurrencyPrice(res.data.price);
+                if (res?.data?.data?.amount) {
+                    setCurrentCurrencyPrice(res.data.data.amount);
                 }
             });
         }

@@ -42,7 +42,7 @@ Axios.interceptors.response.use(
 
 const RestService = {
     getCryptoPrice: cryptoSymbol => {
-        return Axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${cryptoSymbol}USDT`);
+        return Axios.get(`https://api.coinbase.com/v2/prices/${cryptoSymbol}-USD/buy`);
     },
     // getUniSwapV3Tokens: symbol => {
     //     const query = gql`
