@@ -60,6 +60,7 @@ const getTransactionDetails = async (
         value: -1,
         currentPrice: -1,
         valueInUSD: -1,
+        chainId: chainId,
     };
 
     // extract target address
