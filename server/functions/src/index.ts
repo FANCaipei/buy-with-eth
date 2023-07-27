@@ -19,11 +19,11 @@ const rpcUrlConfig: { [key: string]: string } = {
 
 const nativeTokenSymbols: { [key: string]: string } = {
     "0x1": "ETH",
-    "0x89": "MATC",
+    "0x89": "MATIC",
 };
 
 const getTokenPrice = async (cryptoSymbol: string): Promise<number | null> => {
-    const { data } = await axios.get<any>(`https://api.coinbase.com/v2/prices/${cryptoSymbol}-USD/buy`, {
+    const { data } = await axios.get<any>(`https://api.coinbase.com/v2/prices/${cryptoSymbol}-USD/spot`, {
         headers: {
             Accept: "application/json",
         },
