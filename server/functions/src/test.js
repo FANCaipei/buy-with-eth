@@ -1,8 +1,8 @@
 const axios = require("axios");
 
-const getTokenPrice = async cryptoSymbol => {
+const getTokenPrice = async () => {
     console.log("gettting token price....");
-    const { data } = await axios.get(`https://api.binance.com/api/v3/ticker/price?symbol=${cryptoSymbol}USDT`, {
+    const { data } = await axios.get(`https://catfact.ninja/fact`, {
         headers: {
             Accept: "application/json",
         },
@@ -12,4 +12,4 @@ const getTokenPrice = async cryptoSymbol => {
     return data?.price ? parseFloat(data.price) : null;
 };
 
-getTokenPrice("ETH");
+getTokenPrice();

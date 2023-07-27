@@ -28,7 +28,8 @@ const getTokenPrice = async (cryptoSymbol: string): Promise<number | null> => {
             Accept: "application/json",
         },
     });
-    return data?.price ? parseFloat(data.price) : null;
+    const p = parseFloat(data.price);
+    return isNaN(p) ? null : p;
 };
 
 /**
@@ -40,7 +41,7 @@ const getTransactionDetails = async (
     rpcUrl: string,
     txHash: string,
     isErc20: boolean,
-    nativeTokenSymbol?: string
+    chainId: string
 ): Promise<{
     receiveAddress: string;
     value: number;
@@ -77,13 +78,14 @@ const getTransactionDetails = async (
     if (isErc20) {
         result.currentPrice = 1;
         result.valueInUSD = result.value;
-    } else if (nativeTokenSymbol) {
+    } else {
         try {
-            const price = await getTokenPrice(nativeTokenSymbol);
+            const price = await getTokenPrice(nativeTokenSymbols[chainId]);
             result.currentPrice = price ?? -1;
             result.valueInUSD = price != null && price != 0 ? result.value * price : -1;
         } catch (error) {
             // do nothing
+            logger.error(error);
         }
     }
 
@@ -111,7 +113,7 @@ export const checkPaymentAndSave = onRequest(async (request, response) => {
         return;
     }
     try {
-        const txInfo = await getTransactionDetails(rpcUrl, txHash, isErc20, nativeTokenSymbols[chainId]);
+        const txInfo = await getTransactionDetails(rpcUrl, txHash, isErc20, chainId);
         if (!txInfo) {
             response.status(400).send(`Transaction not exist or has not been mined`);
             return;
