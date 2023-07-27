@@ -116,7 +116,7 @@ const getTransactionDetails = async (
     result.value = parseFloat(ethers.utils.formatEther(txInfo.value));
     if (isErc20) {
         // extract target address & value from input
-        const decodeResult = usdtInputValueDecodeFns[chainId]((txInfo as any).input);
+        const decodeResult = usdtInputValueDecodeFns[chainId](txInfo.data);
         result.receiveAddress = decodeResult.toAddr;
         result.value = decodeResult.value;
     }
