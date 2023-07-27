@@ -1,15 +1,20 @@
-const axios = require("axios");
+const ethers = require("ethers");
 
-const getTokenPrice = async cryptoSymbol => {
-    console.log("gettting token price....");
-    const { data } = await axios.get(`https://api.coinbase.com/v2/prices/${cryptoSymbol}-USD/buy`, {
-        headers: {
-            Accept: "application/json",
-        },
-    });
-    console.log("token price: ", data?.data?.amount);
-    console.log("token price: ", data);
-    return data?.price ? parseFloat(data?.data?.amount) : null;
+const testDecodeInput = inputStr => {
+    const result = ethers.utils.defaultAbiCoder.decode(
+        [
+            { name: "_to", type: "address" },
+            { name: "_value", type: "uint256" },
+        ],
+        ethers.utils.hexDataSlice(inputStr, 4)
+    );
+    console.log(result);
+    const toAddr = result[0];
+    const value = ethers.utils.formatUnits(result[1], 6);
+    console.log(toAddr);
+    console.log(value);
 };
 
-getTokenPrice("eth");
+testDecodeInput(
+    "0xa9059cbb0000000000000000000000000ed8d868f2397c2442378da279e441eb86b8cac7000000000000000000000000000000000000000000000000000000002fc8246b"
+);

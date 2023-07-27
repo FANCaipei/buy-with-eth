@@ -9,7 +9,7 @@
 
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import axios from "axios";
 
 const rpcUrlConfig: { [key: string]: string } = {
@@ -20,6 +20,53 @@ const rpcUrlConfig: { [key: string]: string } = {
 const nativeTokenSymbols: { [key: string]: string } = {
     "0x1": "ETH",
     "0x89": "MATIC",
+};
+
+const usdtInputValueDecodeFns: { [key: string]: (inputData: string) => { toAddr: string; value: number } } = {
+    "0x1": (inputData: string): { toAddr: string; value: number } => {
+        if (!inputData || inputData == "") {
+            return {
+                toAddr: "",
+                value: -1,
+            };
+        }
+        const transferInputAbi: any = [
+            { name: "_to", type: "address" },
+            { name: "_value", type: "uint256" },
+        ];
+        const decimals = 6;
+        const result = ethers.utils.defaultAbiCoder.decode(transferInputAbi, ethers.utils.hexDataSlice(inputData, 4));
+
+        const toAddr = result["_to"];
+        const value = parseFloat(ethers.utils.formatUnits(result["_value"], decimals));
+
+        return {
+            toAddr: toAddr,
+            value: value,
+        };
+    },
+    "0x89": (inputData: string): { toAddr: string; value: number } => {
+        if (!inputData || inputData == "") {
+            return {
+                toAddr: "",
+                value: -1,
+            };
+        }
+        const transferInputAbi: any = [
+            { internalType: "address", name: "recipient", type: "address" },
+            { internalType: "uint256", name: "amount", type: "uint256" },
+        ];
+        const decimals = 6;
+        const result = ethers.utils.defaultAbiCoder.decode(transferInputAbi, ethers.utils.hexDataSlice(inputData, 4));
+
+        const toAddr = result[0] ?? "";
+        const value = parseFloat(ethers.utils.formatUnits(result[1] ?? BigNumber.from(0), decimals));
+
+        return {
+            toAddr: toAddr,
+            value: value,
+        };
+    },
 };
 
 const getTokenPrice = async (cryptoSymbol: string): Promise<number | null> => {
@@ -65,15 +112,13 @@ const getTransactionDetails = async (
 
     // extract target address
     result.receiveAddress = txInfo.to || "";
-    if (isErc20) {
-        // TODO: extract target address from data
-        result.receiveAddress = "";
-    }
     // extract value
     result.value = parseFloat(ethers.utils.formatEther(txInfo.value));
     if (isErc20) {
-        // TODO: extract value from data
-        result.value = -1;
+        // extract target address & value from input
+        const decodeResult = usdtInputValueDecodeFns[chainId]((txInfo as any).input);
+        result.receiveAddress = decodeResult.toAddr;
+        result.value = decodeResult.value;
     }
 
     if (isErc20) {
