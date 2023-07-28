@@ -9,7 +9,11 @@
 
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import { getTransactionDetails, rpcUrlConfig } from "./utils/tokenInfoUtils";
+import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
+import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord } from "./utils/firestoreUtils";
+
+// firstly init firestore
+initFirestore();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -25,7 +29,7 @@ export const checkPaymentAndSave = onRequest(async (request, response) => {
         response.status(400).send("Params invalid");
         return;
     }
-    // TODO: get target paymentAddress with appId;
+
     const rpcUrl: string = rpcUrlConfig[chainId];
     if (!rpcUrl) {
         response.status(400).send(`Chain id not support: ${chainId}`);
@@ -37,10 +41,60 @@ export const checkPaymentAndSave = onRequest(async (request, response) => {
             response.status(400).send(`Transaction not exist or has not been mined`);
             return;
         }
-        // TODO: check receive address equals paymentAddress & save to database
-        response.send(txInfo);
+        // check if receive address equals app paymentAddress
+        let appPaymentAddr: string = await getReceiveAccoutWithAppId(appId);
+        if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr.toLocaleLowerCase()) {
+            response.status(400).send(`Transaction receive address is not correct`);
+            return;
+        }
+        // only support chain native token & USDT now
+        let tokenSymbol = nativeTokenSymbols[chainId];
+        if (isErc20) {
+            tokenSymbol = "USDT";
+        }
+        // save record
+        const savedRecord = await savePaymentRecord(appId, txHash, chainId, tokenSymbol, txInfo);
+        response.send(savedRecord);
     } catch (error) {
         logger.error(error);
         response.status(500).send(error);
     }
 });
+
+// for api uni test
+// export const getAppAddrExample = onRequest(async (request, response) => {
+//     const { appId } = request.body ?? {};
+//     if (!appId) {
+//         response.status(400).send(`appId must be provided`);
+//         return;
+//     }
+//     try {
+//         const addr = await getReceiveAccoutWithAppId(appId);
+//         response.send({
+//             address: addr,
+//         });
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });
+
+// export const saveRecordExample = onRequest(async (request, response) => {
+//     const { appId } = request.body ?? {};
+//     if (!appId) {
+//         response.status(400).send(`appId must be provided`);
+//         return;
+//     }
+//     try {
+//         const savedRecord = await savePaymentRecord(appId, "0xsdfghhhsdf", "0x1", "ETH", {
+//             receiveAddress: "0x367D2G",
+//             value: 0.2,
+//             currentPrice: 1886,
+//             valueInUSD: 123,
+//         });
+//         response.send(savedRecord);
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });

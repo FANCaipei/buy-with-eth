@@ -128,4 +128,4 @@ const getTransactionDetails = async (
     return result;
 };
 
-export { rpcUrlConfig, getTokenPrice, getTransactionDetails };
+export { rpcUrlConfig, nativeTokenSymbols, getTokenPrice, getTransactionDetails };
