@@ -7,7 +7,8 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { onRequest } from "firebase-functions/v2/https";
+import { onCall, onRequest } from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
 import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord } from "./utils/firestoreUtils";
@@ -153,3 +154,42 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
 //         response.status(500).send(error);
 //     }
 // });
+
+/**
+ * app call functions.
+ * those functions can only be called by firebase client app.
+ * Callables have these key difference from HTTP functions:
+    # With callables, Firebase Authentication tokens, FCM tokens, and App Check tokens, when available, are automatically included in requests.
+    # The trigger automatically deserializes the request body and validates auth tokens.
+ * ref: https://firebase.google.com/docs/functions/callable 
+ * */
+
+export const registerVipWithPaymentReceipt = onCall(async request => {
+    if (!request.auth) {
+        return {
+            success: false,
+        };
+    }
+
+    const { receiptId, paymentType /* by crypto or by 3rd part*/ } = request.data ?? {};
+    if (!receiptId || !paymentType) {
+        return {
+            success: false,
+        };
+    }
+    // TODO: verify payment info, calculate vipLevel
+
+    // TODO: update user vip expire timestamp, !!attention if expire time < now, the start time shoul be now!!
+    // TODO: caculate expired timestamp
+    const nextExpiredTimestamp = 12341242344234;
+    const vipLevel = "test";
+    await admin.auth().setCustomUserClaims(request.auth.uid, {
+        vipExpired: nextExpiredTimestamp,
+        vipLevel: vipLevel,
+    });
+
+    // response value
+    return {
+        success: true,
+    };
+});
