@@ -11,6 +11,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
 import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord } from "./utils/firestoreUtils";
+import { decodeReceiptId } from "./utils/general";
 
 // firstly init firestore
 initFirestore();
@@ -24,7 +25,7 @@ export const helloWorld = onRequest((request, response) => {
 });
 
 export const checkPaymentAndSave = onRequest(async (request, response) => {
-    const { txHash, chainId, appId, isErc20 } = request.body ?? {};
+    const { txHash, chainId, appId, isErc20, productId } = request.body ?? {};
     if (!txHash || !chainId || !appId) {
         response.status(400).send("Params invalid");
         return;
@@ -35,6 +36,7 @@ export const checkPaymentAndSave = onRequest(async (request, response) => {
         response.status(400).send(`Chain id not support: ${chainId}`);
         return;
     }
+    // same logic with verifyPaymentReceiptAndSave
     try {
         const txInfo = await getTransactionDetails(rpcUrl, txHash, isErc20, chainId);
         if (!txInfo) {
@@ -53,8 +55,51 @@ export const checkPaymentAndSave = onRequest(async (request, response) => {
             tokenSymbol = "USDT";
         }
         // save record
-        const savedRecord = await savePaymentRecord(appId, txHash, chainId, tokenSymbol, txInfo);
-        response.send(savedRecord);
+        const savedRecord = await savePaymentRecord(appId, txHash, chainId, tokenSymbol, txInfo, productId);
+        const receiptId = `${appId}#${savedRecord.txHash}#${savedRecord.chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
+            productId ?? ""
+        }`;
+        response.send({ ...savedRecord, receiptId: receiptId });
+    } catch (error) {
+        logger.error(error);
+        response.status(500).send(error);
+    }
+});
+
+export const verifyPaymentReceiptAndSave = onRequest(async (request, response) => {
+    const { receiptId } = request.body ?? {};
+    if (!receiptId) {
+        response.status(400).send("Params invalid");
+        return;
+    }
+
+    const receiptParams = decodeReceiptId(receiptId);
+    if (!receiptParams) {
+        response.status(400).send("Wrong receipt id");
+        return;
+    }
+
+    const { txHash, isErc20, chainId, appId, tokenSymbol, productId } = receiptParams;
+    const rpcUrl: string = rpcUrlConfig[receiptParams.chainId];
+    // same logic with checkPaymentAndSave
+    try {
+        const txInfo = await getTransactionDetails(rpcUrl, txHash, isErc20, chainId);
+        if (!txInfo) {
+            response.status(400).send(`Transaction not exist or has not been mined`);
+            return;
+        }
+        // check if receive address equals app paymentAddress
+        let appPaymentAddr: string = await getReceiveAccoutWithAppId(appId);
+        if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr.toLocaleLowerCase()) {
+            response.status(400).send(`Transaction receive address is not correct`);
+            return;
+        }
+        // save record
+        const savedRecord = await savePaymentRecord(appId, txHash, chainId, tokenSymbol, txInfo, productId);
+        const receiptId = `${appId}#${savedRecord.txHash}#${savedRecord.chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
+            productId ?? ""
+        }`;
+        response.send({ ...savedRecord, receiptId: receiptId });
     } catch (error) {
         logger.error(error);
         response.status(500).send(error);
