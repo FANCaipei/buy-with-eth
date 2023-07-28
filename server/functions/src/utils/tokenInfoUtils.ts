@@ -85,13 +85,6 @@ const getTransactionDetails = async (
     currentPrice: number;
     valueInUSD: number;
 }> => {
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    const txInfo = await provider.getTransaction(txHash);
-
-    if (!txInfo) {
-        return Promise.reject("Transaction not exist or has not been mined");
-    }
-
     const result = {
         receiveAddress: "",
         value: -1,
@@ -100,29 +93,35 @@ const getTransactionDetails = async (
         chainId: chainId,
     };
 
-    // extract target address
-    result.receiveAddress = txInfo.to || "";
-    // extract value
-    result.value = parseFloat(ethers.utils.formatEther(txInfo.value));
-    if (isErc20) {
-        // extract target address & value from input
-        const decodeResult = usdtInputValueDecodeFns[chainId](txInfo.data);
-        result.receiveAddress = decodeResult.toAddr;
-        result.value = decodeResult.value;
-    }
+    try {
+        const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+        const queryResult = await Promise.all([
+            provider.getTransaction(txHash),
+            getTokenPrice(nativeTokenSymbols[chainId]),
+        ]);
+        const txInfo = queryResult[0];
+        const price = queryResult[1];
 
-    if (isErc20) {
-        result.currentPrice = 1;
-        result.valueInUSD = result.value;
-    } else {
-        try {
-            const price = await getTokenPrice(nativeTokenSymbols[chainId]);
-            result.currentPrice = price ?? -1;
-            result.valueInUSD = price != null && price != 0 ? result.value * price : -1;
-        } catch (error) {
-            // do nothing
-            logger.error(error);
+        if (!txInfo) {
+            return Promise.reject("Transaction not exist or has not been mined");
         }
+
+        // extract target address
+        result.receiveAddress = txInfo.to || "";
+        // extract value
+        result.value = parseFloat(ethers.utils.formatEther(txInfo.value));
+        if (isErc20) {
+            // extract target address & value from input
+            const decodeResult = usdtInputValueDecodeFns[chainId](txInfo.data);
+            result.receiveAddress = decodeResult.toAddr;
+            result.value = decodeResult.value;
+        }
+
+        result.currentPrice = price ?? -1;
+        result.valueInUSD = price != null && price != 0 ? result.value * price : -1;
+    } catch (error) {
+        // do nothing
+        logger.error(error);
     }
 
     return result;

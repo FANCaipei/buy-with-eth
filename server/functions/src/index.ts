@@ -38,13 +38,18 @@ export const checkPaymentAndSave = onRequest(async (request, response) => {
     }
     // same logic with verifyPaymentReceiptAndSave
     try {
-        const txInfo = await getTransactionDetails(rpcUrl, txHash, isErc20, chainId);
+        const queryResult = await Promise.all([
+            getTransactionDetails(rpcUrl, txHash, isErc20, chainId),
+            getReceiveAccoutWithAppId(appId),
+        ]);
+
+        const txInfo = queryResult[0];
         if (!txInfo) {
             response.status(400).send(`Transaction not exist or has not been mined`);
             return;
         }
         // check if receive address equals app paymentAddress
-        let appPaymentAddr: string = await getReceiveAccoutWithAppId(appId);
+        const appPaymentAddr: string = queryResult[1];
         if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr.toLocaleLowerCase()) {
             response.status(400).send(`Transaction receive address is not correct`);
             return;
@@ -83,13 +88,18 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
     const rpcUrl: string = rpcUrlConfig[receiptParams.chainId];
     // same logic with checkPaymentAndSave
     try {
-        const txInfo = await getTransactionDetails(rpcUrl, txHash, isErc20, chainId);
+        const queryResult = await Promise.all([
+            getTransactionDetails(rpcUrl, txHash, isErc20, chainId),
+            getReceiveAccoutWithAppId(appId),
+        ]);
+
+        const txInfo = queryResult[0];
         if (!txInfo) {
             response.status(400).send(`Transaction not exist or has not been mined`);
             return;
         }
         // check if receive address equals app paymentAddress
-        let appPaymentAddr: string = await getReceiveAccoutWithAppId(appId);
+        const appPaymentAddr: string = queryResult[1];
         if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr.toLocaleLowerCase()) {
             response.status(400).send(`Transaction receive address is not correct`);
             return;
