@@ -193,3 +193,8 @@ export const registerVipWithPaymentReceipt = onCall(async request => {
         success: true,
     };
 });
+
+// user add app, must check if user can add app
+export const addApp = onCall(async requst => {
+    // TODO: check if user has right to add app
+});
