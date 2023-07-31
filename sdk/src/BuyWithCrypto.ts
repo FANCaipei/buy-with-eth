@@ -4,9 +4,12 @@ import { IframeOrigin } from "./constant";
 import InitOption from "./types/InitOption";
 import Utils from "./utils";
 import MessageIdManager from "./messageHandlers/MessageIdManager";
+import RestService from "./restService/RestService";
 
 const BuyWithCrypto: {
     appId?: string;
+    tokenConfigs?: Array<any>;
+    isFetchingTokenConfig: boolean;
     appKey?: string;
     logoUrl?: string;
     targetAddr?: string;
@@ -17,16 +20,19 @@ const BuyWithCrypto: {
         ethereumProvider: typeof EthereumProvider;
     };
     isReady: () => boolean;
+    onReady: (callback: Function) => void;
     connectWallet: (walletType: "metamask" | "coinbase") => void;
     initUI: () => void;
     showPayUI: () => void;
     hidePayUI: () => void;
+    getTokenConfigs: () => void;
     request: ({ method, params }: { method: string; params: any }) => Promise<any>;
 } = {
     utils: {
         walletManager: WalletManager,
         ethereumProvider: EthereumProvider,
     },
+    isFetchingTokenConfig: true,
 
     init: (option: InitOption) => {
         if (!option.appId || !option.appKey) {
@@ -48,6 +54,17 @@ const BuyWithCrypto: {
         return true;
     },
 
+    async getTokenConfigs() {
+        BuyWithCrypto.isFetchingTokenConfig = true;
+        try {
+            const configs = (await RestService.getTokenConfig()).data ?? [];
+            BuyWithCrypto.tokenConfigs = configs;
+        } catch (error) {
+            BuyWithCrypto.tokenConfigs = [];
+        }
+        BuyWithCrypto.isFetchingTokenConfig = false;
+    },
+
     connectWallet(walletType: "metamask" | "coinbase") {
         if (!BuyWithCrypto.isReady()) {
             return;
@@ -55,6 +72,17 @@ const BuyWithCrypto: {
         //
     },
 
+    onReady(callback: Function) {
+        if (!BuyWithCrypto.isFetchingTokenConfig) {
+            callback();
+            return;
+        }
+        setTimeout(() => {
+            BuyWithCrypto.onReady(callback);
+        }, 100);
+    },
+
+    // ui controllers
     initUI() {
         if (BuyWithCrypto.iframeEle) {
             return;

@@ -6,46 +6,6 @@ import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
 import RestService from "../common/restService/RestService";
 
-const AvailableCurrencyTypes = [
-    {
-        chainId: "0x1",
-        type: "origin", // 'origin' or 'erc20'
-        symbol: "ETH",
-        code: "eth",
-        priceRequestSymbol: "ETH",
-        needRequestPrice: true, // if needRequestPrice, priceRequestSymbol must not be null
-        isDefault: true,
-    },
-    {
-        chainId: "0x89",
-        type: "origin", // 'origin' or 'erc20'
-        symbol: "MATIC",
-        code: "matic",
-        priceRequestSymbol: "MATIC",
-        needRequestPrice: true, // if needRequestPrice, priceRequestSymbol must not be null
-    },
-    {
-        chainId: "0x1",
-        type: "erc20", // 'origin' or 'erc20'
-        symbol: "USDT-ETH",
-        code: "usdt-eth",
-        contractAddr: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    },
-    {
-        chainId: "0x89",
-        type: "origin", // 'origin' or 'erc20'
-        symbol: "USDT-Polygon",
-        code: "usdt-polygon",
-        contractAddr: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-    },
-    {
-        chainId: "0xaa36a7",
-        type: "origin", // 'origin' or 'erc20'
-        symbol: "SepoliaETH",
-        code: "sepolia-eth",
-    },
-];
-
 const PaymentPage = () => {
     const navigate = useNavigate();
     const { state: params } = useLocation();
@@ -57,22 +17,30 @@ const PaymentPage = () => {
     const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.currencyCode ?? "eth");
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
 
-    const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState();
+    const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
     const getCurrentCurrencyPrice = useCallback((currencyConfig: any) => {
-        if (currencyConfig?.priceRequestSymbol) {
-            RestService.getCryptoPrice(currencyConfig.priceRequestSymbol).then((res: any) => {
+        if (!currencyConfig?.symbol || currencyConfig?.symbol === "") {
+            return;
+        }
+        const symbol = currencyConfig.symbol.includes("USDT") ? "USDT" : currencyConfig.symbol;
+        RestService.getCryptoPrice(symbol)
+            .then((res: any) => {
                 if (res?.data?.data?.amount) {
                     setCurrentCurrencyPrice(res.data.data.amount);
                 }
+            })
+            .catch(() => {
+                setCurrentCurrencyPrice(null);
             });
-        }
     }, []);
 
     const onCurrencyTypeChange = useCallback(
         (selectCode: string) => {
             console.log(selectCode);
             setCurrencyTypeCode(selectCode);
-            const currencyConfig = AvailableCurrencyTypes.find(item => item.code === selectCode);
+            const currencyConfig = (window as any).buyWithCrypto.tokenConfigs.find(
+                (item: any) => item.code === selectCode
+            );
             setCurrencyPaymentConfig(currencyConfig);
             getCurrentCurrencyPrice(currencyConfig);
         },
@@ -86,6 +54,11 @@ const PaymentPage = () => {
     }, []);
 
     const pay = useCallback(async () => {
+        const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
+        if (!currentProvider) {
+            // nav to connect wallet with params
+            navigate("/connect-wallet", { replace: true, state: params });
+        }
         if (!currencyPaymentConfig) {
             console.error("not payment config: TODO: send error back");
             return;
@@ -112,7 +85,9 @@ const PaymentPage = () => {
                     currencyPaymentConfig.chainId,
                     sendValue,
                     fromAddr,
-                    targetAddress
+                    targetAddress,
+                    currencyPaymentConfig?.symbol?.includes("USDT"),
+                    null
                 );
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
@@ -141,20 +116,19 @@ const PaymentPage = () => {
 
     useEffect(() => {
         console.log("payment params: ", params);
-        const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
-        if (!currentProvider) {
-            // nav to connect wallet with params
-            navigate("/connect-wallet", { replace: true, state: params });
-        }
+        console.log((window as any).buyWithCrypto?.tokenConfigs);
         setTargetAddress((window as any).buyWithCrypto.targetAddr);
 
-        const currencyConfig =
-            AvailableCurrencyTypes.find(item => item.code === params?.params?.currencyCode) ??
-            AvailableCurrencyTypes.find(item => item.isDefault) ??
-            AvailableCurrencyTypes[0];
-        setCurrencyPaymentConfig(currencyConfig);
-        setCurrencyTypeCode(currencyConfig.code);
-        getCurrentCurrencyPrice(currencyConfig);
+        (window as any).buyWithCrypto.onReady(() => {
+            const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
+            const currencyConfig =
+                AvailableCurrencyTypes.find(item => item.code === params?.params?.currencyCode) ??
+                AvailableCurrencyTypes.find(item => item.isDefault) ??
+                AvailableCurrencyTypes[0];
+            setCurrencyPaymentConfig(currencyConfig);
+            setCurrencyTypeCode(currencyConfig?.code);
+            getCurrentCurrencyPrice(currencyConfig);
+        });
     }, [navigate, params, getCurrentCurrencyPrice]);
 
     return (
@@ -165,7 +139,7 @@ const PaymentPage = () => {
                 defaultValue={currencyTypeCode}
                 style={{ width: 120 }}
                 onChange={onCurrencyTypeChange}
-                options={AvailableCurrencyTypes.map(item => ({
+                options={((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => ({
                     value: item.code,
                     label: item.symbol,
                 }))}

@@ -25,7 +25,7 @@ export const helloWorld = onRequest((request, response) => {
     response.send("Hello from Firebase!");
 });
 
-export const checkPaymentAndSave = onRequest(async (request, response) => {
+export const checkPaymentAndSave = onRequest({ cors: true }, async (request, response) => {
     const { txHash, chainId, appId, isErc20, productId } = request.body ?? {};
     if (!txHash || !chainId || !appId) {
         response.status(400).send("Params invalid");

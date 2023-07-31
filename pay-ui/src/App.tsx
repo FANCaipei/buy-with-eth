@@ -58,7 +58,10 @@ function Index() {
 
 function App() {
     useEffect(() => {
-        (window as any).buyWithCrypto.init({ appId: "test", appKey: "testk" });
+        (window as any).buyWithCrypto.init({
+            appId: "rBBXvVZq0eSnZZ2pliYiCfeOkx43-jcUrmUedFydsUfr2itcR",
+            appKey: "testk",
+        });
     }, []);
     return (
         <BrowserRouter>

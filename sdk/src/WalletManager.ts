@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 import EthereumProvider from "./EthereumProvider";
+import RestService from "./restService/RestService";
+import BuyWithCrypto from "./BuyWithCrypto";
 
 const WalletManager = {
     async connectWallet(provider: any, providerType: "metamask" | "coinbase"): Promise<string> {
@@ -22,12 +24,28 @@ const WalletManager = {
         chainId: string /**in hex format */,
         value: number /**in eth */,
         fromAddr: string,
-        toAddr: string
+        toAddr: string,
+        isErc20: boolean,
+        productId?: string
     ): Promise<any> {
         const currentProvider = EthereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
             return Promise.reject("no selected provider");
         }
+        const currentTokenConfig = (BuyWithCrypto.tokenConfigs ?? []).find(item => {
+            if (item.chainId !== chainId) {
+                return false;
+            } else {
+                if (isErc20) {
+                    return item.type === "erc20";
+                }
+                return item.type === "origin";
+            }
+        });
+        if (!currentTokenConfig?.symbol || currentTokenConfig?.symbol == "") {
+            return Promise.reject("chain not support");
+        }
+        const tokenSymbol: string = currentTokenConfig.symbol.includes("USDT") ? "USDT" : currentTokenConfig.symbol;
         // check & switch chain
         const currentChainId = await currentProvider.request({
             method: "eth_chainId",
@@ -55,16 +73,21 @@ const WalletManager = {
         const provider = new ethers.providers.Web3Provider(currentProvider, "any");
         const signer = provider.getSigner();
         const tx = await signer.sendTransaction(txParams);
+        const paymentReceiptId = `${BuyWithCrypto.appId}#${tx.hash}#${chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
+            productId ?? ""
+        }`;
         try {
-            const receipt = tx.wait();
+            const receipt = tx.wait(); // wait until transaction minted
 
             console.log("recep: ", receipt);
-            // TODO: save transaction to server
+            // save transaction to server
+            await RestService.savePaymentInfo(tx.hash, chainId, BuyWithCrypto.appId, isErc20, productId);
             return Promise.resolve(receipt);
         } catch (error) {
-            return Promise.reject(
-                "transaction not confirmed, if success in wallet, please send the transaction id to support"
-            );
+            return Promise.reject({
+                receiptId: paymentReceiptId,
+                errorMsg: "transaction not confirmed or saved failed, you can verify payment with receiptId later",
+            });
         }
     },
     async getAccountWithCurrentProvider(): Promise<string> {

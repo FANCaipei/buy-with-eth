@@ -5,11 +5,14 @@ import axios from "axios";
 const rpcUrlConfig: { [key: string]: string } = {
     "0x1": "https://mainnet.infura.io/v3/56f3c243604845ea85dbdb42cf8f6ce3",
     "0x89": "https://polygon-mainnet.infura.io/v3/56f3c243604845ea85dbdb42cf8f6ce3",
+    // testnets
+    "0xaa36a7": "https://sepolia.infura.io/v3/56f3c243604845ea85dbdb42cf8f6ce3", // sepolia
 };
 
 const nativeTokenSymbols: { [key: string]: string } = {
     "0x1": "ETH",
     "0x89": "MATIC",
+    "0xaa36a7": "SepoliaETH",
 };
 
 const usdtInputValueDecodeFns: { [key: string]: (inputData: string) => { toAddr: string; value: number } } = {
@@ -95,12 +98,12 @@ const getTransactionDetails = async (
 
     try {
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-        const queryResult = await Promise.all([
+        const queryResult = await Promise.allSettled([
             provider.getTransaction(txHash),
             getTokenPrice(nativeTokenSymbols[chainId]),
         ]);
-        const txInfo = queryResult[0];
-        const price = queryResult[1];
+        const txInfo = queryResult[0]?.status === "fulfilled" ? queryResult[0].value : null;
+        const price = queryResult[1]?.status === "fulfilled" ? queryResult[1].value : null;
 
         if (!txInfo) {
             return Promise.reject("Transaction not exist or has not been mined");

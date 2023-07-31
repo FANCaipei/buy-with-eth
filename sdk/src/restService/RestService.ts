@@ -1,10 +1,5 @@
-import { message } from "antd";
 import Axios from "axios";
-// import { request as gqlRequest, gql } from "graphql-request";
-// import useGlobalIpfsStore from "../common/GlobalIpfsStore";
-// import Utils from "../common/Utils";
 
-Axios.defaults.baseURL = process.env.REACT_APP_SERVER_URL || "";
 Axios.interceptors.request.use(
     function (config) {
         // Do something before request is sent
@@ -30,24 +25,28 @@ Axios.interceptors.response.use(
         // Do something with response error
         if (error?.response?.status === 400) {
             if (error?.response?.data?.msg && typeof error.response.data.msg === "string") {
-                message.error(error.response.data.msg);
+                // message.error(error.response.data.msg);
             }
         }
         if (error?.response?.status === 500) {
-            message.error("Server error");
+            // message.error("Server error");
         }
         return Promise.reject(error);
     }
 );
 
 const RestService = {
-    getCryptoPrice: cryptoSymbol => {
+    getCryptoPrice: (cryptoSymbol: string) => {
         return Axios.get(`https://api.coinbase.com/v2/prices/${cryptoSymbol}-USD/spot`);
     },
     getTokenConfig: () => {
         return Axios.get(
             "https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/tokenConfigs%2FtokenConfig.json?alt=media"
         );
+    },
+    savePaymentInfo: (txHash: string, chainId: string, appId: string, isErc20: boolean, productId?: string) => {
+        const params = { txHash: txHash, chainId: chainId, appId: appId, isErc20: isErc20, productId: productId };
+        return Axios.post("https://checkpaymentandsave-cjurgglvma-uc.a.run.app", params);
     },
 };
 
