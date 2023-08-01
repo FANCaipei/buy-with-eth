@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import EthereumProvider from "./EthereumProvider";
 import RestService from "./restService/RestService";
 import BuyWithCrypto from "./BuyWithCrypto";
+import erc20Abi from "./abiConfigs/erc20.json";
 
 const WalletManager = {
     async connectWallet(provider: any, providerType: "metamask" | "coinbase"): Promise<string> {
@@ -19,6 +20,9 @@ const WalletManager = {
         } else {
             return Promise.reject("get account failed");
         }
+    },
+    clearConnectInfo(): void {
+        localStorage.removeItem("buywithcrypto-provider-type");
     },
     async requestTransfer(
         chainId: string /**in hex format */,
@@ -72,14 +76,33 @@ const WalletManager = {
         };
         const provider = new ethers.providers.Web3Provider(currentProvider, "any");
         const signer = provider.getSigner();
-        const tx = await signer.sendTransaction(txParams);
-        const paymentReceiptId = `${BuyWithCrypto.appId}#${tx.hash}#${chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
-            productId ?? ""
-        }`;
+
+        let tx;
+        let paymentReceiptId = "";
+        if (isErc20) {
+            if (!currentTokenConfig.contractAddr) {
+                return Promise.reject("config not correct: no contract address");
+            }
+            if (!currentTokenConfig.decimals) {
+                return Promise.reject("config not correct: no decimals");
+            }
+            const usdtContract = new ethers.Contract(currentTokenConfig.contractAddr, erc20Abi, signer);
+            const sendValue = ethers.utils.parseUnits(`${value}`, currentTokenConfig.decimals);
+            const tokenBalance = await usdtContract.balanceOf(fromAddr);
+
+            if (sendValue.gte(tokenBalance)) {
+                return Promise.reject(`no enough token(${currentTokenConfig.code}) in acccount: ${fromAddr}`);
+            }
+            tx = await usdtContract.transfer(toAddr, sendValue);
+        } else {
+            tx = await signer.sendTransaction(txParams);
+            paymentReceiptId = `${BuyWithCrypto.appId}#${tx.hash}#${chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
+                productId ?? ""
+            }`;
+        }
+
         try {
             const receipt = tx.wait(); // wait until transaction minted
-
-            console.log("recep: ", receipt);
             // save transaction to server
             await RestService.savePaymentInfo(tx.hash, chainId, BuyWithCrypto.appId, isErc20, productId);
             return Promise.resolve(receipt);

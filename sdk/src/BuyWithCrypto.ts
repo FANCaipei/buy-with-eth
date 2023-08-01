@@ -42,7 +42,7 @@ const BuyWithCrypto: {
         BuyWithCrypto.appKey = option.appKey;
         // TODO: get config with appId & appKey
         BuyWithCrypto.logoUrl = "";
-        BuyWithCrypto.targetAddr = "0xA02bB13E8d360E9E3A1c07C3043BE140C2D8DA59";
+        BuyWithCrypto.targetAddr = "0x6978De6532Cd2C94D47430C22B1bCddb53fB23aa";
     },
 
     isReady(): boolean {
@@ -57,7 +57,10 @@ const BuyWithCrypto: {
     async getTokenConfigs() {
         BuyWithCrypto.isFetchingTokenConfig = true;
         try {
-            const configs = (await RestService.getTokenConfig()).data ?? [];
+            let configs = (await RestService.getTokenConfig()).data ?? [];
+            if (typeof configs === "string") {
+                configs = JSON.parse(configs);
+            }
             BuyWithCrypto.tokenConfigs = configs;
         } catch (error) {
             BuyWithCrypto.tokenConfigs = [];

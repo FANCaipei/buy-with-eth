@@ -92,6 +92,7 @@ const PaymentPage = () => {
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
             } catch (error) {
+                console.error(error);
                 send(
                     "buy-with-crypto-response",
                     responseToId,
@@ -116,10 +117,11 @@ const PaymentPage = () => {
 
     useEffect(() => {
         console.log("payment params: ", params);
-        console.log((window as any).buyWithCrypto?.tokenConfigs);
         setTargetAddress((window as any).buyWithCrypto.targetAddr);
 
         (window as any).buyWithCrypto.onReady(() => {
+            console.log("token configs: ", (window as any).buyWithCrypto?.tokenConfigs);
+
             const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
             const currencyConfig =
                 AvailableCurrencyTypes.find(item => item.code === params?.params?.currencyCode) ??

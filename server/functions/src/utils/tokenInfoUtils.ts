@@ -100,7 +100,7 @@ const getTransactionDetails = async (
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
         const queryResult = await Promise.allSettled([
             provider.getTransaction(txHash),
-            getTokenPrice(nativeTokenSymbols[chainId]),
+            getTokenPrice(isErc20 ? "USDT" : nativeTokenSymbols[chainId]),
         ]);
         const txInfo = queryResult[0]?.status === "fulfilled" ? queryResult[0].value : null;
         const price = queryResult[1]?.status === "fulfilled" ? queryResult[1].value : null;
