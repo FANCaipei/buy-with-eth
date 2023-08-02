@@ -122,11 +122,9 @@ const PaymentPage = () => {
 
     useEffect(() => {
         console.log("payment params: ", params);
-        setTargetAddress((window as any).buyWithCrypto.targetAddr);
 
         (window as any).buyWithCrypto.onReady(() => {
-            console.log("token configs: ", (window as any).buyWithCrypto?.tokenConfigs);
-
+            setTargetAddress((window as any).buyWithCrypto.targetAddr);
             const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
             const currencyConfig =
                 AvailableCurrencyTypes.find(item => item.code === params?.params?.currencyCode) ??

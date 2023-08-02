@@ -5,12 +5,14 @@ import InitOption from "./types/InitOption";
 import Utils from "./utils";
 import MessageIdManager from "./messageHandlers/MessageIdManager";
 import RestService from "./restService/RestService";
+import FirebaseManager from "./firebase/firebaseManager";
 
 const BuyWithCrypto: {
     appId?: string;
     tokenConfigs?: Array<any>;
-    isFetchingTokenConfig: boolean;
-    appKey?: string;
+    isFetchingTokenConfigOrFailed: boolean;
+    isFetchingAppConfigOrFailed: boolean;
+    // appKey?: string;
     logoUrl?: string;
     targetAddr?: string;
     iframeEle?: HTMLIFrameElement;
@@ -33,22 +35,34 @@ const BuyWithCrypto: {
         walletManager: WalletManager,
         ethereumProvider: EthereumProvider,
     },
-    isFetchingTokenConfig: true,
+    isFetchingTokenConfigOrFailed: true,
+    isFetchingAppConfigOrFailed: true,
 
-    init: (option: InitOption) => {
-        if (!option.appId || !option.appKey) {
-            Utils.throwError("No appId or appKey provided");
+    init: async (option: InitOption): Promise<boolean> => {
+        if (!option.appId) {
+            Utils.throwError("appId must be provided");
         }
         BuyWithCrypto.appId = option.appId;
-        BuyWithCrypto.appKey = option.appKey;
         // TODO: get config with appId & appKey
-        BuyWithCrypto.logoUrl = "";
-        BuyWithCrypto.targetAddr = "0x6978De6532Cd2C94D47430C22B1bCddb53fB23aa";
+        try {
+            BuyWithCrypto.isFetchingAppConfigOrFailed = true;
+            const configData = await FirebaseManager.getAppConfig(option.appId);
+            if (!configData?.paymentAddress) {
+                Utils.throwError("app config not correct, please verify your app config");
+                return Promise.reject();
+            }
+            BuyWithCrypto.isFetchingAppConfigOrFailed = false;
+            BuyWithCrypto.targetAddr = configData.paymentAddress;
+            BuyWithCrypto.logoUrl = configData.logoUrl;
+            // other configs here
+        } catch (error) {
+            Utils.throwError("get app config failed");
+            return Promise.reject();
+        }
     },
 
     isReady(): boolean {
-        if (!BuyWithCrypto.appId || !BuyWithCrypto.appKey) {
-            Utils.throwError("No appId or appKey provided");
+        if (BuyWithCrypto.isFetchingAppConfigOrFailed || BuyWithCrypto.isFetchingTokenConfigOrFailed) {
             return false;
         }
 
@@ -56,17 +70,18 @@ const BuyWithCrypto: {
     },
 
     async getTokenConfigs() {
-        BuyWithCrypto.isFetchingTokenConfig = true;
+        BuyWithCrypto.isFetchingTokenConfigOrFailed = true;
         try {
             let configs = (await RestService.getTokenConfig()).data ?? [];
             if (typeof configs === "string") {
                 configs = JSON.parse(configs);
             }
             BuyWithCrypto.tokenConfigs = configs;
+            BuyWithCrypto.isFetchingTokenConfigOrFailed = false;
         } catch (error) {
+            Utils.throwError("get app config failed");
             BuyWithCrypto.tokenConfigs = [];
         }
-        BuyWithCrypto.isFetchingTokenConfig = false;
     },
     async getTokenPriceInUSD(tokenSymbol: string): Promise<number> {
         try {
@@ -89,7 +104,7 @@ const BuyWithCrypto: {
     },
 
     onReady(callback: Function) {
-        if (!BuyWithCrypto.isFetchingTokenConfig) {
+        if (!BuyWithCrypto.isFetchingTokenConfigOrFailed && !BuyWithCrypto.isFetchingAppConfigOrFailed) {
             callback();
             return;
         }
