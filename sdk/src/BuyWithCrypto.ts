@@ -26,6 +26,7 @@ const BuyWithCrypto: {
     showPayUI: () => void;
     hidePayUI: () => void;
     getTokenConfigs: () => void;
+    getTokenPriceInUSD: (tokenSymbol: string) => Promise<number>;
     request: ({ method, params }: { method: string; params: any }) => Promise<any>;
 } = {
     utils: {
@@ -66,6 +67,18 @@ const BuyWithCrypto: {
             BuyWithCrypto.tokenConfigs = [];
         }
         BuyWithCrypto.isFetchingTokenConfig = false;
+    },
+    async getTokenPriceInUSD(tokenSymbol: string): Promise<number> {
+        try {
+            const res = await RestService.getCryptoPrice(tokenSymbol);
+            if (res?.data?.data?.amount) {
+                return res.data.data.amount;
+            } else {
+                return Promise.reject();
+            }
+        } catch (error) {
+            return Promise.reject();
+        }
     },
 
     connectWallet(walletType: "metamask" | "coinbase") {

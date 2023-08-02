@@ -53,6 +53,11 @@ const PaymentPage = () => {
         setSendValue(event?.target?.value);
     }, []);
 
+    const clearConnectInfo = useCallback(() => {
+        (window as any).buyWithCrypto.utils.walletManager.clearConnectInfo();
+        navigate("/connect-wallet", { replace: true, state: params });
+    }, []);
+
     const pay = useCallback(async () => {
         const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
@@ -137,6 +142,10 @@ const PaymentPage = () => {
         <StyledContainer>
             <div>{targetAddress}</div>
             <div>current price: ~{currentCurrencyPrice} USD</div>
+            <Button type="dashed" onClick={clearConnectInfo}>
+                Disconnect
+            </Button>
+            <br />
             <Select
                 defaultValue={currencyTypeCode}
                 style={{ width: 120 }}
