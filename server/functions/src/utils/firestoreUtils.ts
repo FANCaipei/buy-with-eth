@@ -54,6 +54,7 @@ const savePaymentRecord = async (
         return Promise.reject();
     }
     const userDocId = documentIds[0];
+    const userAppDocId = documentIds[1];
     const db = getFirestore();
     // check if record already exist
     const recordDocData = await getPaymentRecord(userDocId, txHash, chainId);
@@ -90,7 +91,7 @@ const savePaymentRecord = async (
             .doc(userDocId)
             .collection("paymentRecords")
             .doc(`${txHash}${chainId}`)
-            .set(recordData);
+            .set({ ...recordData, appId: userAppDocId });
         return recordData;
     } catch (error) {
         logger.error(error);
