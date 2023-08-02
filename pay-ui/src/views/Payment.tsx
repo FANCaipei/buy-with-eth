@@ -5,9 +5,11 @@ import { styled } from "styled-components";
 import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
 import RestService from "../common/restService/RestService";
+import useUrlParamsConfig from "../common/golbalStates/urlParamsConfigState";
 
 const PaymentPage = () => {
     const navigate = useNavigate();
+    const paramsFromUrl = useUrlParamsConfig((state: any) => state.paramsFromUrl);
     const { state: params } = useLocation();
     /**
      * state format: {
@@ -24,8 +26,9 @@ const PaymentPage = () => {
 
     const [targetAddress, setTargetAddress] = useState();
 
-    const [preSetValueInUSD] = useState(params?.params?.valueInUSD);
-    const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.defaultTokenCode ?? "eth");
+    const [paymentConfigParams, setPaymentConfigParams] = useState(params?.params ?? paramsFromUrl ?? {});
+    const [preSetValueInUSD, setPreSetValueInUSD] = useState(paymentConfigParams?.valueInUSD);
+    const [currencyTypeCode, setCurrencyTypeCode] = useState(paymentConfigParams?.defaultTokenCode ?? "eth");
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
 
     const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
@@ -41,8 +44,8 @@ const PaymentPage = () => {
 
                     if (price && !isNaN(price)) {
                         setCurrentCurrencyPrice(price);
-                        if (params?.params?.valueInUSD) {
-                            setSendValue((parseFloat(`${params.params.valueInUSD}`) / price).toFixed(4));
+                        if (paymentConfigParams?.valueInUSD) {
+                            setSendValue((parseFloat(`${paymentConfigParams.valueInUSD}`) / price).toFixed(4));
                         }
                     } else {
                         setCurrentCurrencyPrice(null);
@@ -54,7 +57,7 @@ const PaymentPage = () => {
                     setSendValue(undefined);
                 });
         },
-        [params]
+        [paymentConfigParams?.valueInUSD]
     );
 
     const onCurrencyTypeChange = useCallback(
@@ -78,7 +81,7 @@ const PaymentPage = () => {
     const clearConnectInfo = useCallback(() => {
         (window as any).buyWithCrypto.utils.walletManager.clearConnectInfo();
         navigate("/connect-wallet", { replace: true, state: params });
-    }, []);
+    }, [navigate, params]);
 
     const pay = useCallback(async () => {
         const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
@@ -143,20 +146,26 @@ const PaymentPage = () => {
     }, [responseToId, responseToOrigin]);
 
     useEffect(() => {
-        console.log("payment params: ", params);
+        const tempParams = params?.params ?? paramsFromUrl ?? {};
+        setPaymentConfigParams(tempParams);
+        setPreSetValueInUSD(tempParams.valueInUSD);
+    }, [params?.params, paramsFromUrl]);
+
+    useEffect(() => {
+        console.log("payment params: ", paymentConfigParams);
 
         (window as any).buyWithCrypto.onReady(() => {
             setTargetAddress((window as any).buyWithCrypto.targetAddr);
             const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
             const currencyConfig =
-                AvailableCurrencyTypes.find(item => item.code === params?.params?.defaultTokenCode) ??
+                AvailableCurrencyTypes.find(item => item.code === paymentConfigParams?.defaultTokenCode) ??
                 AvailableCurrencyTypes.find(item => item.isDefault) ??
                 AvailableCurrencyTypes[0];
             setCurrencyPaymentConfig(currencyConfig);
             setCurrencyTypeCode(currencyConfig?.code);
             getCurrentCurrencyPrice(currencyConfig);
         });
-    }, [navigate, params, getCurrentCurrencyPrice]);
+    }, [navigate, paymentConfigParams, getCurrentCurrencyPrice]);
 
     return (
         <StyledContainer>
@@ -167,7 +176,7 @@ const PaymentPage = () => {
             </Button>
             <br />
             <Select
-                defaultValue={currencyTypeCode}
+                value={currencyTypeCode}
                 style={{ width: 120 }}
                 onChange={onCurrencyTypeChange}
                 options={((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => ({

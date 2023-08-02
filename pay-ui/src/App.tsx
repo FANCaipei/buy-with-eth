@@ -1,11 +1,12 @@
 import { ReactNode, useEffect, useLayoutEffect } from "react";
 import "./App.css";
-import { BrowserRouter, useLocation, useNavigate, useParams, useRoutes } from "react-router-dom";
+import { BrowserRouter, useLocation, useNavigate, useRoutes } from "react-router-dom";
 import styled from "styled-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import routeConfig from "./common/route/RouteConfig";
 import GlobalNavObj from "./common/GlobalNavObj";
 import HandleRequests from "./messageManager/requestHandlers/HandleRequests";
+import useUrlParamsConfig from "./common/golbalStates/urlParamsConfigState";
 
 type WrapperProps = {
     children: ReactNode;
@@ -32,56 +33,12 @@ const StyledContainer = styled.div.attrs({ className: "pay-ui-root" })`
 function Index() {
     const element = useRoutes(routeConfig);
     const navigate = useNavigate();
-    // const urlParams = useParams();
 
     useEffect(() => {
-        // decode url params
-        try {
-            const searchParams = new URLSearchParams(window.location.search);
-            const params = searchParams.get("params");
-            console.log(params);
-            if (params) {
-                const decodedParams = decodeURIComponent(params);
-                const paramsObj = JSON.parse(decodedParams);
-                console.log("params object: ", paramsObj);
-                /**
-                 * params decoded format: {
-                 *  payment: true/false,
-                 *  valueInUSD: number,
-                 *  defaultTokenCode: string
-                 * }
-                 */
-                if (paramsObj.payment) {
-                    if (window.location.pathname.startsWith("/payment")) {
-                        navigate("/buffer", {
-                            replace: true,
-                            state: {
-                                nextPath: "/payment",
-                                nextParams: {
-                                    params: {
-                                        valueInUSD: paramsObj?.valueInUSD,
-                                        defaultTokenCode: paramsObj?.defaultTokenCode,
-                                    },
-                                },
-                            },
-                        });
-                    } else {
-                        navigate("/payment", {
-                            replace: true,
-                            state: {
-                                params: {
-                                    valueInUSD: paramsObj?.valueInUSD,
-                                    defaultTokenCode: paramsObj?.defaultTokenCode,
-                                },
-                            },
-                        });
-                    }
-                }
-            }
-        } catch (error) {
-            // do nothing
+        if (!(window as any).buyWithCrypto.appId) {
+            navigate("/app-id-missing", { replace: true });
         }
-    });
+    }, [navigate]);
 
     useEffect(() => {
         const messageHandler = (event: any) => {
@@ -106,12 +63,13 @@ function Index() {
     );
 }
 
-function App() {
+function App({ appConfigs }: { appConfigs: any }) {
+    const initParamsFromUrl = useUrlParamsConfig((state: any) => state.initParamsFromUrl);
+
     useEffect(() => {
-        (window as any).buyWithCrypto.init({
-            appId: "rBBXvVZq0eSnZZ2pliYiCfeOkx43-jcUrmUedFydsUfr2itcR",
-        });
-    }, []);
+        initParamsFromUrl?.(appConfigs);
+    }, [initParamsFromUrl, appConfigs]);
+
     return (
         <BrowserRouter>
             <AppRootStyledContainer>

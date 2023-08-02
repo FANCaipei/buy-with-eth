@@ -43,7 +43,7 @@ const BuyWithCrypto: {
             Utils.throwError("appId must be provided");
         }
         BuyWithCrypto.appId = option.appId;
-        // TODO: get config with appId & appKey
+        // get config with appId
         try {
             BuyWithCrypto.isFetchingAppConfigOrFailed = true;
             const configData = await FirebaseManager.getAppConfig(option.appId);
@@ -115,6 +115,10 @@ const BuyWithCrypto: {
 
     // ui controllers
     initUI() {
+        if (!BuyWithCrypto.appId) {
+            Utils.throwError("app id not set, please call init first");
+            return;
+        }
         if (BuyWithCrypto.iframeEle) {
             return;
         } else {
@@ -140,8 +144,11 @@ const BuyWithCrypto: {
             `;
             document.body.appendChild(animationStyle);
 
+            const encodedParams = encodeURIComponent(JSON.stringify({ appId: BuyWithCrypto.appId }));
             const paymentIframe = document.createElement("iframe");
-            paymentIframe.src = `${IframeOrigin}?from=${encodeURIComponent(window.location.origin)}`;
+            paymentIframe.src = `${IframeOrigin}?from=${encodeURIComponent(
+                window.location.origin
+            )}&params=${encodedParams}`;
             paymentIframe.style.position = "fixed";
             paymentIframe.style.left = "0";
             paymentIframe.style.top = "0";
