@@ -11,7 +11,7 @@ function App() {
             (window as any).buyWithCrypto.showPayUI();
             const resp = await (window as any).buyWithCrypto.request({
                 method: "request_payment",
-                params: { valueInUSD: 1, defaultTokenCode: "usdt-sepolia" },
+                // params: { valueInUSD: 1, defaultTokenCode: "usdt-sepolia" },
             });
             console.log("payment response: ", resp);
         } catch (error) {

@@ -9,6 +9,17 @@ const WalletManager = {
         if (!provider) {
             return Promise.reject("no provider");
         }
+        if (providerType === "metamask") {
+            await provider.request({
+                method: "wallet_requestPermissions",
+                params: [
+                    {
+                        eth_accounts: {},
+                    },
+                ],
+            });
+        }
+
         const account = await provider.request({
             // eth_requestAccounts not compatible with WalletConnect; at the same time eth_accounts is decrypted by metamask & coinbase
             method: provider.isWalletConnect ? "eth_accounts" : "eth_requestAccounts",
