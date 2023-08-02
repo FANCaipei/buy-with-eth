@@ -9,30 +9,53 @@ import RestService from "../common/restService/RestService";
 const PaymentPage = () => {
     const navigate = useNavigate();
     const { state: params } = useLocation();
+    /**
+     * state format: {
+     *      responseToOrigin?: string,
+     *      responseToId?: string,
+     *      params?: {
+     *          valueInUSD?: number,
+     *          defaultTokenCode?: string,
+     *      },
+     * }
+     */
     const [responseToOrigin] = useState(params?.responseToOrigin);
     const [responseToId] = useState(params?.responseToId);
 
     const [targetAddress, setTargetAddress] = useState();
 
-    const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.currencyCode ?? "eth");
+    const [preSetValueInUSD] = useState(params?.params?.valueInUSD);
+    const [currencyTypeCode, setCurrencyTypeCode] = useState(params?.params?.defaultTokenCode ?? "eth");
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
 
     const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
-    const getCurrentCurrencyPrice = useCallback((currencyConfig: any) => {
-        if (!currencyConfig?.symbol || currencyConfig?.symbol === "") {
-            return;
-        }
-        const symbol = currencyConfig.symbol.includes("USDT") ? "USDT" : currencyConfig.symbol;
-        RestService.getCryptoPrice(symbol)
-            .then((res: any) => {
-                if (res?.data?.data?.amount) {
-                    setCurrentCurrencyPrice(res.data.data.amount);
-                }
-            })
-            .catch(() => {
-                setCurrentCurrencyPrice(null);
-            });
-    }, []);
+    const getCurrentCurrencyPrice = useCallback(
+        (currencyConfig: any) => {
+            if (!currencyConfig?.symbol || currencyConfig?.symbol === "") {
+                return;
+            }
+            const symbol = currencyConfig.symbol.includes("USDT") ? "USDT" : currencyConfig.symbol;
+            RestService.getCryptoPrice(symbol)
+                .then((res: any) => {
+                    const price = parseFloat(`${res?.data?.data?.amount}`);
+
+                    if (price && !isNaN(price)) {
+                        setCurrentCurrencyPrice(price);
+                        if (params?.params?.valueInUSD) {
+                            setSendValue((parseFloat(`${params.params.valueInUSD}`) / price).toFixed(4));
+                        }
+                    } else {
+                        setCurrentCurrencyPrice(null);
+                        setSendValue(undefined);
+                    }
+                })
+                .catch(() => {
+                    setCurrentCurrencyPrice(null);
+                    setSendValue(undefined);
+                });
+        },
+        [params]
+    );
 
     const onCurrencyTypeChange = useCallback(
         (selectCode: string) => {
@@ -47,9 +70,8 @@ const PaymentPage = () => {
         [getCurrentCurrencyPrice]
     );
 
-    const [sendValue, setSendValue] = useState(params?.params?.value);
+    const [sendValue, setSendValue] = useState<number | string | undefined>();
     const onSendValueChange = useCallback((event: any) => {
-        console.log(event);
         setSendValue(event?.target?.value);
     }, []);
 
@@ -127,7 +149,7 @@ const PaymentPage = () => {
             setTargetAddress((window as any).buyWithCrypto.targetAddr);
             const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
             const currencyConfig =
-                AvailableCurrencyTypes.find(item => item.code === params?.params?.currencyCode) ??
+                AvailableCurrencyTypes.find(item => item.code === params?.params?.defaultTokenCode) ??
                 AvailableCurrencyTypes.find(item => item.isDefault) ??
                 AvailableCurrencyTypes[0];
             setCurrencyPaymentConfig(currencyConfig);
@@ -153,7 +175,13 @@ const PaymentPage = () => {
                     label: item.symbol,
                 }))}
             />
-            <Input placeholder="Send value" type="number" value={sendValue} onChange={onSendValueChange} />
+            <Input
+                placeholder="Send value"
+                type="number"
+                value={sendValue}
+                onChange={onSendValueChange}
+                disabled={preSetValueInUSD != null}
+            />
             <div className="btn-line">
                 <Button onClick={cancel}>Cancel</Button>
                 <Button type="primary" onClick={pay}>

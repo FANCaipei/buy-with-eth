@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useLayoutEffect } from "react";
 import "./App.css";
-import { BrowserRouter, useLocation, useNavigate, useRoutes } from "react-router-dom";
+import { BrowserRouter, useLocation, useNavigate, useParams, useRoutes } from "react-router-dom";
 import styled from "styled-components";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import routeConfig from "./common/route/RouteConfig";
@@ -32,6 +32,56 @@ const StyledContainer = styled.div.attrs({ className: "pay-ui-root" })`
 function Index() {
     const element = useRoutes(routeConfig);
     const navigate = useNavigate();
+    // const urlParams = useParams();
+
+    useEffect(() => {
+        // decode url params
+        try {
+            const searchParams = new URLSearchParams(window.location.search);
+            const params = searchParams.get("params");
+            console.log(params);
+            if (params) {
+                const decodedParams = decodeURIComponent(params);
+                const paramsObj = JSON.parse(decodedParams);
+                console.log("params object: ", paramsObj);
+                /**
+                 * params decoded format: {
+                 *  payment: true/false,
+                 *  valueInUSD: number,
+                 *  defaultTokenCode: string
+                 * }
+                 */
+                if (paramsObj.payment) {
+                    if (window.location.pathname.startsWith("/payment")) {
+                        navigate("/buffer", {
+                            replace: true,
+                            state: {
+                                nextPath: "/payment",
+                                nextParams: {
+                                    params: {
+                                        valueInUSD: paramsObj?.valueInUSD,
+                                        defaultTokenCode: paramsObj?.defaultTokenCode,
+                                    },
+                                },
+                            },
+                        });
+                    } else {
+                        navigate("/payment", {
+                            replace: true,
+                            state: {
+                                params: {
+                                    valueInUSD: paramsObj?.valueInUSD,
+                                    defaultTokenCode: paramsObj?.defaultTokenCode,
+                                },
+                            },
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            // do nothing
+        }
+    });
 
     useEffect(() => {
         const messageHandler = (event: any) => {
@@ -60,7 +110,6 @@ function App() {
     useEffect(() => {
         (window as any).buyWithCrypto.init({
             appId: "rBBXvVZq0eSnZZ2pliYiCfeOkx43-jcUrmUedFydsUfr2itcR",
-            appKey: "testk",
         });
     }, []);
     return (
