@@ -42,7 +42,7 @@ function Index() {
 
     useEffect(() => {
         const messageHandler = (event: any) => {
-            console.log("request message listener: ", event);
+            // console.log("request message listener: ", event);
             HandleRequests(event, navigate);
         };
 

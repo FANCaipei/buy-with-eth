@@ -113,10 +113,16 @@ const WalletManager = {
         }
 
         try {
-            const receipt = tx.wait(); // wait until transaction minted
+            await tx.wait(); // wait until transaction minted
             // save transaction to server
-            await RestService.savePaymentInfo(tx.hash, chainId, BuyWithCrypto.appId, isErc20, productId);
-            return Promise.resolve(receipt);
+            const savedPaymentRecord = await RestService.savePaymentInfo(
+                tx.hash,
+                chainId,
+                BuyWithCrypto.appId,
+                isErc20,
+                productId
+            );
+            return Promise.resolve(savedPaymentRecord.data);
         } catch (error) {
             return Promise.reject({
                 receiptId: paymentReceiptId,

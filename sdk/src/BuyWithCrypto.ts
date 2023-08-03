@@ -188,7 +188,6 @@ const BuyWithCrypto: {
                             event?.data?.subType === "buy-with-crypto-response" &&
                             event?.data?.respTo === currentMsgId
                         ) {
-                            console.warn("received buy-withcrypto response: ", event?.data?.data);
                             if (event?.data?.data?.error) {
                                 reject(event?.data?.data?.error);
                             } else {
