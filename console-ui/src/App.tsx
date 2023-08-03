@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import ErrorBoundary from "antd/es/alert/ErrorBoundary";
+import "./App.css";
+import { BrowserRouter, useRoutes } from "react-router-dom";
+import { styled } from "styled-components";
+import routeConfig from "./common/routes/RouteConfig";
+
+function Index() {
+    const element = useRoutes(routeConfig);
+    // use ErrorBoundary in components rather than in antd alter
+    return <ErrorBoundary>{element}</ErrorBoundary>;
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <BrowserRouter>
+            <AppRootStyledContainer>
+                <Index />
+            </AppRootStyledContainer>
+        </BrowserRouter>
+    );
 }
+
+const AppRootStyledContainer = styled.div.attrs({ className: "app-root" })`
+    height: 100%;
+`;
 
 export default App;
