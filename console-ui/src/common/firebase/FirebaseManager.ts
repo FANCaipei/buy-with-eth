@@ -8,6 +8,7 @@ import {
     createUserWithEmailAndPassword,
     getAuth,
     onAuthStateChanged,
+    sendEmailVerification,
     signInWithEmailAndPassword,
 } from "firebase/auth";
 
@@ -63,7 +64,22 @@ class FirebaseManager {
             return Promise.reject("firebase manager not be init");
         }
         const userCredential = await createUserWithEmailAndPassword(FirebaseManager.auth, email, password);
+        try {
+            await FirebaseManager.sendVerifyEmail();
+        } catch (error) {
+            // do nothing
+        }
         return userCredential.user;
+    }
+    static sendVerifyEmail(): Promise<void> {
+        if (!FirebaseManager.auth) {
+            return Promise.reject("firebase manager not be init");
+        }
+        if (!FirebaseManager.auth.currentUser) {
+            return Promise.reject("no current user, please login or signIn first");
+        }
+
+        return sendEmailVerification(FirebaseManager.auth.currentUser);
     }
 }
 

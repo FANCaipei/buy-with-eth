@@ -1,5 +1,5 @@
 import { Button, Form, Input } from "antd";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { styled } from "styled-components";
 
 const AuthPage = () => {
