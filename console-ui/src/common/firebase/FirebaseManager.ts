@@ -11,6 +11,7 @@ import {
     sendEmailVerification,
     signInWithEmailAndPassword,
 } from "firebase/auth";
+import useFirebaseAuth from "../zustand/useFirebaseAuth";
 
 class FirebaseManager {
     static app: FirebaseApp;
@@ -49,6 +50,8 @@ class FirebaseManager {
                     // User is signed out
                     // TODO: navigate to auth page
                 }
+                (useFirebaseAuth.getState() as any)?.setReady(true);
+                (useFirebaseAuth.getState() as any)?.setCurrentUser(user);
             });
         }
     }
@@ -57,14 +60,16 @@ class FirebaseManager {
             return Promise.reject("firebase manager not be init");
         }
         const userCredential = await signInWithEmailAndPassword(FirebaseManager.auth, email, password);
+        await FirebaseManager.auth.currentUser?.reload();
         return userCredential.user;
     }
-    static async signIn(email: string, password: string): Promise<User> {
+    static async signUp(email: string, password: string): Promise<User> {
         if (!FirebaseManager.auth) {
             return Promise.reject("firebase manager not be init");
         }
         const userCredential = await createUserWithEmailAndPassword(FirebaseManager.auth, email, password);
         try {
+            await FirebaseManager.auth.currentUser?.reload();
             await FirebaseManager.sendVerifyEmail();
         } catch (error) {
             // do nothing

@@ -1,12 +1,17 @@
-import { Button, Form, Input } from "antd";
-import { useCallback } from "react";
+import { Button, Form, Input, message } from "antd";
+import { useCallback, useState } from "react";
 import { styled } from "styled-components";
+import FirebaseManager from "../common/firebase/FirebaseManager";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
     const [formInstace] = Form.useForm();
+    const [messageApi, contextHolder] = message.useMessage();
     const email = Form.useWatch("email", formInstace);
     const password = Form.useWatch("password", formInstace);
     const repeatPwd = Form.useWatch("repeat-password", formInstace);
+    const navigate = useNavigate();
+    const [test, setTest] = useState();
 
     const repeatPwdValidator = useCallback(
         (_: any, value: any) => {
@@ -18,18 +23,29 @@ const AuthPage = () => {
         [password]
     );
 
-    const signIn = useCallback(async () => {
-        const validateResult = await formInstace.validateFields();
-        console.log("validate result: ", validateResult);
+    const signUp = useCallback(async () => {
+        await formInstace.validateFields();
         if (password !== repeatPwd) {
             return;
         }
-        // TODO: call firebase signin
-        console.log(email, password, repeatPwd);
-    }, [password, repeatPwd, email, formInstace]);
+
+        FirebaseManager.signUp(email, password)
+            .then(() => {
+                navigate("/emailVerify", {
+                    replace: true,
+                });
+            })
+            .catch(() => {
+                messageApi.open({
+                    type: "error",
+                    content: "Sign up failed",
+                });
+            });
+    }, [messageApi, navigate, password, repeatPwd, email, formInstace]);
 
     return (
         <StyledContainer>
+            {contextHolder}
             <div className="title">Title</div>
             <Form form={formInstace}>
                 <Form.Item
@@ -51,11 +67,11 @@ const AuthPage = () => {
                         { validator: repeatPwdValidator },
                     ]}
                 >
-                    <Input type="repeat-password" placeholder="Repeat your password" />
+                    <Input type="password" placeholder="Repeat your password" />
                 </Form.Item>
             </Form>
-            <Button type="primary" onClick={signIn}>
-                SignIn
+            <Button type="primary" onClick={signUp}>
+                SignUp
             </Button>
         </StyledContainer>
     );
