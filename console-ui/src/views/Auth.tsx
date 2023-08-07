@@ -11,7 +11,11 @@ const AuthPage = () => {
     const password = Form.useWatch("password", formInstace);
     const repeatPwd = Form.useWatch("repeat-password", formInstace);
     const navigate = useNavigate();
-    const [test, setTest] = useState();
+    const [isSignUpMode, setIsSignUpMode] = useState(false);
+
+    const toggleAuthMode = useCallback(() => {
+        setIsSignUpMode(!isSignUpMode);
+    }, [isSignUpMode]);
 
     const repeatPwdValidator = useCallback(
         (_: any, value: any) => {
@@ -22,6 +26,23 @@ const AuthPage = () => {
         },
         [password]
     );
+
+    const login = useCallback(async () => {
+        await formInstace.validateFields();
+        FirebaseManager.login(email, password)
+            .then(() => {
+                // TODO: nav to dashboard
+                // navigate("/emailVerify", {
+                //     replace: true,
+                // });
+            })
+            .catch(() => {
+                messageApi.open({
+                    type: "error",
+                    content: "Login failed",
+                });
+            });
+    }, [email, formInstace, messageApi, password]);
 
     const signUp = useCallback(async () => {
         await formInstace.validateFields();
@@ -46,43 +67,118 @@ const AuthPage = () => {
     return (
         <StyledContainer>
             {contextHolder}
-            <div className="title">Title</div>
-            <Form form={formInstace}>
-                <Form.Item
-                    name="email"
-                    rules={[
-                        { required: true, message: "Email is required" },
-                        { pattern: /^[\w-.]+@([\w-]+.)+[\w-]+$/g, message: "Invalid email format" },
-                    ]}
-                >
-                    <Input type="email" placeholder="Email" />
-                </Form.Item>
-                <Form.Item name="password" rules={[{ required: true, message: "Password is required" }]}>
-                    <Input type="password" placeholder="Password" />
-                </Form.Item>
-                <Form.Item
-                    name="repeat-password"
-                    rules={[
-                        { required: true, message: "Repeat password is required" },
-                        { validator: repeatPwdValidator },
-                    ]}
-                >
-                    <Input type="password" placeholder="Repeat your password" />
-                </Form.Item>
-            </Form>
-            <Button type="primary" onClick={signUp}>
-                SignUp
-            </Button>
+            <div className="container">
+                <div className="title">Title</div>
+                <div className="auth-card">
+                    <Form form={formInstace} layout={"vertical"} size="large">
+                        <Form.Item
+                            name="email"
+                            rules={[
+                                { required: true, message: "Email is required" },
+                                { pattern: /^[\w-.]+@([\w-]+.)+[\w-]+$/g, message: "Invalid email format" },
+                            ]}
+                            label="Email"
+                        >
+                            <Input type="email" placeholder="Email" />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: "Password is required" }]}
+                            label="Password"
+                        >
+                            <Input type="password" placeholder="Password" />
+                        </Form.Item>
+                        {isSignUpMode ? (
+                            <Form.Item
+                                name="repeat-password"
+                                rules={[
+                                    { required: true, message: "Repeat password is required" },
+                                    { validator: repeatPwdValidator },
+                                ]}
+                                label="Repeat password"
+                            >
+                                <Input type="password" placeholder="Repeat your password" />
+                            </Form.Item>
+                        ) : null}
+                    </Form>
+                    {isSignUpMode ? (
+                        <Button type="primary" onClick={signUp} className="form-btn" size="large">
+                            SignUp
+                        </Button>
+                    ) : (
+                        <Button type="primary" onClick={login} className="form-btn" size="large">
+                            Login
+                        </Button>
+                    )}
+                </div>
+                <div className="toggle-mode-container">
+                    <span className="desc">
+                        {isSignUpMode ? "Already have an account? " : `Don't have an account? `}
+                    </span>
+                    <span className="toogle-btn" onClick={toggleAuthMode}>
+                        {isSignUpMode ? "Login" : "SignUp"}
+                    </span>
+                </div>
+            </div>
         </StyledContainer>
     );
 };
 
 const StyledContainer = styled.div.attrs({ className: "auth-page" })`
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+
+    .container {
+        width: 400px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            margin-top: 80px;
+            // font-style: italic;
+        }
+        .auth-card {
+            width: 400px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: rgba(60, 66, 87, 0.2) 0px 8px 24px;
+
+            .ant-form {
+                .ant-form-item {
+                    label {
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+                }
+            }
+
+            .form-btn {
+                width: 100%;
+                margin-top: 40px;
+            }
+        }
+        .toggle-mode-container {
+            margin-top: 20px;
+            font-size: 14px;
+            user-select: none;
+
+            .desc {
+                color: rgba(0, 0, 0, 0.25);
+            }
+            .toogle-btn {
+                margin-left: 8px;
+                cursor: pointer;
+                color: rgb(84, 105, 212);
+            }
+        }
+    }
 `;
 
 export default AuthPage;

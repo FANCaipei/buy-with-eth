@@ -11,7 +11,7 @@ const useProtectedPath = () => {
         } else if (!user.emailVerified) {
             navigate("/emailVerify", { replace: true });
         }
-    }, [user]);
+    }, [user, navigate]);
 };
 
 export default useProtectedPath;
