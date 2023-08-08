@@ -1,11 +1,13 @@
 import { styled } from "styled-components";
 import useProtectedPath from "../../common/hooks/useProtectedPath";
-import { Layout, Menu, MenuProps } from "antd";
+import { Button, Layout, Menu, MenuProps, Tooltip } from "antd";
 import Sider from "antd/es/layout/Sider";
 import React, { useCallback, useEffect } from "react";
-import { BarChartOutlined, AppstoreAddOutlined, UserOutlined } from "@ant-design/icons";
-import { Content } from "antd/es/layout/layout";
+import { BarChartOutlined, AppstoreAddOutlined, UserOutlined, FileTextFilled, LogoutOutlined } from "@ant-design/icons";
+import { Content, Header } from "antd/es/layout/layout";
 import { Outlet, useNavigate } from "react-router-dom";
+import useFirebaseAuth from "../../common/zustand/useFirebaseAuth";
+import FirebaseManager from "../../common/firebase/FirebaseManager";
 
 const items: MenuProps["items"] = [
     {
@@ -26,9 +28,9 @@ const items: MenuProps["items"] = [
 ];
 
 const DashboardPage = () => {
-    useProtectedPath();
-
     const navigate = useNavigate();
+
+    const { user } = useFirebaseAuth() as any;
 
     const onMenuItemClick = useCallback(
         (item: any) => {
@@ -40,10 +42,18 @@ const DashboardPage = () => {
         [navigate]
     );
 
+    const Logout = useCallback(async () => {
+        await FirebaseManager.auth.signOut();
+        navigate("/auth", { replace: true });
+    }, [navigate]);
+
     useEffect(() => {
         // default panel
-        navigate("overview");
+        navigate("overview", { replace: true });
     }, []);
+
+    // must at the end
+    useProtectedPath();
 
     return (
         <StyledContainer>
@@ -58,7 +68,18 @@ const DashboardPage = () => {
                         onClick={onMenuItemClick}
                     />
                 </Sider>
-                <Layout>
+                <Layout className="panel-layout">
+                    <Header className="panel-header">
+                        <span className="email">{user?.email}</span>
+                        <div className="action-btns">
+                            <Tooltip title="Doc">
+                                <Button type="text" icon={<FileTextFilled />}></Button>
+                            </Tooltip>
+                            <Tooltip title="SignOut">
+                                <Button type="text" icon={<LogoutOutlined />} onClick={Logout}></Button>
+                            </Tooltip>
+                        </div>
+                    </Header>
                     <Content>
                         <Outlet />
                     </Content>
@@ -76,6 +97,32 @@ const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
             margin: 16px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 6px;
+        }
+    }
+
+    .panel-layout {
+        padding: 0 20px;
+
+        .panel-header {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: transparent;
+            color: rgb(71, 98, 130);
+
+            .email {
+                font-size: 14px;
+            }
+            .action-btns {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+
+                .ant-btn-icon {
+                    color: rgb(71, 98, 130);
+                }
+            }
         }
     }
 `;
