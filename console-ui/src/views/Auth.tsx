@@ -12,10 +12,14 @@ const AuthPage = () => {
     const repeatPwd = Form.useWatch("repeat-password", formInstace);
     const navigate = useNavigate();
     const [isSignUpMode, setIsSignUpMode] = useState(false);
+    const [isAuthing, setIsAuthing] = useState<boolean>(false);
 
     const toggleAuthMode = useCallback(() => {
+        if (isAuthing) {
+            return;
+        }
         setIsSignUpMode(!isSignUpMode);
-    }, [isSignUpMode]);
+    }, [isAuthing, isSignUpMode]);
 
     const repeatPwdValidator = useCallback(
         (_: any, value: any) => {
@@ -29,6 +33,7 @@ const AuthPage = () => {
 
     const login = useCallback(async () => {
         await formInstace.validateFields();
+        setIsAuthing(true);
         FirebaseManager.login(email, password)
             .then(() => {
                 navigate("/dashboard", {
@@ -40,6 +45,9 @@ const AuthPage = () => {
                     type: "error",
                     content: "Login failed",
                 });
+            })
+            .finally(() => {
+                setIsAuthing(false);
             });
     }, [email, formInstace, messageApi, password]);
 
@@ -48,7 +56,7 @@ const AuthPage = () => {
         if (password !== repeatPwd) {
             return;
         }
-
+        setIsAuthing(true);
         FirebaseManager.signUp(email, password)
             .then(() => {
                 navigate("/emailVerify", {
@@ -60,6 +68,9 @@ const AuthPage = () => {
                     type: "error",
                     content: "Sign up failed",
                 });
+            })
+            .finally(() => {
+                setIsAuthing(false);
             });
     }, [messageApi, navigate, password, repeatPwd, email, formInstace]);
 
@@ -101,11 +112,11 @@ const AuthPage = () => {
                         ) : null}
                     </Form>
                     {isSignUpMode ? (
-                        <Button type="primary" onClick={signUp} className="form-btn" size="large">
+                        <Button type="primary" onClick={signUp} className="form-btn" size="large" loading={isAuthing}>
                             SignUp
                         </Button>
                     ) : (
-                        <Button type="primary" onClick={login} className="form-btn" size="large">
+                        <Button type="primary" onClick={login} className="form-btn" size="large" loading={isAuthing}>
                             Login
                         </Button>
                     )}
