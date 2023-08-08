@@ -31,10 +31,9 @@ const AuthPage = () => {
         await formInstace.validateFields();
         FirebaseManager.login(email, password)
             .then(() => {
-                // TODO: nav to dashboard
-                // navigate("/emailVerify", {
-                //     replace: true,
-                // });
+                navigate("/dashboard", {
+                    replace: true,
+                });
             })
             .catch(() => {
                 messageApi.open({

@@ -34,17 +34,22 @@ const EmailVerifyPage = () => {
     const checkVerifyStateAndGoDashboard = useCallback(async () => {
         await FirebaseManager.auth.currentUser?.reload();
         if (FirebaseManager.auth.currentUser?.emailVerified) {
-            navigate("/dasboard", {
+            navigate("/dashboard", {
                 replace: true,
             });
         }
     }, [navigate]);
 
+    const Logout = useCallback(async () => {
+        await FirebaseManager.auth.signOut();
+        navigate("/auth", { replace: true });
+    }, [navigate]);
+
     useEffect(() => {
         if (FirebaseManager.auth.currentUser?.emailVerified) {
-            // TODO: navigate replacement to console overview page
+            navigate("/dashboard", { replace: true });
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -71,6 +76,7 @@ const EmailVerifyPage = () => {
                 </Button>
             )}
             <Button onClick={checkVerifyStateAndGoDashboard}>Email verified</Button>
+            <Button onClick={Logout}>Logout</Button>
         </StyledContainer>
     );
 };
