@@ -5,6 +5,10 @@ import { styled } from "styled-components";
 import routeConfig from "./common/routes/RouteConfig";
 import { Spin } from "antd";
 import useFirebaseAuth from "./common/zustand/useFirebaseAuth";
+import LoadingIndicator from "./componets/LoadingIndicator";
+
+// 设置全局spin的indicator
+Spin.setDefaultIndicator(<LoadingIndicator indicatorWidth="40px" />);
 
 function Index() {
     const element = useRoutes(routeConfig);
