@@ -2,7 +2,7 @@ import AuthPage from "../../views/Auth";
 import NotFoundPage from "../../views/NotFound";
 import EmailVerifyPage from "../../views/EmailVerify";
 import DashboardPage from "../../views/dashboard/Dashboard";
-import AppManagement from "../../views/dashboard/content/dashboard/AppManagement";
+import AppManagement from "../../views/dashboard/content/appManagement/AppManagement";
 import BusinessOverview from "../../views/dashboard/content/businessOverview/BusinessOverview";
 import Account from "../../views/dashboard/content/accout/Account";
 

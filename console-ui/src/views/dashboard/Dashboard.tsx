@@ -18,7 +18,7 @@ const MenuItemsData: MenuProps["items"] = [
     {
         key: "appManagement", // the path
         icon: React.createElement(AppstoreAddOutlined),
-        label: `Applications`,
+        label: `Projects`,
     },
     {
         key: "account", // the path

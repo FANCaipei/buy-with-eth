@@ -10,7 +10,7 @@ PanelTitle.propTypes = {
 };
 
 const StyledContainer = styled.div.attrs({ className: "panel-title-container" })`
-    font-size: 36px;
+    font-size: 28px;
     /* font-weight: bold; */
     color: rgb(27, 58, 87);
     padding: 0px 0;
