@@ -1,9 +1,11 @@
 import { styled } from "styled-components";
+import GeneralUtils from "../../../../../common/utils/GeneralUtils";
 
 const AppCard = ({ appData }: { appData: any }) => {
     return (
         <StyledContainer>
             <div className="title">{appData?.name}</div>
+            <div className="address">{GeneralUtils.maskAddress(appData?.paymentAddress)}</div>
         </StyledContainer>
     );
 };
@@ -24,6 +26,11 @@ const StyledContainer = styled.div.attrs({ className: "app-card-container" })`
     .title {
         font-size: 16px;
         color: rgba(0, 0, 0, 0.87);
+    }
+    .address {
+        margin-top: 8px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.6);
     }
 `;
 
