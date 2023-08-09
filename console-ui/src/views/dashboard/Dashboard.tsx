@@ -13,7 +13,7 @@ const items: MenuProps["items"] = [
     {
         key: "overview", // the path
         icon: React.createElement(BarChartOutlined),
-        label: `Overview`,
+        label: `Analyse`,
     },
     {
         key: "appManagement", // the path
