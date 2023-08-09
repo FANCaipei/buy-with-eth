@@ -49,7 +49,7 @@ const AuthPage = () => {
             .finally(() => {
                 setIsAuthing(false);
             });
-    }, [email, formInstace, messageApi, password]);
+    }, [navigate, email, formInstace, messageApi, password]);
 
     const signUp = useCallback(async () => {
         await formInstace.validateFields();

@@ -2,14 +2,14 @@ import { styled } from "styled-components";
 import useProtectedPath from "../../common/hooks/useProtectedPath";
 import { Button, Layout, Menu, MenuProps, Tooltip } from "antd";
 import Sider from "antd/es/layout/Sider";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BarChartOutlined, AppstoreAddOutlined, UserOutlined, FileTextFilled, LogoutOutlined } from "@ant-design/icons";
 import { Content, Header } from "antd/es/layout/layout";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useFirebaseAuth from "../../common/zustand/useFirebaseAuth";
 import FirebaseManager from "../../common/firebase/FirebaseManager";
 
-const items: MenuProps["items"] = [
+const MenuItemsData: MenuProps["items"] = [
     {
         key: "overview", // the path
         icon: React.createElement(BarChartOutlined),
@@ -29,6 +29,8 @@ const items: MenuProps["items"] = [
 
 const DashboardPage = () => {
     const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const [activeMenuKey, setActiveMenuKey] = useState("overview");
 
     const { user } = useFirebaseAuth() as any;
 
@@ -48,9 +50,19 @@ const DashboardPage = () => {
     }, [navigate]);
 
     useEffect(() => {
-        // default panel
-        navigate("overview", { replace: true });
-    }, []);
+        const paths = (pathname ?? "").split("/");
+        if (paths[1] !== "dashboard") {
+            return;
+        }
+        const panelKey = paths[2];
+        const availablePath = MenuItemsData.map(item => item?.key);
+        if (availablePath.includes(panelKey)) {
+            setActiveMenuKey(panelKey);
+        } else {
+            // default panel
+            navigate("overview", { replace: true });
+        }
+    }, [pathname, navigate]);
 
     // must at the end
     useProtectedPath();
@@ -63,8 +75,8 @@ const DashboardPage = () => {
                     <Menu
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={["overview"]}
-                        items={items}
+                        selectedKeys={[activeMenuKey]}
+                        items={MenuItemsData}
                         onClick={onMenuItemClick}
                     />
                 </Sider>
