@@ -92,7 +92,7 @@ const DashboardPage = () => {
                             </Tooltip>
                         </div>
                     </Header>
-                    <Content>
+                    <Content className="panel-content">
                         <Outlet />
                     </Content>
                 </Layout>
@@ -113,15 +113,14 @@ const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
     }
 
     .panel-layout {
-        padding: 0 20px;
-
         .panel-header {
-            padding: 20px 0;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: transparent;
             color: rgb(71, 98, 130);
+            box-shadow: rgba(0, 0, 0, 0.1) 2px 8px 12px;
 
             .email {
                 font-size: 14px;
@@ -135,6 +134,9 @@ const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
                     color: rgb(71, 98, 130);
                 }
             }
+        }
+        .panel-content {
+            padding: 40px 20px;
         }
     }
 `;

@@ -6,30 +6,39 @@ import useFirebaseAuth from "../../../../common/zustand/useFirebaseAuth";
 import PanelTitle from "../../../../componets/dashboard/PanelTitle";
 import { PlusOutlined } from "@ant-design/icons";
 import AppCard from "./component/AppCard";
+import { Spin } from "antd";
 
 const AppManagement = () => {
     const { user } = useFirebaseAuth() as any;
 
     const [apps, setApps] = useState<Array<any>>([]);
+    const [isLoadingData, setIsLoadingData] = useState<boolean>(false);
 
     const getAllApps = useCallback(async () => {
         if (!user?.uid) {
             return;
         }
-        const q = query(collection(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps`));
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-            setApps([]);
-            return;
-        }
-        const tempData: Array<any> = [];
-        querySnapshot.forEach(doc => {
-            if (doc.exists()) {
-                tempData.push({ ...doc.data(), id: doc.id });
+        setIsLoadingData(true);
+        try {
+            const q = query(collection(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps`));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                setApps([]);
+                return;
             }
-        });
-        console.log("temp data: ", tempData);
-        setApps(tempData);
+            const tempData: Array<any> = [];
+            querySnapshot.forEach(doc => {
+                if (doc.exists()) {
+                    tempData.push({ ...doc.data(), id: doc.id });
+                }
+            });
+            console.log("temp data: ", tempData);
+            setApps(tempData);
+        } catch (error) {
+            // do nothing
+            console.error(error);
+        }
+        setIsLoadingData(false);
     }, [user?.uid]);
 
     useEffect(() => {
@@ -39,17 +48,19 @@ const AppManagement = () => {
     return (
         <StyledContainer>
             <PanelTitle title="Projects" />
-            <div className="content">
-                <div className="add-app-card">
-                    <PlusOutlined className="add-icon" />
-                    <div className="text">Add Project</div>
-                </div>
-                {apps.map(appData => (
-                    <div className="card-container">
-                        <AppCard appData={appData} />
+            <Spin spinning={isLoadingData}>
+                <div className="content">
+                    <div className="add-app-card">
+                        <PlusOutlined className="add-icon" />
+                        <div className="text">Add Project</div>
                     </div>
-                ))}
-            </div>
+                    {apps.map(appData => (
+                        <div className="card-container">
+                            <AppCard appData={appData} />
+                        </div>
+                    ))}
+                </div>
+            </Spin>
         </StyledContainer>
     );
 };
