@@ -16,7 +16,7 @@ const MenuItemsData: MenuProps["items"] = [
         label: `Analyse`,
     },
     {
-        key: "appManagement", // the path
+        key: "projects", // the path
         icon: React.createElement(AppstoreAddOutlined),
         label: `Projects`,
     },
@@ -26,6 +26,8 @@ const MenuItemsData: MenuProps["items"] = [
         label: `Account`,
     },
 ];
+
+const AllowedSubPaths = ["overview", "projects", "account", "projectSetting"];
 
 const DashboardPage = () => {
     const navigate = useNavigate();
@@ -58,7 +60,8 @@ const DashboardPage = () => {
         const availablePath = MenuItemsData.map(item => item?.key);
         if (availablePath.includes(panelKey)) {
             setActiveMenuKey(panelKey);
-        } else {
+        }
+        if (!AllowedSubPaths.includes(panelKey)) {
             // default panel
             navigate("overview", { replace: true });
         }

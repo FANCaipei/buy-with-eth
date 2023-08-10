@@ -2,17 +2,25 @@ import { styled } from "styled-components";
 import GeneralUtils from "../../../../../common/utils/GeneralUtils";
 import { Button, Tooltip } from "antd";
 import { SettingFilled, DeleteFilled } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { useCallback } from "react";
 
 const AppCard = ({ appData }: { appData: any }) => {
+    const navigate = useNavigate();
+
+    const goSetting = useCallback(() => {
+        navigate("/dashboard/projectSetting");
+    }, [navigate]);
+
     return (
         <StyledContainer>
             <div className="title">{appData?.name}</div>
             <div className="address">{GeneralUtils.maskAddress(appData?.paymentAddress)}</div>
             <div className="action-icons">
-                <Tooltip title="Edit Project">
-                    <Button type="text" icon={<SettingFilled />}></Button>
+                <Tooltip title="Setting">
+                    <Button type="text" icon={<SettingFilled />} onClick={goSetting}></Button>
                 </Tooltip>
-                <Tooltip title="Delete Project">
+                <Tooltip title="Delete">
                     <Button type="text" icon={<DeleteFilled />}></Button>
                 </Tooltip>
             </div>

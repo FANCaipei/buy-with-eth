@@ -5,6 +5,7 @@ import DashboardPage from "../../views/dashboard/Dashboard";
 import AppManagement from "../../views/dashboard/content/appManagement/AppManagement";
 import BusinessOverview from "../../views/dashboard/content/businessOverview/BusinessOverview";
 import Account from "../../views/dashboard/content/accout/Account";
+import ProjectEdit from "../../views/dashboard/content/appManagement/subViews/ProjectEdit";
 
 const routeConfig = [
     { path: "/auth", Component: AuthPage },
@@ -13,9 +14,13 @@ const routeConfig = [
         path: "/dashboard",
         Component: DashboardPage,
         children: [
-            { path: "appManagement", Component: AppManagement },
+            {
+                path: "projects",
+                Component: AppManagement,
+            },
             { path: "overview", Component: BusinessOverview, index: true },
             { path: "account", Component: Account },
+            { path: "projectSetting", Component: ProjectEdit },
         ],
     },
     { path: "*", Component: NotFoundPage },
