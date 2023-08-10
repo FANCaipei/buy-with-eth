@@ -2,6 +2,7 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
 import { Firestore, getFirestore } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import {
     Auth,
     User,
@@ -86,6 +87,61 @@ class FirebaseManager {
 
         return sendEmailVerification(FirebaseManager.auth.currentUser);
     }
+    static uploadFileToFireStorage = (file: File, projectId: string): Promise<string> => {
+        const currentUid = FirebaseManager.auth.currentUser?.uid;
+
+        if (!currentUid) {
+            console.error("no uid, please login before upload file");
+            return Promise.reject();
+        }
+
+        const fileExtension = file.name.split(".").pop();
+        const storage = getStorage();
+        const storageRef = ref(storage, `appLogos/${projectId}/logo.${fileExtension}`);
+        // Upload the file and metadata
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        return new Promise((resolve, reject) => {
+            uploadTask.on(
+                "state_changed",
+                snapshot => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log("Upload is " + progress + "% done");
+                    switch (snapshot.state) {
+                        case "paused":
+                            console.log("Upload is paused");
+                            break;
+                        case "running":
+                            console.log("Upload is running");
+                            break;
+                    }
+                },
+                error => {
+                    // A full list of error codes is available at
+                    // https://firebase.google.com/docs/storage/web/handle-errors
+                    switch (error.code) {
+                        case "storage/unauthorized":
+                            // User doesn't have permission to access the object
+                            break;
+                        case "storage/canceled":
+                            // User canceled the upload
+                            break;
+                        case "storage/unknown":
+                            // Unknown error occurred, inspect error.serverResponse
+                            break;
+                    }
+                    reject();
+                },
+                () => {
+                    // Upload completed successfully, now we can get the download URL
+                    getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                        console.log("File available at: ", downloadURL);
+                        resolve(downloadURL);
+                    });
+                }
+            );
+        });
+    };
 }
 
 export default FirebaseManager;
