@@ -55,7 +55,7 @@ const AppManagement = () => {
                         <div className="text">Add Project</div>
                     </div>
                     {apps.map(appData => (
-                        <div className="card-container">
+                        <div className="card-container" key={appData?.id}>
                             <AppCard appData={appData} />
                         </div>
                     ))}
@@ -87,7 +87,7 @@ const StyledContainer = styled.div.attrs({ className: "app-management" })`
             cursor: pointer;
 
             &:hover {
-                background-color: (245, 245, 245);
+                background-color: rgb(245, 245, 245);
             }
 
             .add-icon {
