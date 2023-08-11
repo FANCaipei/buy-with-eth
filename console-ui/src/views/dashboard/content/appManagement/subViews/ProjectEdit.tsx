@@ -9,6 +9,7 @@ import FirebaseManager from "../../../../../common/firebase/FirebaseManager";
 import { doc, setDoc } from "firebase/firestore";
 import useFirebaseAuth from "../../../../../common/zustand/useFirebaseAuth";
 import useProtectedPath from "../../../../../common/hooks/useProtectedPath";
+import CustomFormLabel from "../../../../../componets/CustomFormLabel";
 
 const Tips = {
     projectLogo: {
@@ -169,7 +170,7 @@ const ProjectEdit = () => {
                         <Form.Item
                             name="logo"
                             rules={[{ required: true, message: "Project logo is required" }]}
-                            label="Project Logo"
+                            label={<CustomFormLabel label="Project Logo" />}
                             trigger="onLogoChange"
                             valuePropName="value"
                         >
@@ -196,7 +197,12 @@ const ProjectEdit = () => {
                                 { required: true, message: "Receivement address is required" },
                                 { validator: AddressValidator },
                             ]}
-                            label="Receivement Address"
+                            label={
+                                <CustomFormLabel
+                                    label="Receivement Address"
+                                    tip="All paid tokens will be sent to this address"
+                                />
+                            }
                         >
                             <Input
                                 className="text-value-input"
@@ -207,7 +213,11 @@ const ProjectEdit = () => {
                                 onFocus={() => setCurrentTips(Tips.receiveAddress)}
                             ></Input>
                         </Form.Item>
-                        <Form.Item name="callbackApi" label="Callback Api">
+                        <Form.Item
+                            name="callbackApi"
+                            rules={[{ pattern: /^https?:\/\//g, message: "Must start with http:// or https://" }]}
+                            label={<CustomFormLabel label="Callback Api" tip="Api url which support 'Post' method" />}
+                        >
                             <Input
                                 className="text-value-input"
                                 placeholder="Callback api url for receiving successful payment result"
@@ -283,15 +293,16 @@ const StyledContainer = styled.div.attrs({ className: "project-edit-container" }
             flex-grow: 0;
             margin-left: 20px;
             font-size: 16px;
-            color: rgba(0, 0, 0, 0.3);
+            color: #1677ffaa;
             max-width: 350px;
 
             .tip-title {
                 font-size: 18px;
+                font-weight: 500;
                 margin-bottom: 40px;
             }
             .tip-desc {
-                color: rgba(255, 204, 0, 1);
+                color: #1677ffaa;
                 li {
                     margin-top: 20px;
                     word-break: break-word;
