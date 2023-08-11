@@ -3,6 +3,7 @@ import { FirebaseApp, initializeApp } from "firebase/app";
 import { Analytics, getAnalytics } from "firebase/analytics";
 import { Firestore, getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { Functions, getFunctions, httpsCallable } from "firebase/functions";
 import {
     Auth,
     User,
@@ -19,6 +20,16 @@ class FirebaseManager {
     static analytics: Analytics;
     static firestore: Firestore;
     static auth: Auth;
+    static functions: Functions;
+    static serverCallFunctions: {
+        createApp: (params: {
+            logoUrl?: string;
+            name: string;
+            paymentAddress: string;
+            callbackApi?: string;
+        }) => Promise<any>;
+    } = { createApp: () => Promise.reject(`hasn't init`) };
+
     static init() {
         if (!FirebaseManager.app) {
             // Your web app's Firebase configuration
@@ -38,6 +49,9 @@ class FirebaseManager {
             FirebaseManager.analytics = getAnalytics(FirebaseManager.app);
             FirebaseManager.firestore = getFirestore(FirebaseManager.app);
             FirebaseManager.auth = getAuth(FirebaseManager.app);
+            FirebaseManager.functions = getFunctions();
+            // Init server call function
+            FirebaseManager.serverCallFunctions.createApp = httpsCallable(FirebaseManager.functions, "createApp");
 
             onAuthStateChanged(FirebaseManager.auth, user => {
                 if (user) {
@@ -97,7 +111,7 @@ class FirebaseManager {
 
         const fileExtension = file.name.split(".").pop();
         const storage = getStorage();
-        const storageRef = ref(storage, `appLogos/${projectId}/logo.${fileExtension}`);
+        const storageRef = ref(storage, `appLogos/${currentUid}/${projectId}/logo.${fileExtension}`);
         // Upload the file and metadata
         const uploadTask = uploadBytesResumable(storageRef, file);
 
@@ -135,7 +149,7 @@ class FirebaseManager {
                 () => {
                     // Upload completed successfully, now we can get the download URL
                     getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-                        console.log("File available at: ", downloadURL);
+                        // console.log("File available at: ", downloadURL);
                         resolve(downloadURL);
                     });
                 }

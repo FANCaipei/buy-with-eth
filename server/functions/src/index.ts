@@ -7,12 +7,13 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { onCall, onRequest } from "firebase-functions/v2/https";
+import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
-import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord } from "./utils/firestoreUtils";
+import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord, addApp } from "./utils/firestoreUtils";
 import { decodeReceiptId } from "./utils/general";
+import { ethers } from "ethers";
 
 // firstly init firestore
 initFirestore();
@@ -166,16 +167,12 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
 
 export const registerVipWithPaymentReceipt = onCall(async request => {
     if (!request.auth) {
-        return {
-            success: false,
-        };
+        throw new HttpsError("unauthenticated", "not authed");
     }
 
     const { receiptId, paymentType /* by crypto or by 3rd part*/ } = request.data ?? {};
     if (!receiptId || !paymentType) {
-        return {
-            success: false,
-        };
+        throw new HttpsError("invalid-argument", "receiptId and paymentType are required");
     }
     // TODO: verify payment info, calculate vipLevel
 
@@ -194,7 +191,32 @@ export const registerVipWithPaymentReceipt = onCall(async request => {
     };
 });
 
-// user add app, must check if user can add app
-export const addApp = onCall(async requst => {
+// user creat app, must check if user can create
+// TODO: set dave cors, exapmle: { cors: [/firebase\.com$/, "flutter.com"] }
+export const createApp = onCall({ cors: true }, async request => {
     // TODO: check if user has right to add app
+
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "not authed");
+    }
+    const { logoUrl, name, paymentAddress, callbackApi } = request.data;
+
+    if (!name || !paymentAddress) {
+        throw new HttpsError("invalid-argument", "name and paymentAddress must be provided");
+    }
+    if (!ethers.utils.isAddress(paymentAddress)) {
+        throw new HttpsError("invalid-argument", "invalid paymentAddress");
+    }
+
+    const uid = request.auth.uid;
+
+    try {
+        const appId = await addApp(uid, name, paymentAddress, logoUrl ?? "", callbackApi ?? "");
+        return {
+            id: appId,
+        };
+    } catch (error) {
+        logger.error(error);
+        throw new HttpsError("internal", "create failed", error);
+    }
 });

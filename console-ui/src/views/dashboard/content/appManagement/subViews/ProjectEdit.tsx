@@ -1,63 +1,93 @@
 import { styled } from "styled-components";
 import SubPanelTitleWithBackIcon from "../../../component/SubPanelTitleWithBackIcon";
 import { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Input, Form } from "antd";
 import LogoUploader from "../../../../../componets/LogoUploader";
 import { ethers } from "ethers";
+import FirebaseManager from "../../../../../common/firebase/FirebaseManager";
+import { doc, setDoc } from "firebase/firestore";
+import useFirebaseAuth from "../../../../../common/zustand/useFirebaseAuth";
+import useProtectedPath from "../../../../../common/hooks/useProtectedPath";
 
 const AddressValidator = async (_rule: any, value: any) => {
     return ethers.utils.isAddress(value) ? Promise.resolve() : Promise.reject("Invalid crypto address");
 };
 
 const ProjectEdit = () => {
+    useProtectedPath();
+    const navigate = useNavigate();
+    const { user } = useFirebaseAuth() as any;
     const [formInstace] = Form.useForm();
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
     const [editAppData, setEditAppData] = useState<any>({});
     const { state } = useLocation();
-    const [logoData, setLogoData] = useState<string>();
+    const [logoFileOrUrl, setLogoFileOrUrl] = useState<File | string>();
     const projectName = Form.useWatch("name", formInstace);
     const receiveAddress = Form.useWatch("address", formInstace);
     const callbackApi = Form.useWatch("callbackApi", formInstace);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const onLogoChange = useCallback((imageData: string) => {
-        setLogoData(imageData);
+    const onLogoChange = useCallback((imageFile: File) => {
+        setLogoFileOrUrl(imageFile);
     }, []);
 
-    const uploadLogo = useCallback(async (): Promise<string> => {
-        if (logoData?.startsWith("data:")) {
-            // upload
-
-            return "https://";
-        } else {
-            return logoData ?? "";
-        }
-    }, [logoData]);
+    const uploadLogo = useCallback(
+        async (projectId: string): Promise<string> => {
+            if (typeof logoFileOrUrl === "string" || logoFileOrUrl == null) {
+                return logoFileOrUrl ?? "";
+            } else {
+                // upload
+                const url = await FirebaseManager.uploadFileToFireStorage(logoFileOrUrl, projectId);
+                return url;
+            }
+        },
+        [logoFileOrUrl]
+    );
 
     const createProject = useCallback(async () => {
-        const logoUrl = await uploadLogo();
         const requestData = {
-            logoUrl: logoUrl,
-            projectName: projectName,
-            receiveAddress: receiveAddress,
+            name: projectName,
+            paymentAddress: receiveAddress,
             callbackApi: callbackApi,
         };
-        console.log(requestData);
-    }, [uploadLogo]);
+        setIsSaving(true);
+        try {
+            const res = await FirebaseManager.serverCallFunctions.createApp(requestData);
+            if (res?.data?.id) {
+                const logoUrl = await uploadLogo(res.data.id);
+                if (logoUrl && logoUrl !== "") {
+                    const docRef = doc(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps/${res.data.id}`);
+                    await setDoc(
+                        docRef,
+                        {
+                            logoUrl: logoUrl,
+                        },
+                        { merge: true }
+                    );
+                    navigate(-1);
+                }
+            }
+        } catch (error) {
+            // do nothing
+            console.error(error);
+        }
+        setIsSaving(false);
+    }, [callbackApi, projectName, receiveAddress, uploadLogo]);
 
     const editProject = useCallback(async () => {
-        const logoUrl = await uploadLogo();
+        // const logoUrl = await uploadLogo();
     }, [uploadLogo]);
 
     const save = useCallback(async () => {
-        const validsteResult = await formInstace.validateFields();
-        console.log(validsteResult);
+        await formInstace.validateFields();
+
         if (isEditMode) {
             editProject();
         } else {
             createProject();
         }
-    }, [formInstace, editProject, createProject]);
+    }, [formInstace, editProject, createProject, isEditMode]);
 
     useEffect(() => {
         if (state?.appData != null) {
@@ -78,7 +108,7 @@ const ProjectEdit = () => {
                         trigger="onLogoChange"
                         valuePropName="value"
                     >
-                        <LogoUploader onLogoChange={onLogoChange} value={logoData} />
+                        <LogoUploader onLogoChange={onLogoChange} value={logoFileOrUrl} />
                     </Form.Item>
                     <Form.Item
                         name="name"
@@ -118,7 +148,7 @@ const ProjectEdit = () => {
                 </Form>
 
                 <div className="btn-block">
-                    <Button className="save-btn" type="primary" size="large" onClick={save}>
+                    <Button className="save-btn" type="primary" size="large" onClick={save} loading={isSaving}>
                         Save
                     </Button>
                 </div>

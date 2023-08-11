@@ -20,23 +20,28 @@ async function getBase64FromImageFile(file: File): Promise<string> {
     });
 }
 
-const LogoUploader = ({ onLogoChange, value }: { onLogoChange: (imageData: string) => void; value?: string }) => {
+const LogoUploader = ({ onLogoChange, value }: { onLogoChange: (imageFile: File) => void; value?: string | File }) => {
     const [currentLogo, setCurrentLogo] = useState<string | null>();
 
-    const onFileInputChange = useCallback(async (event: any) => {
-        const file = event?.target?.files?.[0];
-        if (!file) {
-            return;
-        }
-        const imageData = await getBase64FromImageFile(file);
-        if (imageData) {
-            setCurrentLogo(imageData);
-            onLogoChange(imageData);
-        }
-    }, []);
+    const onFileInputChange = useCallback(
+        async (event: any) => {
+            const file = event?.target?.files?.[0];
+            if (!file) {
+                return;
+            }
+            const imageData = await getBase64FromImageFile(file);
+            if (imageData) {
+                setCurrentLogo(imageData);
+                onLogoChange(file);
+            }
+        },
+        [onLogoChange]
+    );
 
     useEffect(() => {
-        setCurrentLogo(value);
+        if (typeof value === "string") {
+            setCurrentLogo(value);
+        }
     }, [value]);
 
     return (

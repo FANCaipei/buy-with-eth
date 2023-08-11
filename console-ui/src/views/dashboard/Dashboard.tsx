@@ -140,6 +140,8 @@ const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
         }
         .panel-content {
             padding: 40px 20px;
+            max-height: calc(100vh - 60px);
+            overflow-y: scroll;
         }
     }
 `;

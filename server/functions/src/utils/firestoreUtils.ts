@@ -122,4 +122,21 @@ const getPaymentRecord = async (
     }
 };
 
-export { initFirestore, getReceiveAccoutWithAppId, savePaymentRecord };
+const addApp = async (
+    uid: string,
+    name: string,
+    paymentAddress: string,
+    logoUrl: string,
+    callbackApi: string
+): Promise<string> => {
+    const db = getFirestore();
+    const res = await db.collection(`userAppConfigs/${uid}/apps`).add({
+        name: name,
+        paymentAddress: paymentAddress,
+        logoUrl: logoUrl,
+        callbackApi: callbackApi,
+    });
+    return res.id;
+};
+
+export { initFirestore, getReceiveAccoutWithAppId, savePaymentRecord, addApp };

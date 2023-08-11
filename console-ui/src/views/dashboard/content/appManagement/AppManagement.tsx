@@ -7,12 +7,18 @@ import PanelTitle from "../../../../componets/dashboard/PanelTitle";
 import { PlusOutlined } from "@ant-design/icons";
 import AppCard from "./component/AppCard";
 import { Spin } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const AppManagement = () => {
     const { user } = useFirebaseAuth() as any;
+    const navigate = useNavigate() as any;
 
     const [apps, setApps] = useState<Array<any>>([]);
     const [isLoadingData, setIsLoadingData] = useState<boolean>(false);
+
+    const navToNewProject = useCallback(() => {
+        navigate("/dashboard/projectSetting");
+    }, [navigate]);
 
     const getAllApps = useCallback(async () => {
         if (!user?.uid) {
@@ -32,7 +38,6 @@ const AppManagement = () => {
                     tempData.push({ ...doc.data(), id: doc.id });
                 }
             });
-            console.log("temp data: ", tempData);
             setApps(tempData);
         } catch (error) {
             // do nothing
@@ -50,7 +55,7 @@ const AppManagement = () => {
             <PanelTitle title="Projects" />
             <Spin spinning={isLoadingData}>
                 <div className="content">
-                    <div className="add-app-card">
+                    <div className="add-app-card" onClick={navToNewProject}>
                         <PlusOutlined className="add-icon" />
                         <div className="text">Add Project</div>
                     </div>
@@ -69,6 +74,7 @@ const StyledContainer = styled.div.attrs({ className: "app-management" })`
     .content {
         margin-top: 40px;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         .add-app-card {
             width: 300px;
