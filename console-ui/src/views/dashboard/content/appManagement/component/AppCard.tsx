@@ -9,8 +9,12 @@ const AppCard = ({ appData }: { appData: any }) => {
     const navigate = useNavigate();
 
     const goSetting = useCallback(() => {
-        navigate("/dashboard/projectSetting");
-    }, [navigate]);
+        navigate("/dashboard/projectSetting", {
+            state: {
+                appData: appData,
+            },
+        });
+    }, [navigate, appData]);
 
     return (
         <StyledContainer>

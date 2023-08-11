@@ -20,25 +20,25 @@ const ProjectEdit = () => {
     const { user } = useFirebaseAuth() as any;
     const [formInstace] = Form.useForm();
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
-    const [editAppData, setEditAppData] = useState<any>({});
     const { state } = useLocation();
     const [logoFileOrUrl, setLogoFileOrUrl] = useState<File | string>();
     const projectName = Form.useWatch("name", formInstace);
     const receiveAddress = Form.useWatch("address", formInstace);
     const callbackApi = Form.useWatch("callbackApi", formInstace);
     const [isSaving, setIsSaving] = useState(false);
+    const [projectId, setProjectId] = useState<string | null>();
 
     const onLogoChange = useCallback((imageFile: File) => {
         setLogoFileOrUrl(imageFile);
     }, []);
 
     const uploadLogo = useCallback(
-        async (projectId: string): Promise<string> => {
+        async (pId: string): Promise<string> => {
             if (typeof logoFileOrUrl === "string" || logoFileOrUrl == null) {
                 return logoFileOrUrl ?? "";
             } else {
                 // upload
-                const url = await FirebaseManager.uploadFileToFireStorage(logoFileOrUrl, projectId);
+                const url = await FirebaseManager.uploadFileToFireStorage(logoFileOrUrl, pId);
                 return url;
             }
         },
@@ -57,7 +57,7 @@ const ProjectEdit = () => {
             if (res?.data?.id) {
                 const logoUrl = await uploadLogo(res.data.id);
                 if (logoUrl && logoUrl !== "") {
-                    const docRef = doc(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps/${res.data.id}`);
+                    const docRef = doc(FirebaseManager.firestore, `userAppConfigs/${user?.uid}/apps/${res.data.id}`);
                     await setDoc(
                         docRef,
                         {
@@ -73,11 +73,35 @@ const ProjectEdit = () => {
             console.error(error);
         }
         setIsSaving(false);
-    }, [callbackApi, projectName, receiveAddress, uploadLogo]);
+    }, [callbackApi, projectName, receiveAddress, uploadLogo, navigate, user?.uid]);
 
     const editProject = useCallback(async () => {
-        // const logoUrl = await uploadLogo();
-    }, [uploadLogo]);
+        if (projectId == null) {
+            return;
+        }
+        setIsSaving(true);
+        try {
+            const logoUrl = await uploadLogo(projectId);
+            if (logoUrl && logoUrl !== "") {
+                const docRef = doc(FirebaseManager.firestore, `userAppConfigs/${user?.uid}/apps/${projectId}`);
+                await setDoc(
+                    docRef,
+                    {
+                        logoUrl: logoUrl,
+                        name: projectName,
+                        paymentAddress: receiveAddress,
+                        callbackApi: callbackApi,
+                    },
+                    { merge: true }
+                );
+                navigate(-1);
+            }
+        } catch (error) {
+            // do nothing
+            console.error(error);
+        }
+        setIsSaving(false);
+    }, [uploadLogo, projectId, callbackApi, navigate, projectName, receiveAddress, user?.uid]);
 
     const save = useCallback(async () => {
         await formInstace.validateFields();
@@ -92,9 +116,16 @@ const ProjectEdit = () => {
     useEffect(() => {
         if (state?.appData != null) {
             setIsEditMode(true);
-            setEditAppData(state.appData);
+            // init form data
+            formInstace.setFieldsValue({
+                name: state.appData.name,
+                logo: state.appData.logoUrl,
+                address: state.appData.paymentAddress,
+                callbackApi: state.appData.callbackApi,
+            });
+            setProjectId(state.appData.id);
         }
-    }, [state?.appData]);
+    }, [state?.appData, formInstace]);
 
     return (
         <StyledContainer>
