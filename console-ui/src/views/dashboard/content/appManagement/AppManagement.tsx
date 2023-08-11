@@ -13,7 +13,6 @@ const AppManagement = () => {
     const { user } = useFirebaseAuth() as any;
     const navigate = useNavigate() as any;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [apps, setApps] = useState<Array<any>>([]);
     const [isLoadingData, setIsLoadingData] = useState<boolean>(false);
 
@@ -62,7 +61,7 @@ const AppManagement = () => {
                     </div>
                     {apps.map(appData => (
                         <div className="card-container" key={appData?.id}>
-                            <AppCard appData={appData} />
+                            <AppCard appData={appData} onDelete={getAllApps} />
                         </div>
                     ))}
                 </div>
