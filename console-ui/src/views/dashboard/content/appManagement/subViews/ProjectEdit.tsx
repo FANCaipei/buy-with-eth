@@ -37,7 +37,7 @@ const Tips = {
         tips: [
             "This api will be called whenever user payment successful",
             "Leave it empty if you don't need it, you can also get the payment result at your web page",
-            "It must support 'POST' method without authentication required",
+            "It must support POST method without authentication required",
             "Keep this url private, do not share to public",
         ],
     },
@@ -170,7 +170,9 @@ const ProjectEdit = () => {
                         <Form.Item
                             name="logo"
                             rules={[{ required: true, message: "Project logo is required" }]}
-                            label={<CustomFormLabel label="Project Logo" />}
+                            label={
+                                <CustomFormLabel label="Project Logo" tip="User will see your logo on payment view" />
+                            }
                             trigger="onLogoChange"
                             valuePropName="value"
                         >
@@ -181,7 +183,7 @@ const ProjectEdit = () => {
                         <Form.Item
                             name="name"
                             rules={[{ required: true, message: "Project name is required" }]}
-                            label="Project Name"
+                            label={<CustomFormLabel label="Project Name" />}
                         >
                             <Input
                                 className="text-value-input"
@@ -216,7 +218,7 @@ const ProjectEdit = () => {
                         <Form.Item
                             name="callbackApi"
                             rules={[{ pattern: /^https?:\/\//g, message: "Must start with http:// or https://" }]}
-                            label={<CustomFormLabel label="Callback Api" tip="Api url which support 'Post' method" />}
+                            label={<CustomFormLabel label="Callback Api" tip="Api url which support POST method" />}
                         >
                             <Input
                                 className="text-value-input"
@@ -274,6 +276,11 @@ const StyledContainer = styled.div.attrs({ className: "project-edit-container" }
                     border-radius: 0;
                     box-shadow: none;
                     padding-left: 0;
+
+                    &[readonly] {
+                        color: rgba(0, 0, 0, 0.4);
+                        cursor: not-allowed;
+                    }
                 }
             }
 
