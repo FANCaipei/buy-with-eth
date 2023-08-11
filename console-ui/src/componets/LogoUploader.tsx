@@ -20,7 +20,15 @@ async function getBase64FromImageFile(file: File): Promise<string> {
     });
 }
 
-const LogoUploader = ({ onLogoChange, value }: { onLogoChange: (imageFile: File) => void; value?: string | File }) => {
+const LogoUploader = ({
+    onLogoChange,
+    value,
+    onMouseEnter,
+}: {
+    onLogoChange: (imageFile: File) => void;
+    value?: string | File;
+    onMouseEnter?: (event: any) => any;
+}) => {
     const [currentLogo, setCurrentLogo] = useState<string | null>();
 
     const onFileInputChange = useCallback(
@@ -45,14 +53,16 @@ const LogoUploader = ({ onLogoChange, value }: { onLogoChange: (imageFile: File)
     }, [value]);
 
     return (
-        <StyledContainer>
-            {currentLogo ? (
-                <img className="current-logo" src={currentLogo} alt="" />
-            ) : (
-                <PlusOutlined className="add-file" />
-            )}
-            <Input className="file-input" type="file" onChange={onFileInputChange} accept="image/*" />
-        </StyledContainer>
+        <div onMouseEnter={onMouseEnter}>
+            <StyledContainer>
+                {currentLogo ? (
+                    <img className="current-logo" src={currentLogo} alt="" />
+                ) : (
+                    <PlusOutlined className="add-file" />
+                )}
+                <Input className="file-input" type="file" onChange={onFileInputChange} accept="image/*" />
+            </StyledContainer>
+        </div>
     );
 };
 

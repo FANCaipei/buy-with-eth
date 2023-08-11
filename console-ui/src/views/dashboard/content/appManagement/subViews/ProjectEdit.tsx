@@ -169,16 +169,24 @@ const ProjectEdit = () => {
                     <Form form={formInstace} size="large" labelCol={{ span: 7 }} labelAlign="left" colon={false}>
                         <Form.Item
                             name="logo"
-                            rules={[{ required: true, message: "Project logo is required" }]}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Project logo is required",
+                                },
+                            ]}
                             label={
                                 <CustomFormLabel label="Project Logo" tip="User will see your logo on payment view" />
                             }
                             trigger="onLogoChange"
+                            validateTrigger="onLogoChange"
                             valuePropName="value"
                         >
-                            <div onMouseEnter={() => setCurrentTips(Tips.projectLogo)} style={{ width: "50px" }}>
-                                <LogoUploader onLogoChange={onLogoChange} value={logoFileOrUrl} />
-                            </div>
+                            <LogoUploader
+                                onLogoChange={onLogoChange}
+                                value={logoFileOrUrl}
+                                onMouseEnter={() => setCurrentTips(Tips.projectLogo)}
+                            />
                         </Form.Item>
                         <Form.Item
                             name="name"
