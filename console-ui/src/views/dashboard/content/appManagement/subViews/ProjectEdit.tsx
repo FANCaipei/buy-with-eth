@@ -10,6 +10,38 @@ import { doc, setDoc } from "firebase/firestore";
 import useFirebaseAuth from "../../../../../common/zustand/useFirebaseAuth";
 import useProtectedPath from "../../../../../common/hooks/useProtectedPath";
 
+const Tips = {
+    projectLogo: {
+        title: "Project Logo",
+        tips: [
+            "User will see your logo on payment view",
+            "Large logo image may load slow, 64x64 is enough, .jpg is smaller than .png",
+            "The background of where your logo placed will be white",
+        ],
+    },
+    projectName: {
+        title: "Project Name",
+        tips: ["User will see your project name on payment view", "Name should not be too long"],
+    },
+    receiveAddress: {
+        title: "Receivement Address",
+        tips: [
+            `It can't be changed once set(may support later)`,
+            `It's an ethereum address with case sensitive`,
+            "All paid tokens will be sent to this address, make sure you have full control on it",
+        ],
+    },
+    callbackApi: {
+        title: "Callback Api",
+        tips: [
+            "This api will be called whenever user payment successful",
+            "Leave it empty if you don't need it, you can also get the payment result at your web page",
+            "It must support 'POST' method without authentication required",
+            "Keep this url private, do not share to public",
+        ],
+    },
+};
+
 const AddressValidator = async (_rule: any, value: any) => {
     return ethers.utils.isAddress(value) ? Promise.resolve() : Promise.reject("Invalid crypto address");
 };
@@ -27,6 +59,7 @@ const ProjectEdit = () => {
     const callbackApi = Form.useWatch("callbackApi", formInstace);
     const [isSaving, setIsSaving] = useState(false);
     const [projectId, setProjectId] = useState<string | null>();
+    const [currentTips, setCurrentTips] = useState<any>();
 
     const onLogoChange = useCallback((imageFile: File) => {
         setLogoFileOrUrl(imageFile);
@@ -130,58 +163,74 @@ const ProjectEdit = () => {
     return (
         <StyledContainer>
             <SubPanelTitleWithBackIcon title={isEditMode ? "Edit Project" : "New Project"} />
-            <div className="form-wrapper">
-                <Form form={formInstace} size="large" labelCol={{ span: 7 }} labelAlign="left" colon={false}>
-                    <Form.Item
-                        name="logo"
-                        rules={[{ required: true, message: "Project logo is required" }]}
-                        label="Project Logo"
-                        trigger="onLogoChange"
-                        valuePropName="value"
-                    >
-                        <LogoUploader onLogoChange={onLogoChange} value={logoFileOrUrl} />
-                    </Form.Item>
-                    <Form.Item
-                        name="name"
-                        rules={[{ required: true, message: "Project name is required" }]}
-                        label="Project Name"
-                    >
-                        <Input
-                            className="text-value-input"
-                            placeholder="Project Name"
-                            bordered={false}
-                            value={projectName}
-                        ></Input>
-                    </Form.Item>
-                    <Form.Item
-                        name="address"
-                        rules={[
-                            { required: true, message: "Receivement address is required" },
-                            { validator: AddressValidator },
-                        ]}
-                        label="Receivement Address"
-                    >
-                        <Input
-                            className="text-value-input"
-                            placeholder="Your crypto account address"
-                            bordered={false}
-                            value={receiveAddress}
-                        ></Input>
-                    </Form.Item>
-                    <Form.Item name="callbackApi" label="Callback Api">
-                        <Input
-                            className="text-value-input"
-                            placeholder="Callback api url for receiving successful payment result"
-                            bordered={false}
-                            value={callbackApi}
-                        ></Input>
-                    </Form.Item>
-                </Form>
+            <div className="content-block">
+                <div className="form-wrapper">
+                    <Form form={formInstace} size="large" labelCol={{ span: 7 }} labelAlign="left" colon={false}>
+                        <Form.Item
+                            name="logo"
+                            rules={[{ required: true, message: "Project logo is required" }]}
+                            label="Project Logo"
+                            trigger="onLogoChange"
+                            valuePropName="value"
+                        >
+                            <div onMouseEnter={() => setCurrentTips(Tips.projectLogo)} style={{ width: "50px" }}>
+                                <LogoUploader onLogoChange={onLogoChange} value={logoFileOrUrl} />
+                            </div>
+                        </Form.Item>
+                        <Form.Item
+                            name="name"
+                            rules={[{ required: true, message: "Project name is required" }]}
+                            label="Project Name"
+                        >
+                            <Input
+                                className="text-value-input"
+                                placeholder="Project Name"
+                                bordered={false}
+                                value={projectName}
+                                onFocus={() => setCurrentTips(Tips.projectName)}
+                            ></Input>
+                        </Form.Item>
+                        <Form.Item
+                            name="address"
+                            rules={[
+                                { required: true, message: "Receivement address is required" },
+                                { validator: AddressValidator },
+                            ]}
+                            label="Receivement Address"
+                        >
+                            <Input
+                                className="text-value-input"
+                                placeholder="Your crypto account address"
+                                bordered={false}
+                                value={receiveAddress}
+                                readOnly={isEditMode}
+                                onFocus={() => setCurrentTips(Tips.receiveAddress)}
+                            ></Input>
+                        </Form.Item>
+                        <Form.Item name="callbackApi" label="Callback Api">
+                            <Input
+                                className="text-value-input"
+                                placeholder="Callback api url for receiving successful payment result"
+                                bordered={false}
+                                value={callbackApi}
+                                onFocus={() => setCurrentTips(Tips.callbackApi)}
+                            ></Input>
+                        </Form.Item>
+                    </Form>
 
-                <div className="btn-block">
-                    <Button className="save-btn" type="primary" size="large" onClick={save} loading={isSaving}>
-                        Save
-                    </Button>
+                    <div className="btn-block">
+                        <Button className="save-btn" type="primary" size="large" onClick={save} loading={isSaving}>
+                            Save
+                        </Button>
+                    </div>
+                </div>
+                <div className="tips">
+                    <div className="tip-title">{currentTips?.title}</div>
+                    <ul className="tip-desc">
+                        {currentTips?.tips?.map((tip: any) => (
+                            <li key={tip}> {tip}</li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         </StyledContainer>
@@ -189,39 +238,65 @@ const ProjectEdit = () => {
 };
 
 const StyledContainer = styled.div.attrs({ className: "project-edit-container" })`
-    .form-wrapper {
+    .content-block {
+        display: flex;
         margin-top: 40px;
-        max-width: 800px;
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-        background-color: #fff;
-        border-radius: 8px;
-        padding: 24px;
 
-        .ant-form-item {
-            margin-bottom: 40px;
-            label {
-                font-size: 16px;
-                color: rgba(0, 0, 0, 0.55);
-                width: 210px;
-                flex-shrink: 0;
+        .form-wrapper {
+            flex-grow: 1;
+            max-width: 800px;
+            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+
+            .ant-form-item {
+                margin-bottom: 40px;
+                label {
+                    font-size: 16px;
+                    color: rgba(0, 0, 0, 0.55);
+                    width: 210px;
+                    flex-shrink: 0;
+                }
+                .text-value-input {
+                    color: rgba(0, 0, 0, 0.87);
+                    border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+                    border-radius: 0;
+                    box-shadow: none;
+                    padding-left: 0;
+                }
             }
-            .text-value-input {
-                color: rgba(0, 0, 0, 0.87);
-                border-bottom: solid 1px rgba(0, 0, 0, 0.2);
-                border-radius: 0;
-                box-shadow: none;
-                padding-left: 0;
+
+            .btn-block {
+                display: flex;
+                justify-content: flex-end;
+
+                .save-btn {
+                    width: 80px;
+                    margin-top: 40px;
+                    align-self: flex-end;
+                }
             }
         }
 
-        .btn-block {
-            display: flex;
-            justify-content: flex-end;
+        .tips {
+            flex-grow: 0;
+            margin-left: 20px;
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.3);
+            max-width: 350px;
 
-            .save-btn {
-                width: 80px;
-                margin-top: 40px;
-                align-self: flex-end;
+            .tip-title {
+                font-size: 18px;
+                margin-bottom: 40px;
+            }
+            .tip-desc {
+                color: rgba(255, 204, 0, 1);
+                li {
+                    margin-top: 20px;
+                    word-break: break-word;
+                    line-height: 24px;
+                }
             }
         }
     }
