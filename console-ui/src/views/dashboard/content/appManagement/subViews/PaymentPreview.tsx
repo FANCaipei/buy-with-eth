@@ -9,12 +9,17 @@ import CustomFormLabel from "../../../../../componets/CustomFormLabel";
 
 const PaymentUIHost = "http://localhost:3000";
 
+const ProductIdValidator = async (_rule: any, value: any) => {
+    return !value.includes("#") ? Promise.resolve() : Promise.reject("Must not contain #");
+};
+
 const PaymentPreview = () => {
     useProtectedPath();
 
     const [formInstace] = Form.useForm();
     const payValueInUSD = Form.useWatch("payValue", formInstace);
     const defaultTokenType = Form.useWatch("defaultToken", formInstace);
+    const productId = Form.useWatch("productId", formInstace);
     const [currrentUrl, setCurrrentUrl] = useState<string>();
     const [messageApi, contextHolder] = message.useMessage();
     const { state } = useLocation();
@@ -38,6 +43,7 @@ const PaymentPreview = () => {
             const paramsObj = JSON.parse(paramStr || "");
             formInstace.setFieldValue("payValue", paramsObj.valueInUSD);
             formInstace.setFieldValue("defaultToken", paramsObj.defaultTokenCode);
+            formInstace.setFieldValue("productId", paramsObj.productId);
         } catch (error) {
             messageApi.error("Decode url failed, invalid format");
             return;
@@ -55,10 +61,13 @@ const PaymentPreview = () => {
         if (payValueInUSD) {
             (paramObj as any).valueInUSD = payValueInUSD;
         }
-
         if (defaultTokenType) {
             (paramObj as any).defaultTokenCode = defaultTokenType;
         }
+        if (productId) {
+            (paramObj as any).productId = productId;
+        }
+
         const encodedParams = encodeURIComponent(JSON.stringify(paramObj));
         setCurrrentUrl(`${PaymentUIHost}/payment?params=${encodedParams}`);
     }, [messageApi, state?.appId, payValueInUSD, defaultTokenType]);
@@ -114,6 +123,28 @@ const PaymentPreview = () => {
                                     { value: "usdt-sepolia", label: "USDT-SETH" },
                                 ]}
                                 value={defaultTokenType}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="productId"
+                            label={
+                                <CustomFormLabel
+                                    label="Product ID"
+                                    tip="Your unique product id. It will be included in payment success response.This won't display on payment view"
+                                />
+                            }
+                            rules={[
+                                {
+                                    validator: ProductIdValidator,
+                                    message: "Must not contain #",
+                                },
+                            ]}
+                        >
+                            <Input
+                                type="string"
+                                placeholder="Product ID"
+                                value={productId}
+                                style={{ width: "230px" }}
                             />
                         </Form.Item>
                         <div className="right-layout-items">

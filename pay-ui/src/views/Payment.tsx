@@ -117,7 +117,7 @@ const PaymentPage = () => {
                     fromAddr,
                     targetAddress,
                     currencyPaymentConfig?.symbol?.includes("USDT"),
-                    null
+                    paymentConfigParams?.productId
                 );
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
