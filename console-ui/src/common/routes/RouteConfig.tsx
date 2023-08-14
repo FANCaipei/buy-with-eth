@@ -6,6 +6,7 @@ import AppManagement from "../../views/dashboard/content/appManagement/AppManage
 import BusinessOverview from "../../views/dashboard/content/businessOverview/BusinessOverview";
 import Account from "../../views/dashboard/content/accout/Account";
 import ProjectEdit from "../../views/dashboard/content/appManagement/subViews/ProjectEdit";
+import PaymentPreview from "../../views/dashboard/content/appManagement/subViews/PaymentPreview";
 
 const routeConfig = [
     { path: "/auth", Component: AuthPage },
@@ -21,6 +22,7 @@ const routeConfig = [
             { path: "overview", Component: BusinessOverview, index: true },
             { path: "account", Component: Account },
             { path: "projectSetting", Component: ProjectEdit },
+            { path: "paymentPreview", Component: PaymentPreview },
         ],
     },
     { path: "*", Component: NotFoundPage },

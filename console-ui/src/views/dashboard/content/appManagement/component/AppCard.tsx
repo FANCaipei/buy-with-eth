@@ -20,6 +20,14 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
         });
     }, [navigate, appData]);
 
+    const goPaymentPreview = useCallback(() => {
+        navigate("/dashboard/paymentPreview", {
+            state: {
+                appId: `${user.uid}-${appData.id}`,
+            },
+        });
+    }, [user?.uid, appData?.id]);
+
     const deleteProject = useCallback(async (): Promise<void> => {
         if (!user?.uid) {
             return Promise.reject();
@@ -53,7 +61,7 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
     }, [appData?.id, appData?.name, deleteProject]);
 
     return (
-        <StyledContainer>
+        <StyledContainer onClick={goPaymentPreview}>
             <div className="title-block">
                 <div className="left-side">
                     <div className="title">{appData?.name}</div>

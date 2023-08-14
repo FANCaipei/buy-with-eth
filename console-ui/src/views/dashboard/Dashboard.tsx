@@ -27,7 +27,7 @@ const MenuItemsData: MenuProps["items"] = [
     },
 ];
 
-const AllowedSubPaths = ["overview", "projects", "account", "projectSetting"];
+const AllowedSubPaths = ["overview", "projects", "account", "projectSetting", "paymentPreview"];
 
 const DashboardPage = () => {
     const navigate = useNavigate();
