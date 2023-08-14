@@ -10,7 +10,7 @@ import CustomFormLabel from "../../../../../componets/CustomFormLabel";
 const PaymentUIHost = "http://localhost:3000";
 
 const ProductIdValidator = async (_rule: any, value: any) => {
-    return !value.includes("#") ? Promise.resolve() : Promise.reject("Must not contain #");
+    return !value.includes("#") ? Promise.resolve() : Promise.reject();
 };
 
 const PaymentPreview = () => {
@@ -130,13 +130,13 @@ const PaymentPreview = () => {
                             label={
                                 <CustomFormLabel
                                     label="Product ID"
-                                    tip="Your unique product id. It will be included in payment success response.This won't display on payment view"
+                                    tip="This won't display on payment view. You can set unique id for each of your product. It will be included in payment success response. "
                                 />
                             }
                             rules={[
                                 {
                                     validator: ProductIdValidator,
-                                    message: "Must not contain #",
+                                    message: "# is not allowed",
                                 },
                             ]}
                         >
