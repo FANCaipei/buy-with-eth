@@ -12,13 +12,17 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
     const { user } = useFirebaseAuth() as any;
     const navigate = useNavigate();
 
-    const goSetting = useCallback(() => {
-        navigate("/dashboard/projectSetting", {
-            state: {
-                appData: appData,
-            },
-        });
-    }, [navigate, appData]);
+    const goSetting = useCallback(
+        (event: any) => {
+            event?.stopPropagation();
+            navigate("/dashboard/projectSetting", {
+                state: {
+                    appData: appData,
+                },
+            });
+        },
+        [navigate, appData]
+    );
 
     const goPaymentPreview = useCallback(() => {
         navigate("/dashboard/paymentPreview", {
@@ -26,7 +30,7 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
                 appId: `${user.uid}-${appData.id}`,
             },
         });
-    }, [user?.uid, appData?.id]);
+    }, [navigate, user?.uid, appData?.id]);
 
     const deleteProject = useCallback(async (): Promise<void> => {
         if (!user?.uid) {
@@ -39,26 +43,30 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
         return deleteResult;
     }, [appData, user?.uid, onDelete]);
 
-    const confirmDeleteProject = useCallback(() => {
-        if (!appData?.id) {
-            return;
-        }
-        Modal.confirm({
-            centered: true,
-            title: "Delete Project",
-            icon: <WarningOutlined />,
-            content: (() => (
-                <span>
-                    Comfirm to delete <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>{appData?.name}</span>
-                </span>
-            ))(),
-            okText: "Confirm",
-            okType: "danger",
-            cancelText: "Cancel",
-            onOk: deleteProject,
-            onCancel: () => {},
-        });
-    }, [appData?.id, appData?.name, deleteProject]);
+    const confirmDeleteProject = useCallback(
+        (event: any) => {
+            event?.stopPropagation();
+            if (!appData?.id) {
+                return;
+            }
+            Modal.confirm({
+                centered: true,
+                title: "Delete Project",
+                icon: <WarningOutlined />,
+                content: (() => (
+                    <span>
+                        Comfirm to delete <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>{appData?.name}</span>
+                    </span>
+                ))(),
+                okText: "Confirm",
+                okType: "danger",
+                cancelText: "Cancel",
+                onOk: deleteProject,
+                onCancel: () => {},
+            });
+        },
+        [appData?.id, appData?.name, deleteProject]
+    );
 
     return (
         <StyledContainer onClick={goPaymentPreview}>

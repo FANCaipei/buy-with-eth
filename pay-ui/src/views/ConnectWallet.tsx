@@ -24,7 +24,7 @@ function ConnectWallet() {
                 });
             }
         }
-    }, []);
+    }, [params, navigate]);
     const connectCoinbase = useCallback(async () => {
         const coinbaseProvider = (window as any).buyWithCrypto.utils.ethereumProvider.detectProviders()?.coinbase;
         if (!coinbaseProvider) {
@@ -41,7 +41,7 @@ function ConnectWallet() {
                 });
             }
         }
-    }, []);
+    }, [navigate, params]);
     return (
         <StyledContainer>
             <div className="wallet-logo-wrapper" onClick={connectMetamask}>
