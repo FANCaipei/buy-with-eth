@@ -1,4 +1,4 @@
-import { Button, Input, Select, Spin } from "antd";
+import { Button, Divider, Input, Select, Spin } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
 import RestService from "../common/restService/RestService";
 import useUrlParamsConfig from "../common/golbalStates/urlParamsConfigState";
+import SelfLogo from "../assets/images/logos/logo.svg";
 
 const PaymentPage = () => {
     const navigate = useNavigate();
@@ -76,10 +77,19 @@ const PaymentPage = () => {
         [getCurrentCurrencyPrice]
     );
 
-    const [sendValue, setSendValue] = useState<number | string | undefined>();
+    const [sendValue, setSendValue] = useState<string>();
     const onSendValueChange = useCallback((event: any) => {
         setSendValue(event?.target?.value);
     }, []);
+
+    const totalInUSD = useCallback(() => {
+        try {
+            const result = parseFloat(sendValue ?? "") * currentCurrencyPrice;
+            return isNaN(result) ? null : result.toFixed(2);
+        } catch (error) {
+            return null;
+        }
+    }, [sendValue]);
 
     const clearConnectInfo = useCallback(() => {
         (window as any).buyWithCrypto.utils.walletManager.clearConnectInfo();
@@ -185,6 +195,8 @@ const PaymentPage = () => {
 
                 <div className="logo-container">
                     <img className="logo-img" src={logoUrl} alt="" />
+                    <Divider type="vertical" className="divider" />
+                    <img className="logo-img" src={SelfLogo} alt="" />
                 </div>
                 <div className="token-selector-container">
                     <div className="token-selector">
@@ -230,6 +242,12 @@ const PaymentPage = () => {
                         onChange={onSendValueChange}
                         disabled={preSetValueInUSD != null}
                     />
+                </div>
+                <div className="item-wrapper">
+                    <div className="total-value-container">
+                        <span className="label">Total(gas fee not counted):</span>
+                        <span className="value">{totalInUSD() != null ? `$${totalInUSD()}` : "-"}</span>
+                    </div>
                 </div>
                 <div className="item-wrapper">
                     <Button size="large" type="primary" onClick={pay} style={{ width: "100%", marginTop: "20px" }}>
@@ -298,6 +316,12 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
         justify-content: center;
         margin-bottom: 50px;
 
+        .divider {
+            margin: 0 20px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
         .logo-img {
             width: 60px;
             height: 60px;
@@ -341,6 +365,12 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
                 color: #1677ff;
             }
         }
+    }
+    .total-value-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
     }
     .item-wrapper {
         margin-top: 30px;

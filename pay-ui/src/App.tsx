@@ -27,7 +27,7 @@ const Wrapper = ({ children }: WrapperProps) => {
 const StyledContainer = styled.div.attrs({ className: "pay-ui-root" })`
     max-width: 568px;
     /* min-width: 350px; */
-    width: 90%;
+    width: 100%;
     height: 100%;
     max-height: 800px;
     /* height: 65vh; */
