@@ -234,13 +234,14 @@ const StyledContainer = styled.div.attrs({ className: "payment-preview-container
         }
         .iframe-container {
             margin-left: 10px;
-            width: 400px;
-            height: 500px;
+            width: 500px;
+            height: 550px;
 
             iframe {
                 border: none;
-                width: 400px;
-                height: 500px;
+                width: 500px;
+                height: 550px;
+                overflow: hidden;
             }
         }
     }

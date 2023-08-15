@@ -1,7 +1,8 @@
-import { Button, Input, Select } from "antd";
+import { Button, Input, Select, Spin } from "antd";
 import { useCallback, useEffect, useState } from "react";
+import { ReloadOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { styled } from "styled-components";
+import { createGlobalStyle, styled } from "styled-components";
 import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
 import RestService from "../common/restService/RestService";
@@ -21,10 +22,12 @@ const PaymentPage = () => {
      *      },
      * }
      */
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [responseToOrigin] = useState(params?.responseToOrigin);
     const [responseToId] = useState(params?.responseToId);
 
     const [targetAddress, setTargetAddress] = useState();
+    const [logoUrl, setLogoUrl] = useState();
 
     const [paymentConfigParams, setPaymentConfigParams] = useState(params?.params ?? paramsFromUrl ?? {});
     const [preSetValueInUSD, setPreSetValueInUSD] = useState(paymentConfigParams?.valueInUSD);
@@ -153,9 +156,10 @@ const PaymentPage = () => {
 
     useEffect(() => {
         console.log("payment params: ", paymentConfigParams);
-
-        (window as any).buyWithCrypto.onReady(() => {
+        setIsLoading(true);
+        const onPaySDKReady = () => {
             setTargetAddress((window as any).buyWithCrypto.targetAddr);
+            setLogoUrl((window as any).buyWithCrypto.logoUrl);
             const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
             const currencyConfig =
                 AvailableCurrencyTypes.find(item => item.code === paymentConfigParams?.defaultTokenCode) ??
@@ -164,49 +168,205 @@ const PaymentPage = () => {
             setCurrencyPaymentConfig(currencyConfig);
             setCurrencyTypeCode(currencyConfig?.code);
             getCurrentCurrencyPrice(currencyConfig);
-        });
+            setIsLoading(false);
+        };
+
+        if ((window as any).buyWithCrypto.isReady()) {
+            onPaySDKReady();
+        } else {
+            (window as any).buyWithCrypto.onReady(onPaySDKReady);
+        }
     }, [navigate, paymentConfigParams, getCurrentCurrencyPrice]);
 
     return (
-        <StyledContainer>
-            <div>{targetAddress}</div>
-            <div>current price: ~{currentCurrencyPrice} USD</div>
-            <Button type="dashed" onClick={clearConnectInfo}>
-                Disconnect
-            </Button>
-            <br />
-            <Select
-                value={currencyTypeCode}
-                style={{ width: 120 }}
-                onChange={onCurrencyTypeChange}
-                options={((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => ({
-                    value: item.code,
-                    label: item.symbol,
-                }))}
-            />
-            <Input
-                placeholder="Send value"
-                type="number"
-                value={sendValue}
-                onChange={onSendValueChange}
-                disabled={preSetValueInUSD != null}
-            />
-            <div className="btn-line">
-                <Button onClick={cancel}>Cancel</Button>
-                <Button type="primary" onClick={pay}>
-                    Pay
-                </Button>
-            </div>
-        </StyledContainer>
+        <Spin spinning={isLoading} size="large">
+            <StyledContainer>
+                <GlobalStyle />
+
+                <div className="logo-container">
+                    <img className="logo-img" src={logoUrl} alt="" />
+                </div>
+                <div className="token-selector-container">
+                    <div className="token-selector">
+                        <Select
+                            size="large"
+                            value={currencyTypeCode}
+                            style={{ maxWidth: 180 }}
+                            onChange={onCurrencyTypeChange}
+                        >
+                            {((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => (
+                                <Select.Option value={item.code}>
+                                    <div className="token-option">
+                                        <img className="token-logo" src={item.iconUrl} alt="" />
+                                        <span className="token-symbol">{item.symbol}</span>
+                                    </div>
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div className="price-block">
+                        <span className="price">
+                            {currentCurrencyPrice == null ? "-" : `$${currentCurrencyPrice?.toFixed(4)}`}
+                        </span>
+                        <ReloadOutlined className="refresh-icon" onClick={getCurrentCurrencyPrice} />
+                    </div>
+                </div>
+                <div className="item-wrapper">
+                    <Input
+                        size="large"
+                        addonBefore="Send To"
+                        value={targetAddress}
+                        placeholder="Receive address"
+                        disabled
+                    />
+                </div>
+                <div className="item-wrapper">
+                    <Input
+                        size="large"
+                        addonBefore="Amount"
+                        placeholder="Amount"
+                        type="number"
+                        value={sendValue}
+                        onChange={onSendValueChange}
+                        disabled={preSetValueInUSD != null}
+                    />
+                </div>
+                <div className="item-wrapper">
+                    <Button size="large" type="primary" onClick={pay} style={{ width: "100%", marginTop: "20px" }}>
+                        Pay
+                    </Button>
+                </div>
+                {/* <div className="btn-line">
+                    <Button onClick={cancel}>Cancel</Button>
+                    <Button type="primary" onClick={pay}>
+                        Pay
+                    </Button>
+                </div> */}
+                {/* <Button type="dashed" onClick={clearConnectInfo}>
+                    Disconnect
+                </Button> */}
+                <div className="reconnect-wallet">
+                    <Button type="link" onClick={clearConnectInfo}>
+                        Reconnect Wallet
+                    </Button>
+                </div>
+                <div className="spacer"></div>
+                <div className="bottom-block">
+                    <span className="text">Power by xxxx</span>
+                    <img className="logo-img" src="" alt="" />
+                </div>
+            </StyledContainer>
+        </Spin>
     );
 };
 
-const StyledContainer = styled.div.attrs({ className: "payment-page" })`
-    .btn-line {
-        margin-top: 40px;
+const GlobalStyle = createGlobalStyle`
+    .token-option {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        width: 120px;
+
+        .token-logo {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+        .token-symbol {
+        }
+    }
+
+    .ant-spin-nested-loading{
+        height: 100%;
+
+        .ant-spin-container{
+            height: 100%;
+        }
+    }
+`;
+
+const StyledContainer = styled.div.attrs({ className: "payment-page" })`
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+    height: calc(100% - 40px);
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 50px;
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+        }
+    }
+    .token-selector-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .token-selector {
+            .token-option {
+                display: flex;
+                align-items: center;
+
+                .token-logo {
+                    width: 16px;
+                    height: 16px;
+                    margin-right: 8px;
+                    border-radius: 50%;
+                }
+                .token-symbol {
+                }
+            }
+        }
+
+        .price-block {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.6);
+
+            .price {
+                margin-right: 8px;
+            }
+            .refresh-icon {
+                font-size: 12px;
+                cursor: pointer;
+                color: #1677ff;
+            }
+        }
+    }
+    .item-wrapper {
+        margin-top: 30px;
+    }
+    .reconnect-wallet {
+        margin-top: 10px;
+        font-size: 16px;
+        display: flex;
+        justify-content: center;
+    }
+    .spacer {
+        flex-grow: 1;
+    }
+    .bottom-block {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .text {
+            font-size: 14px;
+            margin-right: 8px;
+
+            .logo-img {
+                height: 20px;
+            }
+        }
     }
 `;
 

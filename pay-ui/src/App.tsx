@@ -7,6 +7,11 @@ import routeConfig from "./common/route/RouteConfig";
 import GlobalNavObj from "./common/GlobalNavObj";
 import HandleRequests from "./messageManager/requestHandlers/HandleRequests";
 import useUrlParamsConfig from "./common/golbalStates/urlParamsConfigState";
+import { Spin } from "antd";
+import LoadingIndicator from "./common/components/LoadingIndicator";
+
+// 设置全局spin的indicator
+Spin.setDefaultIndicator(<LoadingIndicator indicatorWidth="40px" />);
 
 type WrapperProps = {
     children: ReactNode;
@@ -23,11 +28,12 @@ const StyledContainer = styled.div.attrs({ className: "pay-ui-root" })`
     max-width: 568px;
     /* min-width: 350px; */
     width: 90%;
+    height: 100%;
     max-height: 800px;
-    height: 65vh;
+    /* height: 65vh; */
     background-color: #fff;
-    border-radius: 16px;
-    box-shadow: 2px 2px 16px #8f8f8f66;
+    /* border-radius: 16px; */
+    /* box-shadow: 2px 2px 16px #8f8f8f66; */
 `;
 
 function Index() {
