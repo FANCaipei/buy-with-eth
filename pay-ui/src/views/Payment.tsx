@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Select, Spin } from "antd";
+import { Button, Divider, Input, Select, Spin, message } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import useUrlParamsConfig from "../common/golbalStates/urlParamsConfigState";
 import SelfLogo from "../assets/images/logos/logo.svg";
 
 const PaymentPage = () => {
+    const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
     const paramsFromUrl = useUrlParamsConfig((state: any) => state.paramsFromUrl);
     const { state: params } = useLocation();
@@ -89,7 +90,7 @@ const PaymentPage = () => {
         } catch (error) {
             return null;
         }
-    }, [sendValue]);
+    }, [sendValue, currentCurrencyPrice]);
 
     const clearConnectInfo = useCallback(() => {
         (window as any).buyWithCrypto.utils.walletManager.clearConnectInfo();
@@ -144,19 +145,33 @@ const PaymentPage = () => {
                     },
                     responseToOrigin
                 );
+                messageApi.open({
+                    type: "error",
+                    content: error?.toString() ?? "",
+                });
             }
         }
-    }, [navigate, params, targetAddress, sendValue, responseToId, responseToOrigin, currencyPaymentConfig]);
-    const cancel = useCallback(() => {
-        send(
-            "buy-with-crypto-response",
-            responseToId,
-            {
-                error: Utils.generateErrorMsg(ResponseErrorType.UserDenyPayment),
-            },
-            responseToOrigin
-        );
-    }, [responseToId, responseToOrigin]);
+    }, [
+        navigate,
+        params,
+        targetAddress,
+        sendValue,
+        responseToId,
+        responseToOrigin,
+        currencyPaymentConfig,
+        paymentConfigParams?.productId,
+        messageApi,
+    ]);
+    // const cancel = useCallback(() => {
+    //     send(
+    //         "buy-with-crypto-response",
+    //         responseToId,
+    //         {
+    //             error: Utils.generateErrorMsg(ResponseErrorType.UserDenyPayment),
+    //         },
+    //         responseToOrigin
+    //     );
+    // }, [responseToId, responseToOrigin]);
 
     useEffect(() => {
         const tempParams = params?.params ?? paramsFromUrl ?? {};
@@ -190,6 +205,7 @@ const PaymentPage = () => {
 
     return (
         <Spin spinning={isLoading} size="large">
+            {contextHolder}
             <StyledContainer>
                 <GlobalStyle />
 
@@ -207,7 +223,7 @@ const PaymentPage = () => {
                             onChange={onCurrencyTypeChange}
                         >
                             {((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => (
-                                <Select.Option value={item.code}>
+                                <Select.Option value={item.code} key={item.code}>
                                     <div className="token-option">
                                         <img className="token-logo" src={item.iconUrl} alt="" />
                                         <span className="token-symbol">{item.symbol}</span>
@@ -220,7 +236,10 @@ const PaymentPage = () => {
                         <span className="price">
                             {currentCurrencyPrice == null ? "-" : `$${currentCurrencyPrice?.toFixed(4)}`}
                         </span>
-                        <ReloadOutlined className="refresh-icon" onClick={getCurrentCurrencyPrice} />
+                        <ReloadOutlined
+                            className="refresh-icon"
+                            onClick={() => getCurrentCurrencyPrice(currencyPaymentConfig)}
+                        />
                     </div>
                 </div>
                 <div className="item-wrapper">
@@ -245,7 +264,7 @@ const PaymentPage = () => {
                 </div>
                 <div className="item-wrapper">
                     <div className="total-value-container">
-                        <span className="label">Total(gas fee not counted):</span>
+                        <span className="label">Total (gas fee not counted):</span>
                         <span className="value">{totalInUSD() != null ? `$${totalInUSD()}` : "-"}</span>
                     </div>
                 </div>
@@ -323,8 +342,8 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
         }
 
         .logo-img {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
         }
     }
