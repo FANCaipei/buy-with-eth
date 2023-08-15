@@ -8,6 +8,7 @@ import { Utils, ResponseErrorType } from "../common/Utils";
 import RestService from "../common/restService/RestService";
 import useUrlParamsConfig from "../common/golbalStates/urlParamsConfigState";
 import SelfLogo from "../assets/images/logos/logo.svg";
+import DotLoading from "../assets/images/icons/dot-loading.svg";
 
 const PaymentPage = () => {
     const [messageApi, contextHolder] = message.useMessage();
@@ -25,6 +26,7 @@ const PaymentPage = () => {
      * }
      */
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isFetchingPrice, setIsFetchingPrice] = useState<boolean>(false);
     const [responseToOrigin] = useState(params?.responseToOrigin);
     const [responseToId] = useState(params?.responseToId);
 
@@ -42,6 +44,7 @@ const PaymentPage = () => {
             if (!currencyConfig?.symbol || currencyConfig?.symbol === "") {
                 return;
             }
+            setIsFetchingPrice(true);
             const symbol = currencyConfig.symbol.includes("USDT") ? "USDT" : currencyConfig.symbol;
             RestService.getCryptoPrice(symbol)
                 .then((res: any) => {
@@ -60,6 +63,9 @@ const PaymentPage = () => {
                 .catch(() => {
                     setCurrentCurrencyPrice(null);
                     setSendValue(undefined);
+                })
+                .finally(() => {
+                    setIsFetchingPrice(false);
                 });
         },
         [paymentConfigParams?.valueInUSD]
@@ -221,6 +227,7 @@ const PaymentPage = () => {
                             value={currencyTypeCode}
                             style={{ maxWidth: 180 }}
                             onChange={onCurrencyTypeChange}
+                            disabled={isFetchingPrice}
                         >
                             {((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => (
                                 <Select.Option value={item.code} key={item.code}>
@@ -232,15 +239,21 @@ const PaymentPage = () => {
                             ))}
                         </Select>
                     </div>
-                    <div className="price-block">
-                        <span className="price">
-                            {currentCurrencyPrice == null ? "-" : `$${currentCurrencyPrice?.toFixed(4)}`}
-                        </span>
-                        <ReloadOutlined
-                            className="refresh-icon"
-                            onClick={() => getCurrentCurrencyPrice(currencyPaymentConfig)}
-                        />
-                    </div>
+                    <Spin
+                        spinning={isFetchingPrice}
+                        indicator={<img src={DotLoading} alt="" width="80px" />}
+                        // className="price-block-spin"
+                    >
+                        <div className="price-block">
+                            <span className="price">
+                                {currentCurrencyPrice == null ? "-" : `$${currentCurrencyPrice?.toFixed(4)}`}
+                            </span>
+                            <ReloadOutlined
+                                className="refresh-icon"
+                                onClick={() => getCurrentCurrencyPrice(currencyPaymentConfig)}
+                            />
+                        </div>
+                    </Spin>
                 </div>
                 <div className="item-wrapper">
                     <Input
@@ -366,6 +379,12 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
                 .token-symbol {
                 }
             }
+        }
+
+        .ant-spin-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .price-block {
