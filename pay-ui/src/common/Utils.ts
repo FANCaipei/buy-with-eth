@@ -29,6 +29,12 @@ const Utils = {
                 };
         }
     },
+    maskAddress: (address: string): string => {
+        if (!address || address.length < 42) {
+            return "-";
+        }
+        return `${address.slice(0, 8)}******${address.slice(-8)}`;
+    },
 };
 
 export { Utils, ResponseErrorType };

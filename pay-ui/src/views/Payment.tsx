@@ -27,6 +27,8 @@ const PaymentPage = () => {
      */
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isFetchingPrice, setIsFetchingPrice] = useState<boolean>(false);
+    const [isPaying, setIsPaying] = useState<boolean>(false);
+
     const [responseToOrigin] = useState(params?.responseToOrigin);
     const [responseToId] = useState(params?.responseToId);
 
@@ -105,6 +107,7 @@ const PaymentPage = () => {
     }, [navigate, params]);
 
     const pay = useCallback(async () => {
+        setIsPaying(true);
         const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
             // nav to connect wallet with params
@@ -158,6 +161,7 @@ const PaymentPage = () => {
                 });
             }
         }
+        setIsPaying(false);
     }, [
         navigate,
         params,
@@ -211,6 +215,17 @@ const PaymentPage = () => {
         }
     }, [navigate, paymentConfigParams, getCurrentCurrencyPrice]);
 
+    // refresh price every minute
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            getCurrentCurrencyPrice(currencyPaymentConfig);
+        }, 60000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [getCurrentCurrencyPrice, currencyPaymentConfig]);
+
     return (
         <Spin spinning={isLoading} size="large">
             {contextHolder}
@@ -261,7 +276,7 @@ const PaymentPage = () => {
                     <Input
                         size="large"
                         addonBefore="Send To"
-                        value={targetAddress}
+                        value={Utils.maskAddress(targetAddress ?? "")}
                         placeholder="Receive address"
                         disabled
                     />
@@ -290,6 +305,7 @@ const PaymentPage = () => {
                         onClick={pay}
                         style={{ width: "100%", marginTop: "20px" }}
                         disabled={!currentCurrencyPrice || !sendValue}
+                        loading={isPaying}
                     >
                         Pay
                     </Button>
@@ -304,7 +320,7 @@ const PaymentPage = () => {
                     Disconnect
                 </Button> */}
                 <div className="reconnect-wallet">
-                    <Button type="link" onClick={clearConnectInfo}>
+                    <Button type="link" onClick={clearConnectInfo} disabled={isPaying}>
                         Reconnect Wallet
                     </Button>
                 </div>
