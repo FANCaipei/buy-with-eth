@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 
 const AppIdNotSetPage = () => {
-    return <StyledContainer>appId must provided</StyledContainer>;
+    return <StyledContainer>project id must provided, please check your url param</StyledContainer>;
 };
 
 const StyledContainer = styled.div.attrs({ className: "404-page" })``;

@@ -145,7 +145,7 @@ const PaymentPage = () => {
                 );
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
-            } catch (error) {
+            } catch (error: any) {
                 console.error(error);
                 send(
                     "buy-with-crypto-response",
@@ -159,6 +159,10 @@ const PaymentPage = () => {
                     type: "error",
                     content: error?.toString() ?? "",
                 });
+                if (error?.receiptId) {
+                    // receiptId generated, maybe the transaction not be confirmed
+                    // TODO: nav to failed result page
+                }
             }
         }
         setIsPaying(false);
