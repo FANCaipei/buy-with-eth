@@ -106,6 +106,18 @@ const PaymentPage = () => {
         navigate("/connect-wallet", { replace: true, state: params });
     }, [navigate, params]);
 
+    const navToResult = useCallback(
+        (success: boolean, receiptId: string) => {
+            navigate("/result", {
+                state: {
+                    type: success ? "success" : "failed",
+                    receiptId: receiptId,
+                },
+            });
+        },
+        [navigate]
+    );
+
     const pay = useCallback(async () => {
         setIsPaying(true);
         const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
@@ -145,6 +157,7 @@ const PaymentPage = () => {
                 );
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
+                navToResult(true, tx.receiptId);
             } catch (error: any) {
                 console.error(error);
                 send(
@@ -161,13 +174,14 @@ const PaymentPage = () => {
                 });
                 if (error?.receiptId) {
                     // receiptId generated, maybe the transaction not be confirmed
-                    // TODO: nav to failed result page
+                    navToResult(false, error.receiptId);
                 }
             }
         }
         setIsPaying(false);
     }, [
         navigate,
+        navToResult,
         params,
         targetAddress,
         sendValue,

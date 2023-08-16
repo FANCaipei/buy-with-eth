@@ -60,7 +60,7 @@ const ResultPage = () => {
             <div className="receipt-container">
                 <Input.TextArea
                     placeholder=""
-                    value={state.receiptId}
+                    value={state?.receiptId}
                     rows={3}
                     autoSize={{ minRows: 3, maxRows: 20 }}
                 />
