@@ -9,6 +9,24 @@ import CustomFormLabel from "../../../../../componets/CustomFormLabel";
 
 const PaymentUIHost = "http://localhost:3000";
 
+const GeneratePayUIUrl = (appId: string, valueInUSD: any, defaultTokenType: any, productId: any): string => {
+    const paramObj = {
+        appId: appId,
+    };
+    if (valueInUSD) {
+        (paramObj as any).valueInUSD = valueInUSD;
+    }
+    if (defaultTokenType) {
+        (paramObj as any).defaultTokenCode = defaultTokenType;
+    }
+    if (productId) {
+        (paramObj as any).productId = productId;
+    }
+
+    const encodedParams = encodeURIComponent(JSON.stringify(paramObj));
+    return `${PaymentUIHost}/payment?params=${encodedParams}`;
+};
+
 const ProductIdValidator = async (_rule: any, value: any) => {
     return !value.includes("#") ? Promise.resolve() : Promise.reject();
 };
@@ -24,53 +42,68 @@ const PaymentPreview = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const { state } = useLocation();
 
-    const onTextAreaChange = useCallback((event: any) => {
-        setCurrrentUrl(event?.target?.value);
-    }, []);
-
     const copyUrl = useCallback(() => {
         if (!currrentUrl) {
             messageApi.error("Url not generated");
             return;
         }
-        navigator.clipboard.writeText(currrentUrl);
-    }, [currrentUrl, messageApi]);
-
-    const decodeUrl = useCallback(() => {
-        const search = new URLSearchParams(currrentUrl?.split("?")?.[1]);
-        const paramStr = search.get("params");
         try {
-            const paramsObj = JSON.parse(paramStr || "");
-            formInstace.setFieldValue("payValue", paramsObj.valueInUSD);
-            formInstace.setFieldValue("defaultToken", paramsObj.defaultTokenCode);
-            formInstace.setFieldValue("productId", paramsObj.productId);
+            navigator.clipboard.writeText(currrentUrl);
+            messageApi.open({
+                type: "success",
+                content: "Copied",
+            });
         } catch (error) {
-            messageApi.error("Decode url failed, invalid format");
-            return;
+            messageApi.open({
+                type: "error",
+                content: "Copy failed",
+            });
         }
-    }, [currrentUrl, formInstace, messageApi]);
+    }, [currrentUrl, messageApi]);
 
     const regenerateUrl = useCallback(() => {
         if (!state?.appId) {
             messageApi.error("No project Id");
             return;
         }
-        const paramObj = {
-            appId: state.appId,
-        };
-        if (payValueInUSD) {
-            (paramObj as any).valueInUSD = payValueInUSD;
-        }
-        if (defaultTokenType) {
-            (paramObj as any).defaultTokenCode = defaultTokenType;
-        }
-        if (productId) {
-            (paramObj as any).productId = productId;
-        }
 
-        const encodedParams = encodeURIComponent(JSON.stringify(paramObj));
-        setCurrrentUrl(`${PaymentUIHost}/payment?params=${encodedParams}`);
-    }, [messageApi, state?.appId, payValueInUSD, defaultTokenType]);
+        const url = GeneratePayUIUrl(state.appId, payValueInUSD, defaultTokenType, productId);
+        setCurrrentUrl(url);
+    }, [messageApi, state?.appId, payValueInUSD, defaultTokenType, productId]);
+
+    const decodeUrl = useCallback(
+        (url?: string) => {
+            const search = new URLSearchParams((url ?? currrentUrl)?.split("?")?.[1]);
+            const paramStr = search.get("params");
+            try {
+                const paramsObj = JSON.parse(paramStr || "");
+                formInstace.setFieldValue("payValue", paramsObj.valueInUSD);
+                formInstace.setFieldValue("defaultToken", paramsObj.defaultTokenCode);
+                formInstace.setFieldValue("productId", paramsObj.productId);
+                if (paramsObj.appId !== state?.appId) {
+                    const url = GeneratePayUIUrl(
+                        state?.appId,
+                        paramsObj.valueInUSD,
+                        paramsObj.defaultTokenCode,
+                        paramsObj.productId
+                    );
+                    setCurrrentUrl(url);
+                }
+            } catch (error) {
+                messageApi.error("Decode url failed, invalid format");
+                return;
+            }
+        },
+        [currrentUrl, formInstace, messageApi]
+    );
+
+    const onTextAreaChange = useCallback(
+        (event: any) => {
+            setCurrrentUrl(event?.target?.value);
+            decodeUrl(event?.target?.value);
+        },
+        [decodeUrl]
+    );
 
     useEffect(
         () => {
@@ -161,8 +194,9 @@ const PaymentPreview = () => {
 
                         <Divider />
                         <div className="url-textarea-wrapper">
+                            <div className="label">Past url here and decode params</div>
                             <Input.TextArea
-                                placeholder="You can past url here and decode params"
+                                placeholder="Past url here and decode params"
                                 value={currrentUrl}
                                 rows={5}
                                 autoSize={{ minRows: 5, maxRows: 8 }}
@@ -177,7 +211,7 @@ const PaymentPreview = () => {
                                 icon={<ToolOutlined />}
                                 className="decode-btn"
                                 type="primary"
-                                onClick={decodeUrl}
+                                onClick={() => decodeUrl()}
                                 size="large"
                             >
                                 Decode url
@@ -218,6 +252,11 @@ const StyledContainer = styled.div.attrs({ className: "payment-preview-container
                 margin-top: 20px;
                 position: relative;
 
+                .label {
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+
                 .copy-icon {
                     position: absolute;
                     right: 10px;
@@ -233,7 +272,7 @@ const StyledContainer = styled.div.attrs({ className: "payment-preview-container
             }
         }
         .iframe-container {
-            margin-left: 10px;
+            margin-left: 40px;
             width: 480px;
             height: 550px;
 
