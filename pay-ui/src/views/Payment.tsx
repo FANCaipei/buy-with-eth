@@ -344,7 +344,7 @@ const PaymentPage = () => {
                 </div>
                 <div className="spacer"></div>
                 <div className="bottom-block">
-                    <span className="text">Power by xxxx</span>
+                    <span className="text">Powered by xxxx</span>
                     <img className="logo-img" src="" alt="" />
                 </div>
             </StyledContainer>
@@ -382,7 +382,7 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
     flex-direction: column;
     align-items: stretch;
     padding: 20px;
-    height: calc(100% - 40px);
+    height: 100%;
 
     .logo-container {
         display: flex;
@@ -468,6 +468,7 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
         display: flex;
         align-items: center;
         justify-content: center;
+        color: rgba(0, 0, 0, 0.45);
 
         .text {
             font-size: 14px;
