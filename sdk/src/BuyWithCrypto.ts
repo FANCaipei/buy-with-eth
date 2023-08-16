@@ -6,6 +6,7 @@ import Utils from "./utils";
 import MessageIdManager from "./messageHandlers/MessageIdManager";
 import RestService from "./restService/RestService";
 import FirebaseManager from "./firebase/firebaseManager";
+import { nanoid } from "nanoid";
 
 const BuyWithCrypto: {
     appId?: string;
@@ -22,7 +23,9 @@ const BuyWithCrypto: {
         ethereumProvider: typeof EthereumProvider;
     };
     isReady: () => boolean;
-    onReady: (callback: Function) => void;
+    onReady: (callback: Function) => string | null;
+    cancelOnReadyCallback: (cid: string) => void;
+    readyCallbacks: { [key: string]: Function | null };
     connectWallet: (walletType: "metamask" | "coinbase") => void;
     initUI: () => void;
     showPayUI: () => void;
@@ -37,6 +40,7 @@ const BuyWithCrypto: {
     },
     isFetchingTokenConfigOrFailed: true,
     isFetchingAppConfigOrFailed: true,
+    readyCallbacks: {},
 
     init: async (option: InitOption): Promise<boolean> => {
         if (!option.appId) {
@@ -55,6 +59,21 @@ const BuyWithCrypto: {
             BuyWithCrypto.targetAddr = configData.paymentAddress;
             BuyWithCrypto.logoUrl = configData.logoUrl;
             // other configs here
+
+            // run readyCallbacks when ready
+            const runReadyCallbacks = () => {
+                if (BuyWithCrypto.isReady()) {
+                    const cbs = Object.keys(BuyWithCrypto.readyCallbacks).map(key => BuyWithCrypto.readyCallbacks[key]);
+                    cbs.forEach(callback => {
+                        callback?.();
+                    });
+                    return;
+                }
+                setTimeout(() => {
+                    runReadyCallbacks();
+                }, 100);
+            };
+            runReadyCallbacks();
         } catch (error) {
             Utils.throwError("get app config failed");
             return Promise.reject();
@@ -103,14 +122,25 @@ const BuyWithCrypto: {
         //
     },
 
-    onReady(callback: Function) {
-        if (!BuyWithCrypto.isFetchingTokenConfigOrFailed && !BuyWithCrypto.isFetchingAppConfigOrFailed) {
+    onReady(callback: Function): string | null {
+        if (BuyWithCrypto.isReady()) {
             callback();
-            return;
+            return null;
         }
-        setTimeout(() => {
-            BuyWithCrypto.onReady(callback);
-        }, 100);
+        // const timeoutID = window.setTimeout(() => {
+        //     BuyWithCrypto.onReady(callback);
+        // }, 100);
+        const cid: string = nanoid(8);
+        BuyWithCrypto.readyCallbacks[cid] = callback;
+        return cid;
+    },
+
+    cancelOnReadyCallback(cid: string): void {
+        if (!BuyWithCrypto.readyCallbacks[cid]) {
+            return;
+        } else {
+            BuyWithCrypto.readyCallbacks[cid] = null;
+        }
     },
 
     // ui controllers

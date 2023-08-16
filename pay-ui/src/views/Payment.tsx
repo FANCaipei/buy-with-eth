@@ -35,7 +35,7 @@ const PaymentPage = () => {
 
     const [paymentConfigParams, setPaymentConfigParams] = useState(params?.params ?? paramsFromUrl ?? {});
     const [preSetValueInUSD, setPreSetValueInUSD] = useState(paymentConfigParams?.valueInUSD);
-    const [currencyTypeCode, setCurrencyTypeCode] = useState(paymentConfigParams?.defaultTokenCode ?? "eth");
+    const [currencyTypeCode, setCurrencyTypeCode] = useState(paymentConfigParams?.defaultTokenCode);
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
 
     const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
@@ -45,6 +45,7 @@ const PaymentPage = () => {
                 return;
             }
             setIsFetchingPrice(true);
+            setCurrentCurrencyPrice(null);
             const symbol = currencyConfig.symbol.includes("USDT") ? "USDT" : currencyConfig.symbol;
             RestService.getCryptoPrice(symbol)
                 .then((res: any) => {
@@ -202,10 +203,11 @@ const PaymentPage = () => {
             setIsLoading(false);
         };
 
-        if ((window as any).buyWithCrypto.isReady()) {
-            onPaySDKReady();
-        } else {
-            (window as any).buyWithCrypto.onReady(onPaySDKReady);
+        const cid = (window as any).buyWithCrypto.onReady(onPaySDKReady);
+        if (cid) {
+            return () => {
+                (window as any).buyWithCrypto.cancelOnReadyCallback(cid);
+            };
         }
     }, [navigate, paymentConfigParams, getCurrentCurrencyPrice]);
 
@@ -282,7 +284,13 @@ const PaymentPage = () => {
                     </div>
                 </div>
                 <div className="item-wrapper">
-                    <Button size="large" type="primary" onClick={pay} style={{ width: "100%", marginTop: "20px" }}>
+                    <Button
+                        size="large"
+                        type="primary"
+                        onClick={pay}
+                        style={{ width: "100%", marginTop: "20px" }}
+                        disabled={!currentCurrencyPrice || !sendValue}
+                    >
                         Pay
                     </Button>
                 </div>
