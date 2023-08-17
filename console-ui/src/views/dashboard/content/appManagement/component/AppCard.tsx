@@ -28,6 +28,7 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
         navigate("/dashboard/paymentPreview", {
             state: {
                 appId: `${user.uid}-${appData.id}`,
+                appName: appData.name,
             },
         });
     }, [navigate, user?.uid, appData?.id]);

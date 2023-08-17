@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Divider, Form, Input, Select, Tooltip, message } from "antd";
 import { CopyOutlined, ToolOutlined, ControlOutlined } from "@ant-design/icons";
+import { CopyBlock, paraisoLight } from "react-code-blocks";
 import useProtectedPath from "../../../../../common/hooks/useProtectedPath";
 import CustomFormLabel from "../../../../../componets/CustomFormLabel";
 
@@ -52,6 +53,25 @@ const PaymentPreview = () => {
             messageApi.open({
                 type: "success",
                 content: "Copied",
+            });
+        } catch (error) {
+            messageApi.open({
+                type: "error",
+                content: "Copy failed",
+            });
+        }
+    }, [currrentUrl, messageApi]);
+
+    const copyCode = useCallback(() => {
+        if (!currrentUrl) {
+            messageApi.error("Url not generated");
+            return;
+        }
+        try {
+            navigator.clipboard.writeText(`<iframe src="${currrentUrl}"/>`);
+            messageApi.open({
+                type: "success",
+                content: "Code copied",
             });
         } catch (error) {
             messageApi.open({
@@ -116,7 +136,10 @@ const PaymentPreview = () => {
     return (
         <StyledContainer>
             {contextHolder}
-            <SubPanelTitleWithBackIcon title="Generate payment url" />
+            <SubPanelTitleWithBackIcon
+                title={state?.appName}
+                tip="Config an copy code at left, your payment view preview on right."
+            />
             <div className="content">
                 <div className="config-container">
                     <Form form={formInstace} size="large" labelCol={{ span: 14 }} labelAlign="left" colon={false}>
@@ -206,6 +229,18 @@ const PaymentPreview = () => {
                                 <CopyOutlined className="copy-icon" onClick={copyUrl} />
                             </Tooltip>
                         </div>
+                        <div className="iframe-code-container">
+                            <CopyBlock
+                                //@ts-ignore
+                                text={`<iframe src="${currrentUrl}"/>`}
+                                language="html"
+                                showLineNumbers={false}
+                                theme={paraisoLight}
+                                onCopy={copyCode}
+                                codeBlock
+                            />
+                        </div>
+
                         <div className="right-layout-items">
                             <Button
                                 icon={<ToolOutlined />}
@@ -265,6 +300,9 @@ const StyledContainer = styled.div.attrs({ className: "payment-preview-container
                     color: rgba(0, 0, 0, 0.55);
                     cursor: pointer;
                 }
+            }
+            .iframe-code-container {
+                margin-top: 10px;
             }
             .decode-btn {
                 margin-top: 40px;
