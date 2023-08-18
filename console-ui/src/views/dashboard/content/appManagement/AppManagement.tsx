@@ -30,6 +30,7 @@ const AppManagement = () => {
             const querySnapshot = await getDocs(q);
             if (querySnapshot.empty) {
                 setApps([]);
+                setIsLoadingData(false);
                 return;
             }
             const tempData: Array<any> = [];

@@ -176,7 +176,7 @@ export const registerVipWithPaymentReceipt = onCall(async request => {
     }
     // TODO: verify payment info, calculate vipLevel
 
-    // TODO: update user vip expire timestamp, !!attention if expire time < now, the start time shoul be now!!
+    // TODO: update user vip expire timestamp, !!attention if expire time < now, the start time should be now!!
     // TODO: caculate expired timestamp
     const nextExpiredTimestamp = 12341242344234;
     const vipLevel = "test";

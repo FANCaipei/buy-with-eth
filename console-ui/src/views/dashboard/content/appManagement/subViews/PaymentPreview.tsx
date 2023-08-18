@@ -114,7 +114,7 @@ const PaymentPreview = () => {
                 return;
             }
         },
-        [currrentUrl, formInstace, messageApi]
+        [currrentUrl, formInstace, messageApi, state?.appId]
     );
 
     const onTextAreaChange = useCallback(

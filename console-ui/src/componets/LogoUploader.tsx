@@ -54,7 +54,7 @@ const LogoUploader = ({
 
     return (
         <div onMouseEnter={onMouseEnter}>
-            <StyledContainer>
+            <StyledContainer style={{ backgroundColor: currentLogo != null ? "transparent" : "rgba(0, 0, 0, 0.12)" }}>
                 {currentLogo ? (
                     <img className="current-logo" src={currentLogo} alt="" />
                 ) : (
@@ -69,9 +69,9 @@ const LogoUploader = ({
 const StyledContainer = styled.div.attrs({ className: "logo-uploader-container" })`
     width: 50px;
     height: 50px;
-    border-radius: 50%;
+    border-radius: 8px;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.12);
+    /* background-color: rgba(0, 0, 0, 0.12); */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,12 +97,13 @@ const StyledContainer = styled.div.attrs({ className: "logo-uploader-container" 
 
     .current-logo {
         width: 50px;
-        height: 50px;
-        border-radius: 50%;
+        /* height: 50px; */
+        /* border-radius: 50%; */
         border: none;
         position: absolute;
-        left: 0;
-        top: 0;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         z-index: 9;
         cursor: pointer;
     }

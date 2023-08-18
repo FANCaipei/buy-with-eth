@@ -31,7 +31,7 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
                 appName: appData.name,
             },
         });
-    }, [navigate, user?.uid, appData?.id]);
+    }, [navigate, user?.uid, appData?.id, appData?.name]);
 
     const deleteProject = useCallback(async (): Promise<void> => {
         if (!user?.uid) {
@@ -124,8 +124,8 @@ const StyledContainer = styled.div.attrs({ className: "app-card-container" })`
         }
         .logo-img {
             width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            /* height: 50px; */
+            /* border-radius: 8px; */
         }
     }
 

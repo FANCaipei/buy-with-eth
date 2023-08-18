@@ -398,8 +398,8 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
 
         .logo-img {
             width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            /* height: 50px; */
+            /* border-radius: 12px; */
         }
     }
     .token-selector-container {
