@@ -199,10 +199,10 @@ export const createApp = onCall({ cors: true }, async request => {
     if (!request.auth) {
         throw new HttpsError("unauthenticated", "not authed");
     }
-    const { logoUrl, name, paymentAddress, callbackApi } = request.data;
+    const { logoUrl, name, paymentAddress, callbackApi, secretPhrase } = request.data;
 
-    if (!name || !paymentAddress) {
-        throw new HttpsError("invalid-argument", "name and paymentAddress must be provided");
+    if (!name || !paymentAddress || !secretPhrase) {
+        throw new HttpsError("invalid-argument", "name, paymentAddress, secretPhrase must be provided");
     }
     if (!ethers.utils.isAddress(paymentAddress)) {
         throw new HttpsError("invalid-argument", "invalid paymentAddress");
@@ -211,7 +211,7 @@ export const createApp = onCall({ cors: true }, async request => {
     const uid = request.auth.uid;
 
     try {
-        const appId = await addApp(uid, name, paymentAddress, logoUrl ?? "", callbackApi ?? "");
+        const appId = await addApp(uid, name, paymentAddress, logoUrl ?? "", callbackApi ?? "", secretPhrase);
         return {
             id: appId,
         };

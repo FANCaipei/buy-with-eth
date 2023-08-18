@@ -2,11 +2,11 @@ import { styled } from "styled-components";
 import SubPanelTitleWithBackIcon from "../../../component/SubPanelTitleWithBackIcon";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Input, Form } from "antd";
+import { Button, Input, Form, message } from "antd";
 import LogoUploader from "../../../../../componets/LogoUploader";
 import { ethers } from "ethers";
 import FirebaseManager from "../../../../../common/firebase/FirebaseManager";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import useFirebaseAuth from "../../../../../common/zustand/useFirebaseAuth";
 import useProtectedPath from "../../../../../common/hooks/useProtectedPath";
 import CustomFormLabel from "../../../../../componets/CustomFormLabel";
@@ -41,6 +41,14 @@ const Tips = {
             "Keep this url private, do not share to public",
         ],
     },
+    secretPhrase: {
+        title: "Secret Phrase",
+        tips: [
+            "This phrase will be used as the salt to hash the payment info",
+            "It will only be used when request your callback api, but required even you don't need set the callback api",
+            "You can enter any phrase and change it whenever you want",
+        ],
+    },
 };
 
 const AddressValidator = async (_rule: any, value: any) => {
@@ -49,6 +57,7 @@ const AddressValidator = async (_rule: any, value: any) => {
 
 const ProjectEdit = () => {
     useProtectedPath();
+    const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
     const { user } = useFirebaseAuth() as any;
     const [formInstace] = Form.useForm();
@@ -58,6 +67,7 @@ const ProjectEdit = () => {
     const projectName = Form.useWatch("name", formInstace);
     const receiveAddress = Form.useWatch("address", formInstace);
     const callbackApi = Form.useWatch("callbackApi", formInstace);
+    const secretPhrase = Form.useWatch("secretPhrase", formInstace);
     const [isSaving, setIsSaving] = useState(false);
     const [projectId, setProjectId] = useState<string | null>();
     const [currentTips, setCurrentTips] = useState<any>();
@@ -84,6 +94,7 @@ const ProjectEdit = () => {
             name: projectName,
             paymentAddress: receiveAddress,
             callbackApi: callbackApi,
+            secretPhrase: secretPhrase,
         };
         setIsSaving(true);
         try {
@@ -105,9 +116,10 @@ const ProjectEdit = () => {
         } catch (error) {
             // do nothing
             console.error(error);
+            messageApi.error("Create failed");
         }
         setIsSaving(false);
-    }, [callbackApi, projectName, receiveAddress, uploadLogo, navigate, user?.uid]);
+    }, [messageApi, callbackApi, projectName, receiveAddress, uploadLogo, navigate, user?.uid, secretPhrase]);
 
     const editProject = useCallback(async () => {
         if (projectId == null) {
@@ -128,14 +140,36 @@ const ProjectEdit = () => {
                     },
                     { merge: true }
                 );
+                const appPrivateDocRef = doc(
+                    FirebaseManager.firestore,
+                    `userAppConfigs/${user?.uid}/apps/${projectId}/private/privateInfo`
+                );
+                await setDoc(
+                    appPrivateDocRef,
+                    {
+                        secretPhrase: secretPhrase,
+                    },
+                    { merge: true }
+                );
                 navigate(-1);
             }
         } catch (error) {
             // do nothing
             console.error(error);
+            messageApi.error("Save failed");
         }
         setIsSaving(false);
-    }, [uploadLogo, projectId, callbackApi, navigate, projectName, receiveAddress, user?.uid]);
+    }, [
+        messageApi,
+        uploadLogo,
+        projectId,
+        callbackApi,
+        navigate,
+        projectName,
+        receiveAddress,
+        user?.uid,
+        secretPhrase,
+    ]);
 
     const save = useCallback(async () => {
         await formInstace.validateFields();
@@ -147,6 +181,26 @@ const ProjectEdit = () => {
         }
     }, [formInstace, editProject, createProject, isEditMode]);
 
+    const getAppSecretPhrase = useCallback(
+        async (projectId: string): Promise<string | undefined> => {
+            if (!user?.uid) {
+                return Promise.reject();
+            }
+            try {
+                const appPrivateDocRef = doc(
+                    FirebaseManager.firestore,
+                    `userAppConfigs/${user?.uid}/apps/${projectId}/private/privateInfo`
+                );
+                const docRef = await getDoc(appPrivateDocRef);
+                return docRef.data()?.secretPhrase;
+            } catch (error) {
+                console.error(error);
+                messageApi.error("Get project secret phrase failed");
+            }
+        },
+        [user?.uid, messageApi]
+    );
+
     useEffect(() => {
         if (state?.appData != null) {
             setIsEditMode(true);
@@ -157,12 +211,15 @@ const ProjectEdit = () => {
                 address: state.appData.paymentAddress,
                 callbackApi: state.appData.callbackApi,
             });
+            setLogoFileOrUrl(state.appData.logoUrl);
             setProjectId(state.appData.id);
+            getAppSecretPhrase(state.appData.id).then(str => formInstace.setFieldsValue({ secretPhrase: str }));
         }
-    }, [state?.appData, formInstace]);
+    }, [state?.appData, formInstace, getAppSecretPhrase]);
 
     return (
         <StyledContainer>
+            {contextHolder}
             <SubPanelTitleWithBackIcon title={isEditMode ? "Edit Project" : "New Project"} />
             <div className="content-block">
                 <div className="form-wrapper">
@@ -221,6 +278,24 @@ const ProjectEdit = () => {
                                 value={receiveAddress}
                                 readOnly={isEditMode}
                                 onFocus={() => setCurrentTips(Tips.receiveAddress)}
+                            ></Input>
+                        </Form.Item>
+                        <Form.Item
+                            name="secretPhrase"
+                            rules={[{ required: true, message: "Secret phrase is required" }]}
+                            label={
+                                <CustomFormLabel
+                                    label="Secret Phrase"
+                                    tip="Secret phrase help you identify the payment response info is from us"
+                                />
+                            }
+                        >
+                            <Input
+                                className="text-value-input"
+                                placeholder="Any phrase you like"
+                                bordered={false}
+                                value={secretPhrase}
+                                onFocus={() => setCurrentTips(Tips.secretPhrase)}
                             ></Input>
                         </Form.Item>
                         <Form.Item

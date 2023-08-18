@@ -36,6 +36,7 @@ const savePaymentRecord = async (
     },
     productId?: string
 ): Promise<{
+    appId: string;
     txHash: string;
     chainId: string;
     tokenSymbol: string;
@@ -61,6 +62,7 @@ const savePaymentRecord = async (
     if (recordDocData != null) {
         // if record exist, return directly
         return {
+            appId: (recordDocData as any).appId,
             txHash: (recordDocData as any).txHash,
             chainId: (recordDocData as any).chainId,
             tokenSymbol: (recordDocData as any).tokenSymbol,
@@ -75,6 +77,7 @@ const savePaymentRecord = async (
 
     // if record not exist, add record
     const recordData = {
+        appId: userAppDocId,
         txHash: txHash,
         chainId: chainId,
         tokenSymbol: tokenSymbol,
@@ -91,7 +94,7 @@ const savePaymentRecord = async (
             .doc(userDocId)
             .collection("paymentRecords")
             .doc(`${txHash}${chainId}`)
-            .set({ ...recordData, appId: userAppDocId });
+            .set({ ...recordData });
         return recordData;
     } catch (error) {
         logger.error(error);
@@ -99,11 +102,25 @@ const savePaymentRecord = async (
     }
 };
 
-const getPaymentRecord = async (
-    userId: string,
-    txHash: string,
-    chainId: string
-): Promise<object | undefined | null> => {
+/**
+ *
+ * @param userId
+ * @param txHash
+ * @param chainId
+ * @returns {
+ *      appId: string,
+ *      chainId: string,
+ *      productId: string,
+ *      receiveAddress: string,
+ *      recordPrice: number,
+ *      recordTimestamp: timestamp
+ *      recordValueInUSD: number,
+ *      tokenSymbol: string,
+ *      txHash: string,
+ *      value: number
+ * }
+ */
+const getPaymentRecord = async (userId: string, txHash: string, chainId: string): Promise<any> => {
     if (!txHash || !chainId || txHash === "" || chainId === "") {
         return null;
     }
@@ -127,7 +144,8 @@ const addApp = async (
     name: string,
     paymentAddress: string,
     logoUrl: string,
-    callbackApi: string
+    callbackApi: string,
+    secretPhrase: string
 ): Promise<string> => {
     const db = getFirestore();
     const res = await db.collection(`userAppConfigs/${uid}/apps`).add({
@@ -136,7 +154,15 @@ const addApp = async (
         logoUrl: logoUrl,
         callbackApi: callbackApi,
     });
+    await db.doc(`userAppConfigs/${uid}/apps/${res.id}/private/privateInfo`).set({
+        secretPhrase: secretPhrase,
+    });
     return res.id;
 };
 
-export { initFirestore, getReceiveAccoutWithAppId, savePaymentRecord, addApp };
+// const updateVipInfo = async (receiptId: string, targetUser: AuthData): Promise<void> => {
+//     // TODO: decode product info
+//     // TODO: calculate vip info & expired date
+// };
+
+export { initFirestore, getReceiveAccoutWithAppId, savePaymentRecord, getPaymentRecord, addApp };
