@@ -14,6 +14,7 @@ import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils
 import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord, addApp } from "./utils/firestoreUtils";
 import { decodeReceiptId } from "./utils/general";
 import { ethers } from "ethers";
+import { scheduledGenerateAllUserInvoices } from "./utils/invoicesManager";
 
 // firstly init firestore
 initFirestore();
@@ -112,6 +113,16 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
             productId ?? ""
         }`;
         response.send({ ...savedRecord, receiptId: receiptId });
+    } catch (error) {
+        logger.error(error);
+        response.status(500).send(error);
+    }
+});
+
+export const testScheduledGenerateInvoices = onRequest({ cors: true }, async (request, response) => {
+    try {
+        await scheduledGenerateAllUserInvoices();
+        response.send({ success: true });
     } catch (error) {
         logger.error(error);
         response.status(500).send(error);
