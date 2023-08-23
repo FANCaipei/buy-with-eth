@@ -64,10 +64,18 @@ const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
     const bill: number = calcBill(previewMonthPaymentsCount);
 
     // save invoice
-    await db.collection("invoices").doc(uid).collection("invoices").doc(invoiceMonthStr).set({
-        paymentCount: previewMonthPaymentsCount,
-        bill: bill,
-    });
+    // create new doc incase it not created
+    await db.collection("invoices").doc(`${uid}`).set({}, { merge: true });
+    await db
+        .collection("invoices")
+        .doc(`${uid}`)
+        .collection("invoices")
+        .doc(invoiceMonthStr)
+        .set({
+            paymentCount: previewMonthPaymentsCount,
+            bill: bill,
+            paied: bill > 0 ? false : true,
+        });
 };
 
 const scheduledGenerateAllUserInvoices = async (): Promise<void> => {
@@ -82,4 +90,31 @@ const scheduledGenerateAllUserInvoices = async (): Promise<void> => {
     });
 };
 
-export { verifyInvoicePaymentReceipt, scheduledGenerateAllUserInvoices };
+const setIfNeedPayBill = async (uid: string): Promise<void> => {
+    const db = getFirestore();
+    const invoicesRef = db.collection("invoices").doc(uid).collection("invoices");
+    // query & count payment record of preview month
+    const qureyResult = await invoicesRef.where("paied", "!=", true).count().get();
+    const hasUnpaied: boolean = qureyResult.data().count > 0;
+    await db.collection("userAppConfigs").doc(`${uid}`).set(
+        {
+            hasUnpaiedBill: hasUnpaied,
+        },
+        { merge: true }
+    );
+};
+
+const scheduledSetUnpaiedState = async (): Promise<any> => {
+    const db = getFirestore();
+    const uidHasInvoices = await db.collection("invoices").select().get();
+
+    uidHasInvoices.forEach(async docRef => {
+        try {
+            await setIfNeedPayBill(docRef.id);
+        } catch (error) {
+            logger.error(error);
+        }
+    });
+};
+
+export { verifyInvoicePaymentReceipt, scheduledGenerateAllUserInvoices, scheduledSetUnpaiedState };
