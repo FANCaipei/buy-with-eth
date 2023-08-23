@@ -40,6 +40,8 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
         const deleteResult = await deleteDoc(
             doc(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps/${appData?.id}`)
         );
+        // delete private info doc, no need await, we don't care if it success
+        deleteDoc(doc(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps/${appData?.id}/private/privateInfo`));
         onDelete?.(appData);
         return deleteResult;
     }, [appData, user?.uid, onDelete]);
