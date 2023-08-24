@@ -23,6 +23,62 @@ const verifyInvoicePaymentReceipt = async (receiptId: string): Promise<any> => {
     return paymentInfo;
 };
 
+const calcInvoicesBillAmount = async (uid: string, invoicesPeriods: Array<string>): Promise<number> => {
+    if (!uid || !invoicesPeriods?.length) {
+        return 0;
+    }
+    const db = getFirestore();
+    const queries = invoicesPeriods.map(period =>
+        db.collection("invoices").doc(uid).collection("invoices").doc(period).get()
+    );
+
+    const result = await Promise.all(queries);
+    let total = 0;
+    result.forEach(invoice => {
+        const data = invoice.data();
+        if (data?.bill && !data?.paied) {
+            total += data.bill;
+        }
+    });
+
+    return total;
+};
+
+const saveInvoicesPaiedState = async (
+    uid: string,
+    invoicesPeriods: Array<string>,
+    receiptId: string
+): Promise<void> => {
+    const receiptInfo = decodeReceiptId(receiptId);
+    if (receiptInfo?.uid !== consoleProjectUserId || receiptInfo?.appId !== consoleProjectAppId) {
+        return Promise.reject("receipt info error");
+    }
+    const txHash = receiptInfo.txHash;
+    const chainId = receiptInfo.chainId;
+
+    // set payment receipt comsumed
+    const db = getFirestore();
+    try {
+        await db
+            .collection("paymentRecords")
+            .doc(uid)
+            .collection("paymentRecords")
+            .doc(`${txHash}${chainId}`)
+            .set({ consumed: true }, { merge: true });
+    } catch (error) {
+        logger.error(error);
+        return Promise.reject("set payment receipt concumed failed");
+    }
+
+    invoicesPeriods.forEach(period => {
+        db.collection("invoices").doc(uid).collection("invoices").doc(period).set({
+            paymentReceiptId: receiptId,
+        });
+    });
+
+    return;
+};
+
 const calcBill = (paymentCount: number): number => {
     const segement1 = 1000;
     const segement2 = 10000;
@@ -117,4 +173,10 @@ const scheduledSetUnpaiedState = async (): Promise<any> => {
     });
 };
 
-export { verifyInvoicePaymentReceipt, scheduledGenerateAllUserInvoices, scheduledSetUnpaiedState };
+export {
+    verifyInvoicePaymentReceipt,
+    scheduledGenerateAllUserInvoices,
+    scheduledSetUnpaiedState,
+    calcInvoicesBillAmount,
+    saveInvoicesPaiedState,
+};
