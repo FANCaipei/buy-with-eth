@@ -16,7 +16,7 @@ const verifyInvoicePaymentReceipt = async (receiptId: string): Promise<any> => {
         return Promise.reject("receipt info error");
     }
     const paymentInfo = await getPaymentRecord(consoleProjectUserId, receiptInfo.txHash, receiptInfo.chainId);
-    if (paymentInfo?.appId !== consoleProjectAppId || paymentInfo?.consumed) {
+    if (paymentInfo?.appId !== consoleProjectAppId || paymentInfo?.consumed || !paymentInfo?.recordValueInUSD) {
         return Promise.reject("payment info error");
     }
 

@@ -21,13 +21,13 @@ const MenuItemsData: MenuProps["items"] = [
         label: `Projects`,
     },
     {
-        key: "account", // the path
+        key: "bills", // the path
         icon: React.createElement(UserOutlined),
-        label: `Account`,
+        label: `Bills`,
     },
 ];
 
-const AllowedSubPaths = ["overview", "projects", "account", "projectSetting", "paymentPreview"];
+const AllowedSubPaths = ["overview", "projects", "bills", "projectSetting", "paymentPreview"];
 
 const DashboardPage = () => {
     const navigate = useNavigate();

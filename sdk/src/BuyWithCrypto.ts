@@ -8,6 +8,12 @@ import RestService from "./restService/RestService";
 import FirebaseManager from "./firebase/firebaseManager";
 import { nanoid } from "nanoid";
 
+interface PaymentConfig {
+    valueInUSD?: number;
+    defaultTokenCode?: "eth" | "matic" | "usdt-eth" | "usdt-polygon";
+    productId?: string;
+}
+
 const BuyWithCrypto: {
     appId?: string;
     tokenConfigs?: Array<any>;
@@ -32,7 +38,11 @@ const BuyWithCrypto: {
     hidePayUI: () => void;
     getTokenConfigs: () => void;
     getTokenPriceInUSD: (tokenSymbol: string) => Promise<number>;
-    request: ({ method, params }: { method: string; params: any }) => Promise<any>;
+    generatePaymentUrl: (config: PaymentConfig) => string;
+    request: (
+        { method, params }: { method: string; params: PaymentConfig },
+        iframeEle: HTMLIFrameElement
+    ) => Promise<any>;
 } = {
     utils: {
         walletManager: WalletManager,
@@ -204,11 +214,37 @@ const BuyWithCrypto: {
             BuyWithCrypto.iframeEle.style.width = "0";
         }, 300);
     },
-    request({ method, params }): Promise<any> {
-        if (!BuyWithCrypto.iframeEle) {
-            return Promise.reject("No payment ui init, please init ui first");
+    generatePaymentUrl(config: PaymentConfig): string | null {
+        if (config.productId && config.productId.includes("#")) {
+            console.error(`product id should not contain '#' `);
+            return null;
         }
-        if (BuyWithCrypto.iframeEle.contentWindow) {
+        try {
+            const paramObj = {
+                appId: BuyWithCrypto.appId,
+            };
+            if (config.valueInUSD) {
+                (paramObj as any).valueInUSD = config.valueInUSD;
+            }
+            if (config.defaultTokenCode) {
+                (paramObj as any).defaultTokenCode = config.defaultTokenCode;
+            }
+            if (config.productId) {
+                (paramObj as any).productId = config.productId;
+            }
+
+            const encodedParams = encodeURIComponent(JSON.stringify(paramObj));
+            return `${IframeOrigin}/payment?params=${encodedParams}`;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    },
+    request({ method, params }, iframeEle: HTMLIFrameElement): Promise<any> {
+        if (!iframeEle) {
+            return Promise.reject("No iframe element provided, please generatePaymentUrl and apply it to iframe first");
+        }
+        if (iframeEle.contentWindow) {
             const currentMsgId = MessageIdManager.id;
 
             const result = new Promise((resolve, reject) => {
@@ -231,7 +267,7 @@ const BuyWithCrypto: {
                 window.addEventListener("message", responseHandler);
             });
 
-            BuyWithCrypto.iframeEle.contentWindow.postMessage(
+            iframeEle.contentWindow.postMessage(
                 {
                     type: "buy-with-crypto",
                     subType: "buy-with-crypto-request",

@@ -125,6 +125,10 @@ const PaymentPreview = () => {
         [decodeUrl]
     );
 
+    useEffect(() => {
+        formInstace.setFieldValue("appId", state?.appId);
+    }, [state?.appId, formInstace]);
+
     useEffect(
         () => {
             regenerateUrl();
@@ -143,6 +147,12 @@ const PaymentPreview = () => {
             <div className="content">
                 <div className="config-container">
                     <Form form={formInstace} size="large" labelCol={{ span: 14 }} labelAlign="left" colon={false}>
+                        <Form.Item
+                            name="appId"
+                            label={<CustomFormLabel label="AppId" tip="You need this to init SDK" />}
+                        >
+                            <Input placeholder="Some thing went wrong" style={{ width: "450px" }} disabled={true} />
+                        </Form.Item>
                         <Form.Item
                             name="payValue"
                             label={

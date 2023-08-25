@@ -4,9 +4,12 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import FirebaseManager from "./common/firebase/FirebaseManager";
+import { BuyWithCrypto } from "payWithCrypto";
 
 // init firebase
 FirebaseManager.init();
+
+BuyWithCrypto.init({ appId: "7eOuUvMKqhOiYjFBPgrxu050Wno1-zLO6MpxSlR0uL8IvDwRU" });
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(

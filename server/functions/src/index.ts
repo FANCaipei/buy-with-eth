@@ -8,13 +8,18 @@
  */
 
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
 import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord, addApp } from "./utils/firestoreUtils";
 import { decodeReceiptId } from "./utils/general";
 import { ethers } from "ethers";
-import { scheduledGenerateAllUserInvoices, scheduledSetUnpaiedState } from "./utils/invoicesManager";
+import {
+    calcInvoicesBillAmount,
+    saveInvoicesPaiedState,
+    scheduledGenerateAllUserInvoices,
+    scheduledSetUnpaiedState,
+    verifyInvoicePaymentReceipt,
+} from "./utils/invoicesManager";
 
 // firstly init firestore
 initFirestore();
@@ -186,30 +191,37 @@ export const testScheduledSetUnpaiedState = onRequest({ cors: true }, async (req
  * ref: https://firebase.google.com/docs/functions/callable 
  * */
 
-export const registerVipWithPaymentReceipt = onCall(async request => {
+export const payBills = onCall({ cors: true }, async request => {
     if (!request.auth) {
         throw new HttpsError("unauthenticated", "not authed");
     }
 
-    const { receiptId, paymentType /* by crypto or by 3rd part*/ } = request.data ?? {};
-    if (!receiptId || !paymentType) {
+    const { receiptId, paymentType /* by crypto or by 3rd part*/, periods } = request.data ?? {};
+    if (!receiptId || !paymentType || !periods) {
         throw new HttpsError("invalid-argument", "receiptId and paymentType are required");
     }
-    // TODO: verify payment info, calculate vipLevel
+    if (!Array.isArray(periods) || !periods.length) {
+        throw new HttpsError("invalid-argument", "periods must not be empty");
+    }
+    // only support crypto pay now
+    if (paymentType !== "crypto") {
+        throw new HttpsError("invalid-argument", "payment type not support");
+    }
+    try {
+        const paymentInfo = await verifyInvoicePaymentReceipt(receiptId);
+        const shouldPayAmount = await calcInvoicesBillAmount(request.auth.uid, periods);
+        if (shouldPayAmount > paymentInfo.recordValueInUSD * 1.02 /** 2% price buffer */) {
+            throw new HttpsError("internal", "not paying enough");
+        }
+        await saveInvoicesPaiedState(request.auth.uid, periods, receiptId);
 
-    // TODO: update user vip expire timestamp, !!attention if expire time < now, the start time should be now!!
-    // TODO: caculate expired timestamp
-    const nextExpiredTimestamp = 12341242344234;
-    const vipLevel = "test";
-    await admin.auth().setCustomUserClaims(request.auth.uid, {
-        vipExpired: nextExpiredTimestamp,
-        vipLevel: vipLevel,
-    });
-
-    // response value
-    return {
-        success: true,
-    };
+        return {
+            success: true,
+        };
+    } catch (error) {
+        logger.error(error);
+        throw new HttpsError("internal", error?.toString() ?? "unknow error", error);
+    }
 });
 
 // user creat app, must check if user can create

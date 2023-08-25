@@ -203,10 +203,11 @@ const PaymentPage = () => {
     // }, [responseToId, responseToOrigin]);
 
     useEffect(() => {
+        console.log("state: ", params);
         const tempParams = params?.params ?? paramsFromUrl ?? {};
         setPaymentConfigParams(tempParams);
         setPreSetValueInUSD(tempParams.valueInUSD);
-    }, [params?.params, paramsFromUrl]);
+    }, [params, paramsFromUrl]);
 
     useEffect(() => {
         console.log("payment params: ", paymentConfigParams);
