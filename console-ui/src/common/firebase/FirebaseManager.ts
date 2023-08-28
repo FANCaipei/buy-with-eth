@@ -28,7 +28,8 @@ class FirebaseManager {
             paymentAddress: string;
             callbackApi?: string;
         }) => Promise<any>;
-    } = { createApp: () => Promise.reject(`hasn't init`) };
+        payBills: (params: { receiptId: string; periods: Array<string>; paymentType: string }) => Promise<any>;
+    } = { createApp: () => Promise.reject(`hasn't init`), payBills: () => Promise.reject(`hasn't init`) };
 
     static init() {
         if (!FirebaseManager.app) {
@@ -52,6 +53,7 @@ class FirebaseManager {
             FirebaseManager.functions = getFunctions();
             // Init server call function
             FirebaseManager.serverCallFunctions.createApp = httpsCallable(FirebaseManager.functions, "createApp");
+            FirebaseManager.serverCallFunctions.payBills = httpsCallable(FirebaseManager.functions, "payBills");
 
             onAuthStateChanged(FirebaseManager.auth, user => {
                 if (user) {

@@ -41,7 +41,8 @@ const WalletManager = {
         fromAddr: string,
         toAddr: string,
         isErc20: boolean,
-        productId?: string
+        productId?: string,
+        onProgressChanged?: (progress: string) => void
     ): Promise<any> {
         const currentProvider = EthereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
@@ -68,6 +69,7 @@ const WalletManager = {
         });
         if (currentChainId != chainId) {
             // switch chain
+            onProgressChanged?.("Switching chain");
             await currentProvider.request({
                 method: "wallet_switchEthereumChain",
                 params: [
@@ -99,13 +101,16 @@ const WalletManager = {
             }
             const usdtContract = new ethers.Contract(currentTokenConfig.contractAddr, erc20Abi, signer);
             const sendValue = ethers.utils.parseUnits(`${value}`, currentTokenConfig.decimals);
+            onProgressChanged?.("Verifying balance");
             const tokenBalance = await usdtContract.balanceOf(fromAddr);
 
             if (sendValue.gte(tokenBalance)) {
                 return Promise.reject(`no enough token(${currentTokenConfig.code}) in acccount: ${fromAddr}`);
             }
+            onProgressChanged?.("Paying");
             tx = await usdtContract.transfer(toAddr, sendValue);
         } else {
+            onProgressChanged?.("Paying");
             tx = await signer.sendTransaction(txParams);
             paymentReceiptId = `${BuyWithCrypto.appId}#${tx.hash}#${chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
                 productId ?? ""
@@ -113,8 +118,10 @@ const WalletManager = {
         }
 
         try {
+            onProgressChanged?.("Validating on chain");
             await tx.wait(); // wait until transaction minted
             // save transaction to server
+            onProgressChanged?.("Saving payment info");
             const savedPaymentRecord = await RestService.savePaymentInfo(
                 tx.hash,
                 chainId,

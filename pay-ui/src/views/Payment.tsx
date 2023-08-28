@@ -15,6 +15,7 @@ const PaymentPage = () => {
     const navigate = useNavigate();
     const paramsFromUrl = useUrlParamsConfig((state: any) => state.paramsFromUrl);
     const { state: params } = useLocation();
+    const [payProgress, setPayProgress] = useState<string | null>();
     /**
      * state format: {
      *      responseToOrigin?: string,
@@ -118,6 +119,10 @@ const PaymentPage = () => {
         [navigate]
     );
 
+    const onPaymentProgressChanged = useCallback((currentProgress: string) => {
+        setPayProgress(currentProgress);
+    }, []);
+
     const pay = useCallback(async () => {
         setIsPaying(true);
         const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
@@ -153,7 +158,8 @@ const PaymentPage = () => {
                     fromAddr,
                     targetAddress,
                     currencyPaymentConfig?.symbol?.includes("USDT"),
-                    paymentConfigParams?.productId
+                    paymentConfigParams?.productId,
+                    onPaymentProgressChanged
                 );
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
@@ -177,11 +183,13 @@ const PaymentPage = () => {
                     navToResult(false, error.receiptId);
                 }
             }
+            setPayProgress(null);
         }
         setIsPaying(false);
     }, [
         navigate,
         navToResult,
+        onPaymentProgressChanged,
         params,
         targetAddress,
         sendValue,
@@ -326,7 +334,7 @@ const PaymentPage = () => {
                         disabled={!currentCurrencyPrice || !sendValue}
                         loading={isPaying}
                     >
-                        Pay
+                        {payProgress ? payProgress : "Pay"}
                     </Button>
                 </div>
                 {/* <div className="btn-line">

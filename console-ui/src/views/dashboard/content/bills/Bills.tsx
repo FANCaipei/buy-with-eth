@@ -5,10 +5,11 @@ import PanelTitle from "../../../../componets/dashboard/PanelTitle";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import FirebaseManager from "../../../../common/firebase/FirebaseManager";
-import { Button, Modal } from "antd";
+import { Button, Modal, message } from "antd";
 
 const Bills = () => {
     const { user } = useFirebaseAuth() as any;
+    const [messageApi, contextHolder] = message.useMessage();
     const [isLoadingData, setIsLoadingData] = useState<boolean>(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
     const [unpaiedBills, setUnpaiedBills] = useState<Array<any>>([]);
@@ -45,33 +46,74 @@ const Bills = () => {
         setIsLoadingData(false);
     }, [user?.uid]);
 
-    const payBills = useCallback((bills: Array<any>) => {
-        let totalAmount = 0;
-        bills.forEach(bill => {
-            totalAmount += bill?.bill ?? 0;
-        });
+    const payBills = useCallback(
+        (bills: Array<any>) => {
+            let totalAmount = 0;
+            bills.forEach(bill => {
+                totalAmount += bill?.bill ?? 0;
+            });
 
-        setIsPaymentModalOpen(true);
+            const billPeriods = bills.map(item => item.id);
 
-        setTimeout(async () => {
-            if (!payIframeRef?.current) {
-                console.error("payment iframe has not been init");
+            if (totalAmount <= 0) {
                 return;
             }
-            try {
-                const payResult = await BuyWithCrypto.request(
-                    {
-                        method: "request_payment",
-                        params: { valueInUSD: totalAmount, defaultTokenCode: "usdt-polygon" },
-                    },
-                    payIframeRef.current
-                );
-                console.log("pay reslt: ", payResult);
-            } catch (error) {
-                console.error(error);
-            }
-        }, 0);
-    }, []);
+
+            setIsPaymentModalOpen(true);
+
+            setTimeout(async () => {
+                if (!payIframeRef?.current) {
+                    console.error("payment iframe has not been init");
+                    return;
+                }
+                try {
+                    const payResult = await BuyWithCrypto.request(
+                        {
+                            method: "request_payment",
+                            params: { valueInUSD: totalAmount, defaultTokenCode: "usdt-polygon" },
+                        },
+                        payIframeRef.current
+                    );
+                    console.log("pay result: ", payResult);
+                    if (payResult?.receiptId) {
+                        try {
+                            const result = await FirebaseManager.serverCallFunctions.payBills({
+                                receiptId: payResult?.receiptId,
+                                periods: billPeriods,
+                                paymentType: "crypto",
+                            });
+                            if (result?.data?.success) {
+                                // success
+                                getUnpaiedBills();
+                                setIsPaymentModalOpen(false);
+                            } else {
+                                // TODO: show receiptId and verify link
+                                message.error("Unknown error");
+                            }
+                        } catch (error: any) {
+                            console.error(error);
+                            // TODO: show receiptId and verify link
+                            message.error(error?.message);
+                        }
+                    } else {
+                        // some thing wrong
+                        messageApi.error("Payment failed");
+                    }
+                } catch (error: any) {
+                    console.error(error);
+
+                    if (error?.receiptId) {
+                        // transaction maybe validat on chain but not saved on server
+                        // TODO: show receiptId and verify link
+                    } else {
+                        messageApi.error("Payment failed");
+                    }
+                }
+                // setIsPaymentModalOpen(false);
+            }, 0);
+        },
+        [getUnpaiedBills, messageApi]
+    );
 
     useEffect(() => {
         getUnpaiedBills();
@@ -93,6 +135,7 @@ const Bills = () => {
 
     return (
         <StyledContainer>
+            {contextHolder}
             <GlobalStyle />
             <Modal
                 title=""
@@ -101,6 +144,7 @@ const Bills = () => {
                 onCancel={() => setIsPaymentModalOpen(false)}
                 className="pay-modal"
                 forceRender={true}
+                maskClosable={false}
             >
                 <iframe
                     src={paymentUrl}

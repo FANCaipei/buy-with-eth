@@ -12,7 +12,10 @@ const consoleProjectAppId = "zLO6MpxSlR0uL8IvDwRU";
 
 const verifyInvoicePaymentReceipt = async (receiptId: string): Promise<any> => {
     const receiptInfo = decodeReceiptId(receiptId);
-    if (receiptInfo?.uid !== consoleProjectUserId || receiptInfo?.appId !== consoleProjectAppId) {
+    if (
+        receiptInfo?.uid !== consoleProjectUserId ||
+        receiptInfo?.appId !== `${consoleProjectUserId}-${consoleProjectAppId}`
+    ) {
         return Promise.reject("receipt info error");
     }
     const paymentInfo = await getPaymentRecord(consoleProjectUserId, receiptInfo.txHash, receiptInfo.chainId);
@@ -50,7 +53,10 @@ const saveInvoicesPaiedState = async (
     receiptId: string
 ): Promise<void> => {
     const receiptInfo = decodeReceiptId(receiptId);
-    if (receiptInfo?.uid !== consoleProjectUserId || receiptInfo?.appId !== consoleProjectAppId) {
+    if (
+        receiptInfo?.uid !== consoleProjectUserId ||
+        receiptInfo?.appId !== `${consoleProjectUserId}-${consoleProjectAppId}`
+    ) {
         return Promise.reject("receipt info error");
     }
     const txHash = receiptInfo.txHash;
@@ -70,11 +76,16 @@ const saveInvoicesPaiedState = async (
         return Promise.reject("set payment receipt concumed failed");
     }
 
-    invoicesPeriods.forEach(period => {
-        db.collection("invoices").doc(uid).collection("invoices").doc(period).set({
-            paymentReceiptId: receiptId,
-        });
+    const updateInvoices = invoicesPeriods.map(period => {
+        return db.collection("invoices").doc(uid).collection("invoices").doc(period).set(
+            {
+                paied: true,
+                paymentReceiptId: receiptId,
+            },
+            { merge: true }
+        );
     });
+    Promise.all(updateInvoices).then(() => setIfNeedPayBill(uid));
 
     return;
 };
