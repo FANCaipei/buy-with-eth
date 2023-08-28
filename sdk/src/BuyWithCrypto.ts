@@ -39,6 +39,7 @@ const BuyWithCrypto: {
     getTokenConfigs: () => void;
     getTokenPriceInUSD: (tokenSymbol: string) => Promise<number>;
     generatePaymentUrl: (config: PaymentConfig) => string;
+    checkPayUIIframeReady: (iframeEle: HTMLIFrameElement) => Promise<boolean>;
     request: (
         { method, params }: { method: string; params: PaymentConfig },
         iframeEle: HTMLIFrameElement
@@ -219,6 +220,9 @@ const BuyWithCrypto: {
             console.error(`product id should not contain '#' `);
             return null;
         }
+        if (!BuyWithCrypto.appId) {
+            return null;
+        }
         try {
             const paramObj = {
                 appId: BuyWithCrypto.appId,
@@ -240,9 +244,65 @@ const BuyWithCrypto: {
             return null;
         }
     },
-    request({ method, params }, iframeEle: HTMLIFrameElement): Promise<any> {
+    async checkPayUIIframeReady(iframeEle: HTMLIFrameElement): Promise<boolean> {
         if (!iframeEle) {
             return Promise.reject("No iframe element provided, please generatePaymentUrl and apply it to iframe first");
+        }
+        if (!iframeEle.contentWindow) {
+            return Promise.reject("Iframe content window not detected");
+        }
+        if (iframeEle.contentWindow) {
+            const currentMsgId = MessageIdManager.id;
+
+            const result = new Promise<boolean>((resolve, reject) => {
+                const responseHandler = event => {
+                    if (event?.origin === IframeOrigin && event?.data?.type === "buy-with-crypto") {
+                        if (event?.data?.subType === "check-ready-response" && event?.data?.respTo === currentMsgId) {
+                            if (event?.data?.data?.isReady) {
+                                resolve(true);
+                            } else {
+                                resolve(false);
+                            }
+                            // remove current event listener
+                            window.removeEventListener("message", responseHandler);
+                        }
+                    }
+                };
+                window.addEventListener("message", responseHandler);
+
+                // reject as false if timeout; no complex process so set 300 ms as max time
+                setTimeout(() => {
+                    reject("request pay ui ready state timeout");
+                    window.removeEventListener("message", responseHandler);
+                }, 300);
+            });
+
+            iframeEle.contentWindow.postMessage(
+                {
+                    type: "buy-with-crypto",
+                    subType: "check-ready-request",
+                    requestId: currentMsgId,
+                },
+                IframeOrigin
+            );
+
+            return result;
+        }
+    },
+    async request({ method, params }, iframeEle: HTMLIFrameElement): Promise<any> {
+        if (!iframeEle) {
+            return Promise.reject("No iframe element provided, please generatePaymentUrl and apply it to iframe first");
+        }
+        if (!iframeEle.contentWindow) {
+            return Promise.reject("Iframe content window not detected");
+        }
+        try {
+            const isUIReady = await BuyWithCrypto.checkPayUIIframeReady(iframeEle);
+            if (!isUIReady) {
+                return Promise.reject("Payment UI not ready");
+            }
+        } catch (error) {
+            return Promise.reject("Payment UI not ready");
         }
         if (iframeEle.contentWindow) {
             const currentMsgId = MessageIdManager.id;

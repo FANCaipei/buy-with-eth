@@ -53,8 +53,10 @@ function Index() {
         };
 
         window.addEventListener("message", messageHandler);
+        (window as any).isPayUIReady = true;
         return () => {
             window.removeEventListener("message", messageHandler);
+            (window as any).isPayUIReady = false;
         };
     }, [navigate]);
 

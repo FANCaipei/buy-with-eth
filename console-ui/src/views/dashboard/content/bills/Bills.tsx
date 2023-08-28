@@ -53,18 +53,24 @@ const Bills = () => {
 
         setIsPaymentModalOpen(true);
 
-        console.log(payIframeRef?.current);
-
-        setTimeout(() => {
+        setTimeout(async () => {
             if (!payIframeRef?.current) {
                 console.error("payment iframe has not been init");
                 return;
             }
-            BuyWithCrypto.request(
-                { method: "request_payment", params: { valueInUSD: totalAmount, defaultTokenCode: "usdt-polygon" } },
-                payIframeRef.current
-            );
-        }, 100);
+            try {
+                const payResult = await BuyWithCrypto.request(
+                    {
+                        method: "request_payment",
+                        params: { valueInUSD: totalAmount, defaultTokenCode: "usdt-polygon" },
+                    },
+                    payIframeRef.current
+                );
+                console.log("pay reslt: ", payResult);
+            } catch (error) {
+                console.error(error);
+            }
+        }, 0);
     }, []);
 
     useEffect(() => {
@@ -94,6 +100,7 @@ const Bills = () => {
                 open={isPaymentModalOpen}
                 onCancel={() => setIsPaymentModalOpen(false)}
                 className="pay-modal"
+                forceRender={true}
             >
                 <iframe
                     src={paymentUrl}

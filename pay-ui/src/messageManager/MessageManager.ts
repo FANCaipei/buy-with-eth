@@ -21,8 +21,8 @@ const send = (subType: string, responseId: string | number | null, params: any, 
 //     send("buy-with-crypto-event", null, { eventType: eventType, eventData: eventData });
 // };
 
-const isReady = () => {
-    send("buy-with-crypto-ready", null, null);
-};
+// const isReady = () => {
+//     send("buy-with-crypto-ready", null, null);
+// };
 
-export { send, isReady };
+export { send };
