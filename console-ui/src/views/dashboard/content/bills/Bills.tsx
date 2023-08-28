@@ -1,4 +1,4 @@
-import { styled } from "styled-components";
+import { createGlobalStyle, styled } from "styled-components";
 import { BuyWithCrypto } from "payWithCrypto";
 import useFirebaseAuth from "../../../../common/zustand/useFirebaseAuth";
 import PanelTitle from "../../../../componets/dashboard/PanelTitle";
@@ -87,8 +87,24 @@ const Bills = () => {
 
     return (
         <StyledContainer>
-            <Modal title="" open={isPaymentModalOpen} onCancel={() => setIsPaymentModalOpen(false)}>
-                <iframe src={paymentUrl} ref={payIframeRef} title="payment" />
+            <GlobalStyle />
+            <Modal
+                title=""
+                footer={null}
+                open={isPaymentModalOpen}
+                onCancel={() => setIsPaymentModalOpen(false)}
+                className="pay-modal"
+            >
+                <iframe
+                    src={paymentUrl}
+                    ref={payIframeRef}
+                    title="payment"
+                    style={{
+                        width: "100%",
+                        height: "600px",
+                        border: "none",
+                    }}
+                />
             </Modal>
             <PanelTitle title="Bills" />
             {unpaiedBills?.map(bill => (
@@ -105,6 +121,23 @@ const Bills = () => {
         </StyledContainer>
     );
 };
+
+const GlobalStyle = createGlobalStyle`
+    .pay-modal{
+        .ant-modal-content{
+            padding: 0;
+            border-radius: 12px;
+
+            .ant-modal-body{
+                border-radius: 12px;
+
+                iframe{
+                    border-radius: 12px;
+                }
+            }
+        }
+    }
+`;
 
 const StyledContainer = styled.div.attrs({ className: "bills-content" })``;
 
