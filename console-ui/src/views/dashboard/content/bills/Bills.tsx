@@ -7,7 +7,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import FirebaseManager from "../../../../common/firebase/FirebaseManager";
 import { Button, Modal, Table, message } from "antd";
 
-const UnpaiedTableColumns = [
+const UnpaidTableColumns = [
     {
         title: "Period",
         dataIndex: "id",
@@ -42,20 +42,20 @@ const HiatoryPaiedTableColumns = [
 const Bills = () => {
     const { user } = useFirebaseAuth() as any;
     const [messageApi, contextHolder] = message.useMessage();
-    const [isLoadingUnpaiedData, setIsLoadingUnpaiedData] = useState<boolean>(false);
+    const [isLoadingUnpaidData, setIsLoadingUnpaidData] = useState<boolean>(false);
     const [isLoadingHistoryData, setIsLoadingHistoryData] = useState<boolean>(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
-    const [unpaiedBills, setUnpaiedBills] = useState<Array<any>>([]);
-    const [totalUnpaied, setTotalUnpaied] = useState<number>();
+    const [unpaidBills, setUnpaidBills] = useState<Array<any>>([]);
+    const [totalUnpaid, setTotalUnpaid] = useState<number>();
     const [historyBills, setHistoryBills] = useState<Array<any>>([]);
     const [paymentUrl, setPaymentUrl] = useState<string>();
     const payIframeRef = useRef<HTMLIFrameElement>(null);
 
-    const getUnpaiedBills = useCallback(async () => {
+    const getUnpaidBills = useCallback(async () => {
         if (!user?.uid) {
             return;
         }
-        setIsLoadingUnpaiedData(true);
+        setIsLoadingUnpaidData(true);
         try {
             const q = query(
                 collection(FirebaseManager.firestore, `invoices/${user.uid}/invoices`),
@@ -63,9 +63,9 @@ const Bills = () => {
             );
             const querySnapshot = await getDocs(q);
             if (querySnapshot.empty) {
-                setUnpaiedBills([]);
-                setTotalUnpaied(0);
-                setIsLoadingUnpaiedData(false);
+                setUnpaidBills([]);
+                setTotalUnpaid(0);
+                setIsLoadingUnpaidData(false);
                 return;
             }
             const tempBills: Array<any> = [];
@@ -76,13 +76,13 @@ const Bills = () => {
                     tempBills.push({ ...doc.data(), id: doc.id });
                 }
             });
-            setTotalUnpaied(tempTotal);
-            setUnpaiedBills(tempBills);
+            setTotalUnpaid(tempTotal);
+            setUnpaidBills(tempBills);
         } catch (error) {
             // do nothing
             console.error(error);
         }
-        setIsLoadingUnpaiedData(false);
+        setIsLoadingUnpaidData(false);
     }, [user?.uid]);
 
     const getHistoryBills = useCallback(async () => {
@@ -153,7 +153,7 @@ const Bills = () => {
                             });
                             if (result?.data?.success) {
                                 // success
-                                getUnpaiedBills();
+                                getUnpaidBills();
                                 getHistoryBills();
                                 setIsPaymentModalOpen(false);
                             } else {
@@ -182,12 +182,12 @@ const Bills = () => {
                 // setIsPaymentModalOpen(false);
             }, 0);
         },
-        [getUnpaiedBills, getHistoryBills, messageApi]
+        [getUnpaidBills, getHistoryBills, messageApi]
     );
 
     useEffect(() => {
-        getUnpaiedBills();
-    }, [getUnpaiedBills]);
+        getUnpaidBills();
+    }, [getUnpaidBills]);
 
     useEffect(() => {
         getHistoryBills();
@@ -232,24 +232,24 @@ const Bills = () => {
                 />
             </Modal>
             <PanelTitle title="Bills" />
-            <div className="title">Unpaied Bills</div>
+            <div className="title">Unpaid Bills</div>
             <Table
-                columns={UnpaiedTableColumns}
-                dataSource={unpaiedBills}
+                columns={UnpaidTableColumns}
+                dataSource={unpaidBills}
                 pagination={false}
-                loading={isLoadingUnpaiedData}
+                loading={isLoadingUnpaidData}
                 footer={() =>
-                    unpaiedBills.length ? (
-                        <div className="unpaied-table-footer">
+                    unpaidBills.length ? (
+                        <div className="unpaid-table-footer">
                             <div className="text">
                                 <span>Total: </span>
-                                <span>${totalUnpaied}</span>
+                                <span>${totalUnpaid}</span>
                             </div>
 
                             <Button
                                 type="primary"
                                 onClick={() => {
-                                    payBills(unpaiedBills);
+                                    payBills(unpaidBills);
                                 }}
                             >
                                 Pay Bills
@@ -298,7 +298,7 @@ const StyledContainer = styled.div.attrs({ className: "bills-content" })`
     }
 
     .ant-table-footer {
-        .unpaied-table-footer {
+        .unpaid-table-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;

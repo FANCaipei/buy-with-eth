@@ -1,13 +1,25 @@
 import { styled } from "styled-components";
 import useProtectedPath from "../../common/hooks/useProtectedPath";
-import { Button, Layout, Menu, MenuProps, Tooltip } from "antd";
+import { Button, Layout, Menu, MenuProps, Tooltip, Modal } from "antd";
 import Sider from "antd/es/layout/Sider";
 import React, { useCallback, useEffect, useState } from "react";
-import { BarChartOutlined, AppstoreAddOutlined, UserOutlined, FileTextFilled, LogoutOutlined } from "@ant-design/icons";
+import {
+    BarChartOutlined,
+    AppstoreAddOutlined,
+    UserOutlined,
+    FileTextFilled,
+    LogoutOutlined,
+    ExclamationCircleFilled,
+} from "@ant-design/icons";
 import { Content, Header } from "antd/es/layout/layout";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useFirebaseAuth from "../../common/zustand/useFirebaseAuth";
 import FirebaseManager from "../../common/firebase/FirebaseManager";
+import { collection, getCountFromServer, query, where } from "firebase/firestore";
+
+const { confirm } = Modal;
+
+let isBillModalDisplayedOrQuering = false;
 
 const MenuItemsData: MenuProps["items"] = [
     {
@@ -51,6 +63,38 @@ const DashboardPage = () => {
         navigate("/auth", { replace: true });
     }, [navigate]);
 
+    const checkIfHasUnpaiedBill = useCallback(async () => {
+        if (!user?.uid || isBillModalDisplayedOrQuering) {
+            return;
+        }
+        isBillModalDisplayedOrQuering = true;
+        try {
+            const q = query(
+                collection(FirebaseManager.firestore, `invoices/${user.uid}/invoices`),
+                where("paied", "!=", true)
+            );
+            const snapshot = await getCountFromServer(q);
+            if (snapshot?.data().count) {
+                // show confirm modal
+                confirm({
+                    title: "Unpaid Bills",
+                    icon: <ExclamationCircleFilled />,
+                    content: "You have unpaid bill, go Bills and check?",
+                    okText: "Go",
+                    cancelText: "cancel",
+                    onOk() {
+                        navigate("bills");
+                    },
+                    onCancel() {
+                        // console.log("Cancel");
+                    },
+                });
+            }
+        } catch (error) {
+            isBillModalDisplayedOrQuering = false;
+        }
+    }, [user?.uid, navigate]);
+
     useEffect(() => {
         const paths = (pathname ?? "").split("/");
         if (paths[1] !== "dashboard") {
@@ -66,6 +110,10 @@ const DashboardPage = () => {
             navigate("overview", { replace: true });
         }
     }, [pathname, navigate]);
+
+    useEffect(() => {
+        checkIfHasUnpaiedBill();
+    }, [checkIfHasUnpaiedBill]);
 
     // must at the end
     useProtectedPath();

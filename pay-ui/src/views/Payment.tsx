@@ -326,6 +326,10 @@ const PaymentPage = () => {
                     </div>
                 </div>
                 <div className="item-wrapper">
+                    {!currentCurrencyPrice && !isFetchingPrice ? (
+                        <div className="no-price">Get price failed, please refresh price manually</div>
+                    ) : null}
+
                     <Button
                         size="large"
                         type="primary"
@@ -463,6 +467,11 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
     }
     .item-wrapper {
         margin-top: 30px;
+
+        .no-price {
+            text-align: center;
+            color: rgba(0, 0, 0, 0.45);
+        }
     }
     .reconnect-wallet {
         margin-top: 10px;
