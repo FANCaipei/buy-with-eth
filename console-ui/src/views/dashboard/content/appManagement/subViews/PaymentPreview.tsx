@@ -62,13 +62,37 @@ const PaymentPreview = () => {
         }
     }, [currrentUrl, messageApi]);
 
+    const copyText = useCallback(
+        (text: string) => {
+            if (!text) {
+                messageApi.error("No content");
+                return;
+            }
+            try {
+                navigator.clipboard.writeText(text);
+                messageApi.open({
+                    type: "success",
+                    content: "Copied",
+                });
+            } catch (error) {
+                messageApi.open({
+                    type: "error",
+                    content: "Copy failed",
+                });
+            }
+        },
+        [messageApi]
+    );
+
     const copyCode = useCallback(() => {
         if (!currrentUrl) {
             messageApi.error("Url not generated");
             return;
         }
         try {
-            navigator.clipboard.writeText(`<iframe src="${currrentUrl}"/>`);
+            navigator.clipboard.writeText(
+                `<iframe src="${currrentUrl}" style="border: none;width: 480px;height: 550px;overflow: hidden;"/>`
+            );
             messageApi.open({
                 type: "success",
                 content: "Code copied",
@@ -151,7 +175,14 @@ const PaymentPreview = () => {
                             name="appId"
                             label={<CustomFormLabel label="AppId" tip="You need this to init SDK" />}
                         >
-                            <Input placeholder="Some thing went wrong" style={{ width: "450px" }} disabled={true} />
+                            {/* <Input placeholder="Some thing went wrong" style={{ width: "450px" }} disabled={true} /> */}
+                            <span>{state?.appId}</span>&nbsp;&nbsp;
+                            <Tooltip title="copy app id">
+                                <CopyOutlined
+                                    style={{ color: "rgba(0, 0, 0, 0.55)" }}
+                                    onClick={() => copyText(state?.appId)}
+                                />
+                            </Tooltip>
                         </Form.Item>
                         <Form.Item
                             name="payValue"
@@ -242,7 +273,7 @@ const PaymentPreview = () => {
                         <div className="iframe-code-container">
                             <CopyBlock
                                 //@ts-ignore
-                                text={`<iframe src="${currrentUrl}"/>`}
+                                text={`<iframe src="${currrentUrl}" style="border: none;width: 480px;height: 550px;overflow: hidden;"/>`}
                                 language="html"
                                 showLineNumbers={false}
                                 theme={paraisoLight}
