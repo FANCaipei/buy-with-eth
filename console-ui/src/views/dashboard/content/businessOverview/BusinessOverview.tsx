@@ -5,9 +5,9 @@ import useProtectedPath from "../../../../common/hooks/useProtectedPath";
 import useFirebaseAuth from "../../../../common/zustand/useFirebaseAuth";
 import { useCallback, useEffect, useState } from "react";
 import FirebaseManager from "../../../../common/firebase/FirebaseManager";
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { Select, Spin, TimeRangePickerProps, message, DatePicker } from "antd";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs, { Dayjs, UnitType } from "dayjs";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -22,15 +22,76 @@ const BusinessOverview = () => {
     useProtectedPath();
     const { user } = useFirebaseAuth() as any;
     const [allProjects, setAllProjects] = useState<any>();
+    const [allPaymentRecords, setAllPaymentRecords] = useState<Array<any>>([]);
+    const [totalReceiveValue, setTotalReceiveValue] = useState<number>();
     const [selectedProjectId, setSelectedProjectId] = useState<any>();
-    const [rangeDates, setRangeDates] = useState<RangeValue>(null);
+    const [rangeDates, setRangeDates] = useState<RangeValue>([dayjs().add(-7, "day"), dayjs()]);
     const [resultRangeDates, setResultRangeDates] = useState<RangeValue>(null);
     const [isFetchingProjects, setIsFetchingProjects] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
 
-    const onProjectSelected = useCallback((selectedId: any) => {
-        setSelectedProjectId(selectedId);
-    }, []);
+    const getPaymentRecords = useCallback(
+        async (projectId: string, dateRange: RangeValue) => {
+            ["hour", "minute", "second", "millisecond"].forEach((unit: string) => {
+                dateRange?.[0]?.set(unit as UnitType, 0);
+                dateRange?.[1]?.set(unit as UnitType, 0);
+            });
+
+            const startTimestamp = dateRange?.[0]?.toDate()?.getTime();
+            const endTimestamp = dateRange?.[1]?.add(1, "day")?.toDate()?.getTime();
+            if (!user?.uid || !projectId || !startTimestamp || !endTimestamp) {
+                return;
+            }
+            if (startTimestamp >= endTimestamp) {
+                return;
+            }
+
+            const timeStartCondition = where("recordTimestamp", ">=", startTimestamp);
+            const timeEndCondition = where("recordTimestamp", "<=", endTimestamp);
+
+            let q = null;
+            if (projectId === "all") {
+                // query all project
+                q = query(
+                    collection(FirebaseManager.firestore, `paymentRecords/${user.uid}/paymentRecords`),
+                    timeStartCondition,
+                    timeEndCondition
+                );
+            } else {
+                q = query(
+                    collection(FirebaseManager.firestore, `paymentRecords/${user.uid}/paymentRecords`),
+                    timeStartCondition,
+                    timeEndCondition,
+                    where("appId", "==", projectId)
+                );
+            }
+
+            try {
+                const snapshots = await getDocs(q);
+                const tempRecords = [];
+                let tempTotalValue = 0;
+                snapshots.forEach(doc => {
+                    if (doc.exists()) {
+                        tempTotalValue += doc.data().recordValueInUSD;
+                        tempRecords.push({ ...doc.data(), id: doc.id });
+                    }
+                });
+                setTotalReceiveValue(tempTotalValue);
+                setAllPaymentRecords(snapshots.docs);
+            } catch (error) {
+                messageApi.error("Fetch data failed");
+            }
+        },
+        [user?.uid, messageApi]
+    );
+
+    const onProjectSelected = useCallback(
+        (selectedId: any) => {
+            setSelectedProjectId(selectedId);
+            getPaymentRecords(selectedId, resultRangeDates);
+        },
+        [resultRangeDates]
+    );
 
     const getAllProjects = useCallback(async () => {
         if (!user?.uid) {
@@ -60,10 +121,14 @@ const BusinessOverview = () => {
         setIsFetchingProjects(false);
     }, [user?.uid, messageApi]);
 
-    const onDateRangeChange = useCallback((dates: null | [Dayjs | null, Dayjs | null]) => {
-        // console.log(dates);
-        setResultRangeDates(dates);
-    }, []);
+    const onDateRangeChange = useCallback(
+        (dates: null | [Dayjs | null, Dayjs | null]) => {
+            // console.log(dates);
+            setResultRangeDates(dates);
+            getPaymentRecords(selectedProjectId, dates);
+        },
+        [getPaymentRecords, selectedProjectId]
+    );
 
     const onRangeOpenChange = useCallback((open: boolean) => {
         if (open) {
@@ -138,7 +203,10 @@ const BusinessOverview = () => {
                                 onOpenChange={onRangeOpenChange}
                             />
                         </div>
-                        <div className="charts-panel"></div>
+                        <div className="charts-panel">
+                            {totalReceiveValue}
+                            count: {allPaymentRecords?.length}
+                        </div>
                     </Spin>
                 </div>
             )}
