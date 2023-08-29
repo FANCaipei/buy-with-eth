@@ -1,14 +1,147 @@
 import { styled } from "styled-components";
 import PanelTitle from "../../../../componets/dashboard/PanelTitle";
 import NoApps from "../../../../componets/NoApps";
+import useProtectedPath from "../../../../common/hooks/useProtectedPath";
+import useFirebaseAuth from "../../../../common/zustand/useFirebaseAuth";
+import { useCallback, useEffect, useState } from "react";
+import FirebaseManager from "../../../../common/firebase/FirebaseManager";
+import { collection, getDocs, query } from "firebase/firestore";
+import { Select, Spin, TimeRangePickerProps, message, DatePicker } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+
+const { RangePicker } = DatePicker;
+type RangeValue = [Dayjs | null, Dayjs | null] | null;
+
+const rangePresets: TimeRangePickerProps["presets"] = [
+    { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
+    { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
+    { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
+];
 
 const BusinessOverview = () => {
+    useProtectedPath();
+    const { user } = useFirebaseAuth() as any;
+    const [allProjects, setAllProjects] = useState<any>();
+    const [selectedProjectId, setSelectedProjectId] = useState<any>();
+    const [rangeDates, setRangeDates] = useState<RangeValue>(null);
+    const [resultRangeDates, setResultRangeDates] = useState<RangeValue>(null);
+    const [isFetchingProjects, setIsFetchingProjects] = useState<boolean>(false);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const onProjectSelected = useCallback((selectedId: any) => {
+        setSelectedProjectId(selectedId);
+    }, []);
+
+    const getAllProjects = useCallback(async () => {
+        if (!user?.uid) {
+            return;
+        }
+        setIsFetchingProjects(true);
+        try {
+            const q = query(collection(FirebaseManager.firestore, `userAppConfigs/${user.uid}/apps`));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                setAllProjects([]);
+                setIsFetchingProjects(false);
+                return;
+            }
+            const tempData: Array<any> = [];
+            querySnapshot.forEach(doc => {
+                if (doc.exists()) {
+                    tempData.push({ ...doc.data(), id: doc.id });
+                }
+            });
+            setAllProjects(tempData);
+            setSelectedProjectId(tempData[0]?.id);
+        } catch (error) {
+            messageApi.error("Get projects failed");
+            setAllProjects([]);
+        }
+        setIsFetchingProjects(false);
+    }, [user?.uid, messageApi]);
+
+    const onDateRangeChange = useCallback((dates: null | [Dayjs | null, Dayjs | null]) => {
+        // console.log(dates);
+        setResultRangeDates(dates);
+    }, []);
+
+    const onRangeOpenChange = useCallback((open: boolean) => {
+        if (open) {
+            setRangeDates([null, null]);
+        } else {
+            setRangeDates(null);
+        }
+    }, []);
+
+    const disableDate = useCallback(
+        (current: Dayjs) => {
+            let earliestDate = dayjs("2020-01-01");
+            let latestDate = rangeDates?.[1] ?? dayjs();
+            if (rangeDates?.[0]) {
+                earliestDate = rangeDates[0];
+                latestDate = latestDate.isBefore(earliestDate.add(31, "day"))
+                    ? latestDate
+                    : earliestDate.add(31, "day");
+            }
+            if (rangeDates?.[1]) {
+                latestDate = rangeDates[1];
+                earliestDate = rangeDates[1].add(-31, "day");
+            }
+
+            return current.isBefore(earliestDate) || current.isAfter(latestDate);
+        },
+        [rangeDates]
+    );
+
+    useEffect(() => {
+        getAllProjects();
+    }, [getAllProjects]);
+
     return (
         <StyledContainer>
+            {contextHolder}
             <PanelTitle title="Analyse" />
-            <div className="no-app">
-                <NoApps />
-            </div>
+            {!allProjects?.length && !isFetchingProjects ? (
+                <div className="no-app">
+                    <NoApps />
+                </div>
+            ) : (
+                <div className="content">
+                    <Spin spinning={isFetchingProjects}>
+                        <div className="filters-block">
+                            <Select
+                                className="project-select"
+                                value={selectedProjectId}
+                                onChange={onProjectSelected}
+                                options={[
+                                    {
+                                        value: "all",
+                                        label: "All Projects",
+                                    },
+                                    ...(allProjects?.map((item: any) => {
+                                        return {
+                                            value: item.id,
+                                            label: item.name,
+                                        };
+                                    }) ?? []),
+                                ]}
+                            />
+                            <RangePicker
+                                value={rangeDates || resultRangeDates}
+                                presets={rangePresets}
+                                disabledDate={disableDate}
+                                onCalendarChange={val => {
+                                    setRangeDates(val);
+                                }}
+                                onChange={onDateRangeChange}
+                                changeOnBlur
+                                onOpenChange={onRangeOpenChange}
+                            />
+                        </div>
+                        <div className="charts-panel"></div>
+                    </Spin>
+                </div>
+            )}
         </StyledContainer>
     );
 };
@@ -16,7 +149,20 @@ const BusinessOverview = () => {
 const StyledContainer = styled.div.attrs({ className: "business-overview" })`
     height: 100%;
     .no-app {
-        margin-top: 200px;
+        margin-top: 100px;
+    }
+
+    .content {
+        .filters-block {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
+            .project-select {
+                min-width: 120px;
+                margin-right: 10px;
+            }
+        }
     }
 `;
 

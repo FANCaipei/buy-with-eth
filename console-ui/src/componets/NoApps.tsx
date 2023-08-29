@@ -2,19 +2,21 @@ import { Button } from "antd";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
+import EmptyFolderIcon from "../assets/imgs/icons/empty-folder.svg";
 
 const NoApps = () => {
     const navigate = useNavigate();
 
     const goAppMangement = useCallback(() => {
-        navigate("/dashboard/appManagement");
+        navigate("/dashboard/projects");
     }, [navigate]);
 
     return (
         <StyledContainer>
-            <div className="text">Haven't got an App?</div>
+            <img className="empty-icon" src={EmptyFolderIcon} alt="" />
+            <div className="text">Haven't got a project?</div>
             <Button type="primary" size="large" onClick={goAppMangement}>
-                Create App
+                Create Project
             </Button>
         </StyledContainer>
     );
@@ -25,10 +27,14 @@ const StyledContainer = styled.div.attrs({ className: "no-apps-container" })`
     flex-direction: column;
     align-items: center;
 
-    .text {
-        font-size: 24px;
-        color: #000;
+    .empty-icon {
+        height: 100px;
         margin-bottom: 40px;
+    }
+    .text {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.8);
+        margin-bottom: 20px;
     }
 `;
 
