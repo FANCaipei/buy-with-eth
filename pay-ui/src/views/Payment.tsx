@@ -174,10 +174,10 @@ const PaymentPage = () => {
                     },
                     responseToOrigin
                 );
-                messageApi.open({
-                    type: "error",
-                    content: error?.toString() ?? "",
-                });
+                // messageApi.open({
+                //     type: "error",
+                //     content: error?.toString() ?? "",
+                // });
                 if (error?.receiptId) {
                     // receiptId generated, maybe the transaction not be confirmed
                     navToResult(false, error.receiptId);
