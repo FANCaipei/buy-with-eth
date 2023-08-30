@@ -8,6 +8,7 @@ import FirebaseManager from "../../../../common/firebase/FirebaseManager";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { Select, Spin, TimeRangePickerProps, message, DatePicker } from "antd";
 import dayjs, { Dayjs, UnitType } from "dayjs";
+import PanelItemCard from "./component/PanelItemCard";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -207,9 +208,18 @@ const BusinessOverview = () => {
                                 onOpenChange={onRangeOpenChange}
                             />
                         </div>
+                        {totalReceiveValue}
+                        count: {allPaymentRecords?.length}
                         <div className="charts-panel">
-                            {totalReceiveValue}
-                            count: {allPaymentRecords?.length}
+                            <PanelItemCard title="test" width="30%">
+                                card 1, bigNumber
+                                <div>second line</div>
+                            </PanelItemCard>
+                            <PanelItemCard
+                                title="Revenue by day"
+                                titleTooltip="In token price at the time of payment"
+                                width="65%"
+                            ></PanelItemCard>
                         </div>
                     </Spin>
                 </div>
@@ -234,6 +244,11 @@ const StyledContainer = styled.div.attrs({ className: "business-overview" })`
                 min-width: 120px;
                 margin-right: 10px;
             }
+        }
+        .charts-panel {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
         }
     }
 `;
