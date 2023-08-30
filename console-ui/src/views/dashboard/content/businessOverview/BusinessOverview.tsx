@@ -32,6 +32,7 @@ const BusinessOverview = () => {
 
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
+            console.log("fetching records...");
             ["hour", "minute", "second", "millisecond"].forEach((unit: string) => {
                 dateRange?.[0]?.set(unit as UnitType, 0);
                 dateRange?.[1]?.set(unit as UnitType, 0);
@@ -39,6 +40,7 @@ const BusinessOverview = () => {
 
             const startTimestamp = dateRange?.[0]?.toDate()?.getTime();
             const endTimestamp = dateRange?.[1]?.add(1, "day")?.toDate()?.getTime();
+
             if (!user?.uid || !projectId || !startTimestamp || !endTimestamp) {
                 return;
             }
@@ -68,7 +70,7 @@ const BusinessOverview = () => {
 
             try {
                 const snapshots = await getDocs(q);
-                const tempRecords = [];
+                const tempRecords: Array<any> = [];
                 let tempTotalValue = 0;
                 snapshots.forEach(doc => {
                     if (doc.exists()) {
@@ -76,22 +78,20 @@ const BusinessOverview = () => {
                         tempRecords.push({ ...doc.data(), id: doc.id });
                     }
                 });
+                console.log("records: ", tempRecords);
                 setTotalReceiveValue(tempTotalValue);
                 setAllPaymentRecords(snapshots.docs);
             } catch (error) {
+                console.error(error);
                 messageApi.error("Fetch data failed");
             }
         },
         [user?.uid, messageApi]
     );
 
-    const onProjectSelected = useCallback(
-        (selectedId: any) => {
-            setSelectedProjectId(selectedId);
-            getPaymentRecords(selectedId, resultRangeDates);
-        },
-        [resultRangeDates]
-    );
+    const onProjectSelected = useCallback((selectedId: any) => {
+        setSelectedProjectId(selectedId);
+    }, []);
 
     const getAllProjects = useCallback(async () => {
         if (!user?.uid) {
@@ -104,7 +104,7 @@ const BusinessOverview = () => {
             if (querySnapshot.empty) {
                 setAllProjects([]);
                 setIsFetchingProjects(false);
-                return;
+                return Promise.reject();
             }
             const tempData: Array<any> = [];
             querySnapshot.forEach(doc => {
@@ -114,21 +114,20 @@ const BusinessOverview = () => {
             });
             setAllProjects(tempData);
             setSelectedProjectId(tempData[0]?.id);
+            setIsFetchingProjects(false);
+            return Promise.resolve(tempData[0]?.id);
         } catch (error) {
             messageApi.error("Get projects failed");
             setAllProjects([]);
+            setIsFetchingProjects(false);
+            return Promise.reject();
         }
-        setIsFetchingProjects(false);
     }, [user?.uid, messageApi]);
 
-    const onDateRangeChange = useCallback(
-        (dates: null | [Dayjs | null, Dayjs | null]) => {
-            // console.log(dates);
-            setResultRangeDates(dates);
-            getPaymentRecords(selectedProjectId, dates);
-        },
-        [getPaymentRecords, selectedProjectId]
-    );
+    const onDateRangeChange = useCallback((dates: null | [Dayjs | null, Dayjs | null]) => {
+        // console.log(dates);
+        setResultRangeDates(dates);
+    }, []);
 
     const onRangeOpenChange = useCallback((open: boolean) => {
         if (open) {
@@ -161,6 +160,11 @@ const BusinessOverview = () => {
     useEffect(() => {
         getAllProjects();
     }, [getAllProjects]);
+
+    // auto fetch records data whenever filter changes
+    useEffect(() => {
+        getPaymentRecords(selectedProjectId, resultRangeDates);
+    }, [getPaymentRecords, selectedProjectId, resultRangeDates]);
 
     return (
         <StyledContainer>
