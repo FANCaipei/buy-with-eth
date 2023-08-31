@@ -11,6 +11,7 @@ import dayjs, { Dayjs, UnitType } from "dayjs";
 import PanelItemCard from "./component/PanelItemCard";
 import BigNumber from "./component/BigNumber";
 import TokenDistributionPieChart from "./component/TokenDistributionPieChart";
+import RevenueByDayChart from "./component/RevenueByDayChart";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -22,19 +23,33 @@ const rangePresets: TimeRangePickerProps["presets"] = [
 ];
 
 const handlePaymentRecordsData = (
-    records: Array<any>
-): { totalRevenue: number; tokenDistributionPieChartData: Array<any> } => {
+    records: Array<any>,
+    rangeDays: Array<string>
+): {
+    totalRevenue: number;
+    tokenDistributionPieChartData: Array<{ value: number; name: string; color: string }>;
+    revenueByDayChartData: Array<{ dateStr: string; value: number }>;
+} => {
     let totalRevenue = 0;
-    const tokenDistributionData = {
+    const tokenDistributionData: { [key: string]: { value: number; name: string; color: string } } = {
         eth: { value: 0, name: "ETH", color: "#6DC41F" },
         matic: { value: 0, name: "MATIC", color: "#805AD5" },
         "usdt-polygon": { value: 0, name: "USDT Polygon", color: "#239CFF" },
         "usdt-eth": { value: 0, name: "USDT Ethereum", color: "#06AED4" },
     };
+    const revenueByDayData: { [key: string]: { dateStr: string; value: number } } = {};
+
+    rangeDays.forEach(dayStr => {
+        revenueByDayData[dayStr] = {
+            dateStr: dayStr,
+            value: 0,
+        };
+    });
 
     records.forEach(item => {
         // -1 means get price failed, can't calculate value in usd
-        totalRevenue += item.recordValueInUSD === -1 ? 0 : item.recordValueInUSD;
+        const valueInUSD = item.recordValueInUSD === -1 ? 0 : item.recordValueInUSD;
+        totalRevenue += valueInUSD;
         // token distribution data
         switch (item.tokenSymbol) {
             case "USDT":
@@ -54,16 +69,25 @@ const handlePaymentRecordsData = (
             default:
                 break;
         }
+        // revenue by day data
+        if (item.recordTimestamp) {
+            const dateStr = dayjs(item.recordTimestamp).format("DD/MM");
+
+            if (revenueByDayData[dateStr]) {
+                revenueByDayData[dateStr].value += valueInUSD;
+            } else {
+                revenueByDayData[dateStr] = {
+                    dateStr: dateStr,
+                    value: valueInUSD,
+                };
+            }
+        }
         // ...
     });
     return {
         totalRevenue: totalRevenue,
-        tokenDistributionPieChartData: [
-            tokenDistributionData["eth"],
-            tokenDistributionData["matic"],
-            tokenDistributionData["usdt-polygon"],
-            tokenDistributionData["usdt-eth"],
-        ],
+        tokenDistributionPieChartData: Object.keys(tokenDistributionData).map(key => tokenDistributionData[key]),
+        revenueByDayChartData: Object.keys(revenueByDayData).map(key => revenueByDayData[key]),
     };
 };
 
@@ -81,7 +105,9 @@ const BusinessOverview = () => {
     const [messageApi, contextHolder] = message.useMessage();
 
     // chart datas
-    const [tokenDistriPieChartData, setTokenDistriPieChartData] = useState<Array<any>>();
+    const [tokenDistriPieChartData, setTokenDistriPieChartData] =
+        useState<Array<{ value: number; name: string; color: string }>>();
+    const [revenueByDayChartData, setRevenueByDayChartData] = useState<Array<{ dateStr: string; value: number }>>();
 
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
@@ -99,6 +125,13 @@ const BusinessOverview = () => {
             }
             if (startTimestamp >= endTimestamp) {
                 return;
+            }
+
+            const rangeDays = [];
+            let dayTimestamp = startTimestamp;
+            while (dayTimestamp < endTimestamp) {
+                rangeDays.push(dayjs(dayTimestamp).format("DD/MM"));
+                dayTimestamp += 24 * 60 * 60 * 1000;
             }
 
             const timeStartCondition = where("recordTimestamp", ">=", startTimestamp);
@@ -132,9 +165,11 @@ const BusinessOverview = () => {
                 });
                 setAllPaymentRecords(tempRecords);
 
-                const handledResult = handlePaymentRecordsData(tempRecords);
+                const handledResult = handlePaymentRecordsData(tempRecords, rangeDays);
                 setTotalReceiveValue(handledResult.totalRevenue);
                 setTokenDistriPieChartData(handledResult.tokenDistributionPieChartData);
+                console.log("revenue by day: ", handledResult.revenueByDayChartData);
+                setRevenueByDayChartData(handledResult.revenueByDayChartData);
                 // set other chart datas
             } catch (error) {
                 console.error(error);
@@ -275,7 +310,9 @@ const BusinessOverview = () => {
                                     title="Revenue by day"
                                     titleTooltip="In token price at the time of payment"
                                     style={{ flexGrow: "1" }}
-                                ></PanelItemCard>
+                                >
+                                    <RevenueByDayChart chartData={revenueByDayChartData ?? []} />
+                                </PanelItemCard>
                             </div>
                             <div className="panel-line">
                                 <PanelItemCard title="Token distribution" style={{ width: "40%" }}>
