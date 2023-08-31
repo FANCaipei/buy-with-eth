@@ -141,7 +141,7 @@ const BusinessOverview = () => {
             }
             setIsLoadingRecords(false);
         },
-        [user?.uid, messageApi]
+        [user?.uid, messageApi, isLoadingRecords]
     );
 
     const onProjectSelected = useCallback((selectedId: any) => {
