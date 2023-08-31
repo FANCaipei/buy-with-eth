@@ -14,6 +14,10 @@ const RevenueByDayChart = ({ chartData }: { chartData: Array<{ dateStr: string; 
         const valueData = chartData?.map(item => item.value) ?? [];
 
         const tempOption = {
+            grid: {
+                top: 40,
+                bottom: 20,
+            },
             xAxis: {
                 type: "category",
                 axisTick: {

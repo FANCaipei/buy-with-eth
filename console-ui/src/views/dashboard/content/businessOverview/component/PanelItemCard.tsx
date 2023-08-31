@@ -50,7 +50,7 @@ const StyledContainer = styled.div`
     }
     .content {
         width: 100%;
-        height: 100%;
+        height: calc(100% - 40px);
         display: flex;
         align-items: center;
         justify-content: center;
