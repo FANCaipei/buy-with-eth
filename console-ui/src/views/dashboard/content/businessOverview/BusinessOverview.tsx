@@ -19,6 +19,52 @@ const rangePresets: TimeRangePickerProps["presets"] = [
     { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
 ];
 
+const handlePaymentRecordsData = (
+    records: Array<any>
+): { totalRevenue: number; tokenDistributionPieChartData: Array<any> } => {
+    let totalRevenue = 0;
+    const tokenDistributionData = {
+        eth: { value: 0, name: "ETH", color: "#6DC41F" },
+        matic: { value: 0, name: "MATIC", color: "#805AD5" },
+        "usdt-polygon": { value: 0, name: "USDT Polygon", color: "#239CFF" },
+        "usdt-eth": { value: 0, name: "USDT Ethereum", color: "#06AED4" },
+    };
+
+    records.forEach(item => {
+        // -1 means get price failed, can't calculate value in usd
+        totalRevenue += item.recordValueInUSD === -1 ? 0 : item.recordValueInUSD;
+        // token distribution data
+        switch (item.tokenSymbol) {
+            case "USDT":
+                if (item.chainId === "0x1") {
+                    tokenDistributionData["usdt-eth"].value += item.value;
+                }
+                if (item.chainId === "0x89") {
+                    tokenDistributionData["usdt-polygon"].value += item.value;
+                }
+                break;
+            case "ETH":
+                tokenDistributionData["eth"].value += item.value;
+                break;
+            case "MATIC":
+                tokenDistributionData["matic"].value += item.value;
+                break;
+            default:
+                break;
+        }
+        // ...
+    });
+    return {
+        totalRevenue: totalRevenue,
+        tokenDistributionPieChartData: [
+            tokenDistributionData["eth"],
+            tokenDistributionData["matic"],
+            tokenDistributionData["usdt-polygon"],
+            tokenDistributionData["usdt-eth"],
+        ],
+    };
+};
+
 const BusinessOverview = () => {
     useProtectedPath();
     const { user } = useFirebaseAuth() as any;
@@ -29,10 +75,14 @@ const BusinessOverview = () => {
     const [rangeDates, setRangeDates] = useState<RangeValue>([dayjs().add(-7, "day"), dayjs()]);
     const [resultRangeDates, setResultRangeDates] = useState<RangeValue>(null);
     const [isFetchingProjects, setIsFetchingProjects] = useState<boolean>(false);
+    const [isLoadingRecords, setIsLoadingRecords] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
 
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
+            if (isLoadingRecords) {
+                return;
+            }
             console.log("fetching records...");
             ["hour", "minute", "second", "millisecond"].forEach((unit: string) => {
                 dateRange?.[0]?.set(unit as UnitType, 0);
@@ -49,6 +99,7 @@ const BusinessOverview = () => {
                 return;
             }
 
+            setIsLoadingRecords(true);
             const timeStartCondition = where("recordTimestamp", ">=", startTimestamp);
             const timeEndCondition = where("recordTimestamp", "<=", endTimestamp);
 
@@ -72,20 +123,22 @@ const BusinessOverview = () => {
             try {
                 const snapshots = await getDocs(q);
                 const tempRecords: Array<any> = [];
-                let tempTotalValue = 0;
                 snapshots.forEach(doc => {
                     if (doc.exists()) {
-                        tempTotalValue += doc.data().recordValueInUSD;
                         tempRecords.push({ ...doc.data(), id: doc.id });
                     }
                 });
                 console.log("records: ", tempRecords);
-                setTotalReceiveValue(tempTotalValue);
-                setAllPaymentRecords(snapshots.docs);
+                setAllPaymentRecords(tempRecords);
+
+                const handledResult = handlePaymentRecordsData(tempRecords);
+                setTotalReceiveValue(handledResult.totalRevenue);
+                // set other chart datas
             } catch (error) {
                 console.error(error);
                 messageApi.error("Fetch data failed");
             }
+            setIsLoadingRecords(false);
         },
         [user?.uid, messageApi]
     );
@@ -177,7 +230,7 @@ const BusinessOverview = () => {
                 </div>
             ) : (
                 <div className="content">
-                    <Spin spinning={isFetchingProjects}>
+                    <Spin spinning={isFetchingProjects || isLoadingRecords}>
                         <div className="filters-block">
                             <Select
                                 className="project-select"
