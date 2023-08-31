@@ -9,6 +9,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { Select, Spin, TimeRangePickerProps, message, DatePicker } from "antd";
 import dayjs, { Dayjs, UnitType } from "dayjs";
 import PanelItemCard from "./component/PanelItemCard";
+import BigNumber from "./component/BigNumber";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -264,14 +265,16 @@ const BusinessOverview = () => {
                         {totalReceiveValue}
                         count: {allPaymentRecords?.length}
                         <div className="charts-panel">
-                            <PanelItemCard title="test" width="30%">
-                                card 1, bigNumber
-                                <div>second line</div>
+                            <PanelItemCard title="Revenue" style={{ width: "30%" }}>
+                                <BigNumber
+                                    totalRevenue={totalReceiveValue ?? 0}
+                                    recordsCount={allPaymentRecords?.length}
+                                />
                             </PanelItemCard>
                             <PanelItemCard
                                 title="Revenue by day"
                                 titleTooltip="In token price at the time of payment"
-                                width="65%"
+                                style={{ flexGrow: "1" }}
                             ></PanelItemCard>
                         </div>
                     </Spin>
@@ -292,6 +295,7 @@ const StyledContainer = styled.div.attrs({ className: "business-overview" })`
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            margin-right: 8px;
 
             .project-select {
                 min-width: 120px;

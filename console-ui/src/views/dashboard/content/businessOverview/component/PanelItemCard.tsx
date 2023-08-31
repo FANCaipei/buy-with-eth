@@ -5,16 +5,16 @@ import { styled } from "styled-components";
 const PanelItemCard = ({
     title,
     children,
-    width,
+    style,
     titleTooltip,
 }: {
     title: string;
     children?: any;
-    width: string;
+    style?: object;
     titleTooltip?: string;
 }) => {
     return (
-        <StyledContainer style={{ width: width }}>
+        <StyledContainer style={style}>
             <div className="title">
                 {title}
                 <div className="tooltip">
@@ -50,6 +50,10 @@ const StyledContainer = styled.div`
     }
     .content {
         width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 `;
 
