@@ -10,6 +10,7 @@ import { Select, Spin, TimeRangePickerProps, message, DatePicker } from "antd";
 import dayjs, { Dayjs, UnitType } from "dayjs";
 import PanelItemCard from "./component/PanelItemCard";
 import BigNumber from "./component/BigNumber";
+import TokenDistributionPieChart from "./component/TokenDistributionPieChart";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -79,11 +80,11 @@ const BusinessOverview = () => {
     const [isLoadingRecords, setIsLoadingRecords] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
 
+    // chart datas
+    const [tokenDistriPieChartData, setTokenDistriPieChartData] = useState<Array<any>>();
+
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
-            if (isLoadingRecords) {
-                return;
-            }
             console.log("fetching records...");
             ["hour", "minute", "second", "millisecond"].forEach((unit: string) => {
                 dateRange?.[0]?.set(unit as UnitType, 0);
@@ -100,7 +101,6 @@ const BusinessOverview = () => {
                 return;
             }
 
-            setIsLoadingRecords(true);
             const timeStartCondition = where("recordTimestamp", ">=", startTimestamp);
             const timeEndCondition = where("recordTimestamp", "<=", endTimestamp);
 
@@ -121,6 +121,7 @@ const BusinessOverview = () => {
                 );
             }
 
+            setIsLoadingRecords(true);
             try {
                 const snapshots = await getDocs(q);
                 const tempRecords: Array<any> = [];
@@ -129,11 +130,11 @@ const BusinessOverview = () => {
                         tempRecords.push({ ...doc.data(), id: doc.id });
                     }
                 });
-                console.log("records: ", tempRecords);
                 setAllPaymentRecords(tempRecords);
 
                 const handledResult = handlePaymentRecordsData(tempRecords);
                 setTotalReceiveValue(handledResult.totalRevenue);
+                setTokenDistriPieChartData(handledResult.tokenDistributionPieChartData);
                 // set other chart datas
             } catch (error) {
                 console.error(error);
@@ -141,7 +142,7 @@ const BusinessOverview = () => {
             }
             setIsLoadingRecords(false);
         },
-        [user?.uid, messageApi, isLoadingRecords]
+        [user?.uid, messageApi]
     );
 
     const onProjectSelected = useCallback((selectedId: any) => {
@@ -262,20 +263,25 @@ const BusinessOverview = () => {
                                 onOpenChange={onRangeOpenChange}
                             />
                         </div>
-                        {totalReceiveValue}
-                        count: {allPaymentRecords?.length}
                         <div className="charts-panel">
-                            <PanelItemCard title="Revenue" style={{ width: "30%" }}>
-                                <BigNumber
-                                    totalRevenue={totalReceiveValue ?? 0}
-                                    recordsCount={allPaymentRecords?.length}
-                                />
-                            </PanelItemCard>
-                            <PanelItemCard
-                                title="Revenue by day"
-                                titleTooltip="In token price at the time of payment"
-                                style={{ flexGrow: "1" }}
-                            ></PanelItemCard>
+                            <div className="panel-line">
+                                <PanelItemCard title="Revenue" style={{ width: "30%" }}>
+                                    <BigNumber
+                                        totalRevenue={totalReceiveValue ?? 0}
+                                        recordsCount={allPaymentRecords?.length}
+                                    />
+                                </PanelItemCard>
+                                <PanelItemCard
+                                    title="Revenue by day"
+                                    titleTooltip="In token price at the time of payment"
+                                    style={{ flexGrow: "1" }}
+                                ></PanelItemCard>
+                            </div>
+                            <div className="panel-line">
+                                <PanelItemCard title="Token distribution" style={{ width: "40%" }}>
+                                    <TokenDistributionPieChart chartData={tokenDistriPieChartData} />
+                                </PanelItemCard>
+                            </div>
                         </div>
                     </Spin>
                 </div>
@@ -304,8 +310,13 @@ const StyledContainer = styled.div.attrs({ className: "business-overview" })`
         }
         .charts-panel {
             margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
+            width: 100%;
+
+            .panel-line {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+            }
         }
     }
 `;
