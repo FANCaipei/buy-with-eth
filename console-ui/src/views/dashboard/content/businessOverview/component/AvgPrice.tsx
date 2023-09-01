@@ -4,7 +4,7 @@ const AvgPrice = ({ avgPrices }: { avgPrices: Array<{ avgPrice: number; tokenSym
     return (
         <StyledContainer>
             {avgPrices.map(item => (
-                <div className="avg-price" style={{ color: item.color }}>
+                <div className="avg-price" style={{ color: item.color }} key={item.tokenSymbol}>
                     <div className="price">${item.avgPrice?.toFixed(4)}</div>
                     <div className="label">{item.tokenSymbol}</div>
                 </div>

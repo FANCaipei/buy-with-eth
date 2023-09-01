@@ -13,6 +13,7 @@ import BigNumber from "./component/BigNumber";
 import TokenDistributionPieChart from "./component/TokenDistributionPieChart";
 import RevenueByDayChart from "./component/RevenueByDayChart";
 import AvgPrice from "./component/AvgPrice";
+import RevenueByProductIdChart from "./component/RevenueByProductIdChart";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -31,6 +32,7 @@ const handlePaymentRecordsData = (
     tokenDistributionPieChartData: Array<{ value: number; name: string; color: string }>;
     revenueByDayChartData: Array<{ dateStr: string; value: number }>;
     avgPrices: Array<{ avgPrice: number; tokenSymbol: string; color: string }>;
+    revenueByProductIdData: Array<{ productId: string; value: number }>;
 } => {
     const tokenColors: { [key: string]: string } = {
         eth: "#6DC41F",
@@ -64,6 +66,7 @@ const handlePaymentRecordsData = (
             count: 0,
         },
     };
+    const revenueByProductId: { [key: string]: { productId: string; value: number } } = {};
 
     rangeDays.forEach(dayStr => {
         revenueByDayData[dayStr] = {
@@ -80,24 +83,23 @@ const handlePaymentRecordsData = (
         switch (item.tokenSymbol) {
             case "USDT":
                 if (item.chainId === "0x1") {
-                    tokenDistributionData["usdt-eth"].value += item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                    tokenDistributionData["usdt-eth"].value += valueInUSD;
                     avgPricesData["usdt-eth"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                     avgPricesData["usdt-eth"].count += 1;
                 }
                 if (item.chainId === "0x89") {
-                    tokenDistributionData["usdt-polygon"].value +=
-                        item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                    tokenDistributionData["usdt-polygon"].value += valueInUSD;
                     avgPricesData["usdt-polygon"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                     avgPricesData["usdt-polygon"].count += 1;
                 }
                 break;
             case "ETH":
-                tokenDistributionData["eth"].value += item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                tokenDistributionData["eth"].value += valueInUSD;
                 avgPricesData["eth"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                 avgPricesData["eth"].count += 1;
                 break;
             case "MATIC":
-                tokenDistributionData["matic"].value += item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                tokenDistributionData["matic"].value += valueInUSD;
                 avgPricesData["matic"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                 avgPricesData["matic"].count += 1;
                 break;
@@ -117,8 +119,19 @@ const handlePaymentRecordsData = (
                 };
             }
         }
+        // revenue by productId
+        const prdId = item.productId?.length > 0 ? item.productId : "others";
+        if (revenueByProductId[prdId]) {
+            revenueByProductId[prdId].value += valueInUSD;
+        } else {
+            revenueByProductId[prdId] = {
+                productId: prdId,
+                value: valueInUSD,
+            };
+        }
         // ...
     });
+
     return {
         totalRevenue: totalRevenue,
         tokenDistributionPieChartData: Object.keys(tokenDistributionData).map(key => tokenDistributionData[key]),
@@ -135,6 +148,7 @@ const handlePaymentRecordsData = (
                 color: avgPricesData[key].color,
             };
         }),
+        revenueByProductIdData: Object.keys(revenueByProductId).map(key => revenueByProductId[key]),
     };
 };
 
@@ -156,6 +170,7 @@ const BusinessOverview = () => {
         useState<Array<{ value: number; name: string; color: string }>>();
     const [revenueByDayChartData, setRevenueByDayChartData] = useState<Array<{ dateStr: string; value: number }>>();
     const [avgPriceData, setAvgPriceData] = useState<Array<{ avgPrice: number; tokenSymbol: string; color: string }>>();
+    const [revenueByProductIdData, setRevenueByProductIdData] = useState<Array<{ productId: string; value: number }>>();
 
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
@@ -218,6 +233,7 @@ const BusinessOverview = () => {
                 setTokenDistriPieChartData(handledResult.tokenDistributionPieChartData);
                 setRevenueByDayChartData(handledResult.revenueByDayChartData);
                 setAvgPriceData(handledResult.avgPrices);
+                setRevenueByProductIdData(handledResult.revenueByProductIdData);
                 // set other chart datas
             } catch (error) {
                 console.error(error);
@@ -364,18 +380,23 @@ const BusinessOverview = () => {
                             </div>
                             <div className="panel-line">
                                 <PanelItemCard
+                                    title="Average payment price"
+                                    style={{ flexGrow: "1" }}
+                                    titleTooltip="Token average price (the price recorded at payment moment)"
+                                >
+                                    <AvgPrice avgPrices={avgPriceData ?? []} />
+                                </PanelItemCard>
+                                <PanelItemCard
                                     title="Revenue by token"
-                                    style={{ width: "45%" }}
+                                    style={{ width: "40%" }}
                                     titleTooltip="Revenue in USD distribution by token type"
                                 >
                                     <TokenDistributionPieChart chartData={tokenDistriPieChartData} />
                                 </PanelItemCard>
-                                <PanelItemCard
-                                    title="Average payment price"
-                                    style={{ width: "45%" }}
-                                    titleTooltip="Token average price (the price recorded at payment moment)"
-                                >
-                                    <AvgPrice avgPrices={avgPriceData ?? []} />
+                            </div>
+                            <div className="panel-line">
+                                <PanelItemCard title="Revenue by product" style={{ flexGrow: "1" }}>
+                                    <RevenueByProductIdChart chartData={revenueByProductIdData ?? []} />
                                 </PanelItemCard>
                             </div>
                         </div>
@@ -406,6 +427,7 @@ const StyledContainer = styled.div.attrs({ className: "business-overview" })`
         }
         .charts-panel {
             margin-top: 20px;
+            padding-bottom: 20px;
             width: 100%;
 
             .panel-line {
