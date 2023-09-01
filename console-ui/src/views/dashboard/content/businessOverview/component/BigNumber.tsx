@@ -19,7 +19,7 @@ const StyledContainer = styled.div`
     justify-content: center;
 
     .revenue {
-        font-size: 80px;
+        font-size: 64px;
         color: rgba(0, 0, 0, 0.87);
     }
     .count {

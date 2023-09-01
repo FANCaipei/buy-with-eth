@@ -80,24 +80,25 @@ const handlePaymentRecordsData = (
         switch (item.tokenSymbol) {
             case "USDT":
                 if (item.chainId === "0x1") {
-                    tokenDistributionData["usdt-eth"].value += item.recordValueInUSD;
-                    avgPricesData["usdt-eth"].totalPrice += item.recordValueInUSD;
+                    tokenDistributionData["usdt-eth"].value += item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                    avgPricesData["usdt-eth"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                     avgPricesData["usdt-eth"].count += 1;
                 }
                 if (item.chainId === "0x89") {
-                    tokenDistributionData["usdt-polygon"].value += item.recordValueInUSD;
-                    avgPricesData["usdt-polygon"].totalPrice += item.recordValueInUSD;
+                    tokenDistributionData["usdt-polygon"].value +=
+                        item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                    avgPricesData["usdt-polygon"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                     avgPricesData["usdt-polygon"].count += 1;
                 }
                 break;
             case "ETH":
-                tokenDistributionData["eth"].value += item.recordValueInUSD;
-                avgPricesData["eth"].totalPrice += item.recordValueInUSD;
+                tokenDistributionData["eth"].value += item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                avgPricesData["eth"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                 avgPricesData["eth"].count += 1;
                 break;
             case "MATIC":
-                tokenDistributionData["matic"].value += item.recordValueInUSD;
-                avgPricesData["matic"].totalPrice += item.recordValueInUSD;
+                tokenDistributionData["matic"].value += item.recordValueInUSD !== -1 ? item.recordValueInUSD : 0;
+                avgPricesData["matic"].totalPrice += item.recordPrice !== -1 ? item.recordPrice : 0;
                 avgPricesData["matic"].count += 1;
                 break;
             default:
@@ -372,7 +373,7 @@ const BusinessOverview = () => {
                                 <PanelItemCard
                                     title="Average payment price"
                                     style={{ width: "45%" }}
-                                    titleTooltip="Token average price(at the payment moment)"
+                                    titleTooltip="Token average price (the price recorded at payment moment)"
                                 >
                                     <AvgPrice avgPrices={avgPriceData ?? []} />
                                 </PanelItemCard>
