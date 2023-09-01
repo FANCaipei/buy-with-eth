@@ -12,6 +12,7 @@ import PanelItemCard from "./component/PanelItemCard";
 import BigNumber from "./component/BigNumber";
 import TokenDistributionPieChart from "./component/TokenDistributionPieChart";
 import RevenueByDayChart from "./component/RevenueByDayChart";
+import AvgPrice from "./component/AvgPrice";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -29,15 +30,40 @@ const handlePaymentRecordsData = (
     totalRevenue: number;
     tokenDistributionPieChartData: Array<{ value: number; name: string; color: string }>;
     revenueByDayChartData: Array<{ dateStr: string; value: number }>;
+    avgPrices: Array<{ avgPrice: number; tokenSymbol: string; color: string }>;
 } => {
+    const tokenColors: { [key: string]: string } = {
+        eth: "#6DC41F",
+        matic: "#805AD5",
+        "usdt-polygon": "#239CFF",
+        "usdt-eth": "#06AED4",
+    };
     let totalRevenue = 0;
     const tokenDistributionData: { [key: string]: { value: number; name: string; color: string } } = {
-        eth: { value: 0, name: "ETH", color: "#6DC41F" },
-        matic: { value: 0, name: "MATIC", color: "#805AD5" },
-        "usdt-polygon": { value: 0, name: "USDT Polygon", color: "#239CFF" },
-        "usdt-eth": { value: 0, name: "USDT Ethereum", color: "#06AED4" },
+        eth: { value: 0, name: "ETH", color: tokenColors["eth"] },
+        matic: { value: 0, name: "MATIC", color: tokenColors["matic"] },
+        "usdt-polygon": { value: 0, name: "USDT Polygon", color: tokenColors["usdt-polygon"] },
+        "usdt-eth": { value: 0, name: "USDT Ethereum", color: tokenColors["usdt-eth"] },
     };
     const revenueByDayData: { [key: string]: { dateStr: string; value: number } } = {};
+    const avgPricesData: {
+        [key: string]: { tokenSymbol: string; totalPrice: number; count: number; color: string };
+    } = {
+        eth: { tokenSymbol: "ETH", color: tokenColors["eth"], totalPrice: 0, count: 0 },
+        matic: { tokenSymbol: "MATIC", color: tokenColors["matic"], totalPrice: 0, count: 0 },
+        "usdt-polygon": {
+            tokenSymbol: "USDT Polygon",
+            color: tokenColors["usdt-polygon"],
+            totalPrice: 0,
+            count: 0,
+        },
+        "usdt-eth": {
+            tokenSymbol: "USDT Ethereum",
+            color: tokenColors["usdt-eth"],
+            totalPrice: 0,
+            count: 0,
+        },
+    };
 
     rangeDays.forEach(dayStr => {
         revenueByDayData[dayStr] = {
@@ -54,17 +80,25 @@ const handlePaymentRecordsData = (
         switch (item.tokenSymbol) {
             case "USDT":
                 if (item.chainId === "0x1") {
-                    tokenDistributionData["usdt-eth"].value += item.value;
+                    tokenDistributionData["usdt-eth"].value += item.recordValueInUSD;
+                    avgPricesData["usdt-eth"].totalPrice += item.recordValueInUSD;
+                    avgPricesData["usdt-eth"].count += 1;
                 }
                 if (item.chainId === "0x89") {
-                    tokenDistributionData["usdt-polygon"].value += item.value;
+                    tokenDistributionData["usdt-polygon"].value += item.recordValueInUSD;
+                    avgPricesData["usdt-polygon"].totalPrice += item.recordValueInUSD;
+                    avgPricesData["usdt-polygon"].count += 1;
                 }
                 break;
             case "ETH":
-                tokenDistributionData["eth"].value += item.value;
+                tokenDistributionData["eth"].value += item.recordValueInUSD;
+                avgPricesData["eth"].totalPrice += item.recordValueInUSD;
+                avgPricesData["eth"].count += 1;
                 break;
             case "MATIC":
-                tokenDistributionData["matic"].value += item.value;
+                tokenDistributionData["matic"].value += item.recordValueInUSD;
+                avgPricesData["matic"].totalPrice += item.recordValueInUSD;
+                avgPricesData["matic"].count += 1;
                 break;
             default:
                 break;
@@ -88,6 +122,18 @@ const handlePaymentRecordsData = (
         totalRevenue: totalRevenue,
         tokenDistributionPieChartData: Object.keys(tokenDistributionData).map(key => tokenDistributionData[key]),
         revenueByDayChartData: Object.keys(revenueByDayData).map(key => revenueByDayData[key]),
+        avgPrices: Object.keys(avgPricesData).map(key => {
+            let avg = 0;
+            if (avgPricesData[key].count !== 0) {
+                avg = avgPricesData[key].totalPrice / avgPricesData[key].count;
+            }
+
+            return {
+                avgPrice: avg,
+                tokenSymbol: avgPricesData[key].tokenSymbol,
+                color: avgPricesData[key].color,
+            };
+        }),
     };
 };
 
@@ -108,6 +154,7 @@ const BusinessOverview = () => {
     const [tokenDistriPieChartData, setTokenDistriPieChartData] =
         useState<Array<{ value: number; name: string; color: string }>>();
     const [revenueByDayChartData, setRevenueByDayChartData] = useState<Array<{ dateStr: string; value: number }>>();
+    const [avgPriceData, setAvgPriceData] = useState<Array<{ avgPrice: number; tokenSymbol: string; color: string }>>();
 
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
@@ -168,8 +215,8 @@ const BusinessOverview = () => {
                 const handledResult = handlePaymentRecordsData(tempRecords, rangeDays);
                 setTotalReceiveValue(handledResult.totalRevenue);
                 setTokenDistriPieChartData(handledResult.tokenDistributionPieChartData);
-                console.log("revenue by day: ", handledResult.revenueByDayChartData);
                 setRevenueByDayChartData(handledResult.revenueByDayChartData);
+                setAvgPriceData(handledResult.avgPrices);
                 // set other chart datas
             } catch (error) {
                 console.error(error);
@@ -315,8 +362,19 @@ const BusinessOverview = () => {
                                 </PanelItemCard>
                             </div>
                             <div className="panel-line">
-                                <PanelItemCard title="Token distribution" style={{ width: "40%" }}>
+                                <PanelItemCard
+                                    title="Revenue by token"
+                                    style={{ width: "45%" }}
+                                    titleTooltip="Revenue in USD distribution by token type"
+                                >
                                     <TokenDistributionPieChart chartData={tokenDistriPieChartData} />
+                                </PanelItemCard>
+                                <PanelItemCard
+                                    title="Average payment price"
+                                    style={{ width: "45%" }}
+                                    titleTooltip="Token average price(at the payment moment)"
+                                >
+                                    <AvgPrice avgPrices={avgPriceData ?? []} />
                                 </PanelItemCard>
                             </div>
                         </div>
