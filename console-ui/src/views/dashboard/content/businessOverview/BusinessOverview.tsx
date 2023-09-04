@@ -15,6 +15,7 @@ import RevenueByDayChart from "./component/RevenueByDayChart";
 import AvgPrice from "./component/AvgPrice";
 import RevenueByProductIdChart from "./component/RevenueByProductIdChart";
 import PaymentCountInHour from "./component/PaymentCountInHour";
+import { useLocation } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -174,12 +175,13 @@ const handlePaymentRecordsData = (
 const BusinessOverview = () => {
     useProtectedPath();
     const { user } = useFirebaseAuth() as any;
+    const { state } = useLocation();
     const [allProjects, setAllProjects] = useState<any>();
     const [allPaymentRecords, setAllPaymentRecords] = useState<Array<any>>([]);
     const [totalReceiveValue, setTotalReceiveValue] = useState<number>();
     const [selectedProjectId, setSelectedProjectId] = useState<any>();
-    const [rangeDates, setRangeDates] = useState<RangeValue>([dayjs().add(-7, "day"), dayjs()]);
-    const [resultRangeDates, setResultRangeDates] = useState<RangeValue>(null);
+    const [rangeDates, setRangeDates] = useState<RangeValue>(null);
+    const [resultRangeDates, setResultRangeDates] = useState<RangeValue>([dayjs().add(-7, "day"), dayjs()]);
     const [isFetchingProjects, setIsFetchingProjects] = useState<boolean>(false);
     const [isLoadingRecords, setIsLoadingRecords] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
@@ -332,6 +334,14 @@ const BusinessOverview = () => {
         },
         [rangeDates]
     );
+
+    useEffect(() => {
+        if (state?.fromTimestamp && state?.toTimestamp) {
+            if (state.fromTimestamp < state.toTimestamp) {
+                setResultRangeDates([dayjs(state.fromTimestamp), dayjs(state.toTimestamp)]);
+            }
+        }
+    }, [state?.fromTimestamp, state?.toTimestamp]);
 
     useEffect(() => {
         getAllProjects();

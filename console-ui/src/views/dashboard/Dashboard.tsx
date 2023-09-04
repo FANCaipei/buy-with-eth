@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
     BarChartOutlined,
     AppstoreAddOutlined,
-    UserOutlined,
+    FileDoneOutlined,
     FileTextFilled,
     LogoutOutlined,
     ExclamationCircleFilled,
@@ -34,7 +34,7 @@ const MenuItemsData: MenuProps["items"] = [
     },
     {
         key: "bills", // the path
-        icon: React.createElement(UserOutlined),
+        icon: React.createElement(FileDoneOutlined),
         label: `Bills`,
     },
 ];

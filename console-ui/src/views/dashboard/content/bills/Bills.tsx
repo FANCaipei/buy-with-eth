@@ -6,41 +6,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import FirebaseManager from "../../../../common/firebase/FirebaseManager";
 import { Button, Modal, Table, message } from "antd";
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
-const UnpaidTableColumns = [
-    {
-        title: "Period",
-        dataIndex: "id",
-    },
-    {
-        title: "Total Successful Payment",
-        dataIndex: "paymentCount",
-    },
-    {
-        title: "Bill",
-        dataIndex: "bill",
-        render: (text: any) => <span>${text}</span>,
-    },
-];
-
-const HiatoryPaiedTableColumns = [
-    {
-        title: "Period",
-        dataIndex: "id",
-    },
-    {
-        title: "Total Successful Payment",
-        dataIndex: "paymentCount",
-    },
-    {
-        title: "Bill Paied",
-        dataIndex: "bill",
-        render: (text: any) => <span>${text}</span>,
-    },
-];
+const CalcMonthStartEndTime = (billId: string): { startTimestamp: number; endTimestamp: number } | null => {
+    const dateTime = dayjs(billId);
+    return {
+        startTimestamp: dateTime.startOf("month").toDate().getTime(),
+        endTimestamp: dateTime.endOf("month").toDate().getTime(),
+    };
+};
 
 const Bills = () => {
     const { user } = useFirebaseAuth() as any;
+    const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [isLoadingUnpaidData, setIsLoadingUnpaidData] = useState<boolean>(false);
     const [isLoadingHistoryData, setIsLoadingHistoryData] = useState<boolean>(false);
@@ -50,6 +29,69 @@ const Bills = () => {
     const [historyBills, setHistoryBills] = useState<Array<any>>([]);
     const [paymentUrl, setPaymentUrl] = useState<string>();
     const payIframeRef = useRef<HTMLIFrameElement>(null);
+
+    const goOverview = useCallback((startTimestamp: number, endTimestamp: number) => {
+        navigate("/dashboard/overview", {
+            state: {
+                fromTimestamp: startTimestamp,
+                toTimestamp: endTimestamp,
+            },
+        });
+    }, []);
+
+    const [historyPaiedTableColumns] = useState([
+        {
+            title: "Period",
+            dataIndex: "id",
+            render: (text: any) => {
+                const times = CalcMonthStartEndTime(text);
+                const navFn = () => {
+                    if (!times) {
+                        return;
+                    }
+                    goOverview(times.startTimestamp, times.endTimestamp);
+                };
+
+                return <a onClick={navFn}> {text}</a>;
+            },
+        },
+        {
+            title: "Total Successful Payment",
+            dataIndex: "paymentCount",
+        },
+        {
+            title: "Bill Paied",
+            dataIndex: "bill",
+            render: (text: any) => <span>${text}</span>,
+        },
+    ]);
+
+    const [unpaidTableColumns] = useState([
+        {
+            title: "Period",
+            dataIndex: "id",
+            render: (text: any) => {
+                const times = CalcMonthStartEndTime(text);
+                const navFn = () => {
+                    if (!times) {
+                        return;
+                    }
+                    goOverview(times.startTimestamp, times.endTimestamp);
+                };
+
+                return <a onClick={navFn}> {text}</a>;
+            },
+        },
+        {
+            title: "Total Successful Payment",
+            dataIndex: "paymentCount",
+        },
+        {
+            title: "Bill",
+            dataIndex: "bill",
+            render: (text: any) => <span>${text}</span>,
+        },
+    ]);
 
     const getUnpaidBills = useCallback(async () => {
         if (!user?.uid) {
@@ -234,7 +276,7 @@ const Bills = () => {
             <PanelTitle title="Bills" />
             <div className="title">Unpaid Bills</div>
             <Table
-                columns={UnpaidTableColumns}
+                columns={unpaidTableColumns}
                 dataSource={unpaidBills}
                 pagination={false}
                 loading={isLoadingUnpaidData}
@@ -262,7 +304,7 @@ const Bills = () => {
 
             <div className="title">History Bills</div>
             <Table
-                columns={HiatoryPaiedTableColumns}
+                columns={historyPaiedTableColumns}
                 dataSource={historyBills}
                 rowKey="id"
                 loading={isLoadingHistoryData}
