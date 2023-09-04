@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 import ReactECharts from "echarts-for-react";
 import { useEffect, useState } from "react";
+import { Empty } from "antd";
 
 const TokenDistributionPieChart = ({ chartData }: { chartData?: Array<any> }) => {
     const [chartOption, setChartOption] = useState<any>({});
@@ -44,7 +45,13 @@ const TokenDistributionPieChart = ({ chartData }: { chartData?: Array<any> }) =>
 
     return (
         <StyledContainer>
-            <ReactECharts option={chartOption} />
+            {chartData?.length ? (
+                <ReactECharts option={chartOption} />
+            ) : (
+                <div className="empty-contianer">
+                    <Empty />
+                </div>
+            )}
         </StyledContainer>
     );
 };
@@ -52,6 +59,14 @@ const TokenDistributionPieChart = ({ chartData }: { chartData?: Array<any> }) =>
 const StyledContainer = styled.div`
     width: 100%;
     height: 100%;
+
+    .empty-contianer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 `;
 
 export default TokenDistributionPieChart;

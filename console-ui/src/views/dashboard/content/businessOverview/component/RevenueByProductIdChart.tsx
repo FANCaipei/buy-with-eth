@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 import ReactECharts from "echarts-for-react";
 import { useEffect, useState } from "react";
+import { Empty } from "antd";
 
 const RevenueByProductIdChart = ({ chartData }: { chartData?: Array<{ productId: string; value: number }> }) => {
     const [chartOption, setChartOption] = useState<any>({});
@@ -52,7 +53,13 @@ const RevenueByProductIdChart = ({ chartData }: { chartData?: Array<{ productId:
 
     return (
         <StyledContainer>
-            <ReactECharts option={chartOption} />
+            {chartData?.length ? (
+                <ReactECharts option={chartOption} />
+            ) : (
+                <div className="empty-contianer">
+                    <Empty />
+                </div>
+            )}
         </StyledContainer>
     );
 };
@@ -60,6 +67,14 @@ const RevenueByProductIdChart = ({ chartData }: { chartData?: Array<{ productId:
 const StyledContainer = styled.div`
     width: 100%;
     height: 100%;
+
+    .empty-contianer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 `;
 
 export default RevenueByProductIdChart;

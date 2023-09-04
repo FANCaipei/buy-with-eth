@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 import ReactECharts from "echarts-for-react";
 import { useEffect, useState } from "react";
+import { Empty } from "antd";
 
 const PaymentCountInHour = ({ chartData }: { chartData: Array<{ hourStr: string; value: number }> }) => {
     const [chartOption, setChartOption] = useState<any>({});
@@ -48,7 +49,13 @@ const PaymentCountInHour = ({ chartData }: { chartData: Array<{ hourStr: string;
     }, [chartData]);
     return (
         <StyledContainer>
-            <ReactECharts option={chartOption} />
+            {chartData?.length ? (
+                <ReactECharts option={chartOption} />
+            ) : (
+                <div className="empty-contianer">
+                    <Empty />
+                </div>
+            )}
         </StyledContainer>
     );
 };
@@ -56,6 +63,14 @@ const PaymentCountInHour = ({ chartData }: { chartData: Array<{ hourStr: string;
 const StyledContainer = styled.div`
     width: 100%;
     height: 100%;
+
+    .empty-contianer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 `;
 
 export default PaymentCountInHour;
