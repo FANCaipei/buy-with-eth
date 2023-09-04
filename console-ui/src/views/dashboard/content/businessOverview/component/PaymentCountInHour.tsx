@@ -2,7 +2,7 @@ import { styled } from "styled-components";
 import ReactECharts from "echarts-for-react";
 import { useEffect, useState } from "react";
 
-const RevenueByDayChart = ({ chartData }: { chartData: Array<{ dateStr: string; value: number }> }) => {
+const PaymentCountInHour = ({ chartData }: { chartData: Array<{ hourStr: string; value: number }> }) => {
     const [chartOption, setChartOption] = useState<any>({});
 
     useEffect(() => {
@@ -10,7 +10,7 @@ const RevenueByDayChart = ({ chartData }: { chartData: Array<{ dateStr: string; 
             return;
         }
 
-        const timeAxisData = chartData?.map(item => item.dateStr) ?? [];
+        const timeAxisData = chartData?.map(item => item.hourStr).sort((a, b) => parseFloat(a) - parseFloat(b)) ?? [];
         const valueData = chartData?.map(item => item.value) ?? [];
 
         const tempOption = {
@@ -30,13 +30,10 @@ const RevenueByDayChart = ({ chartData }: { chartData: Array<{ dateStr: string; 
             },
             yAxis: {
                 type: "value",
-                name: "Revenue in USD",
+                name: "Payment count",
             },
             tooltip: {
                 show: true,
-                formatter: (params: any) => {
-                    return params?.value?.toFixed(4);
-                },
             },
             series: [
                 {
@@ -49,7 +46,6 @@ const RevenueByDayChart = ({ chartData }: { chartData: Array<{ dateStr: string; 
 
         setChartOption(tempOption);
     }, [chartData]);
-
     return (
         <StyledContainer>
             <ReactECharts option={chartOption} />
@@ -62,4 +58,4 @@ const StyledContainer = styled.div`
     height: 100%;
 `;
 
-export default RevenueByDayChart;
+export default PaymentCountInHour;

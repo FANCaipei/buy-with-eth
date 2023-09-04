@@ -14,6 +14,7 @@ import TokenDistributionPieChart from "./component/TokenDistributionPieChart";
 import RevenueByDayChart from "./component/RevenueByDayChart";
 import AvgPrice from "./component/AvgPrice";
 import RevenueByProductIdChart from "./component/RevenueByProductIdChart";
+import PaymentCountInHour from "./component/PaymentCountInHour";
 
 const { RangePicker } = DatePicker;
 type RangeValue = [Dayjs | null, Dayjs | null] | null;
@@ -33,6 +34,7 @@ const handlePaymentRecordsData = (
     revenueByDayChartData: Array<{ dateStr: string; value: number }>;
     avgPrices: Array<{ avgPrice: number; tokenSymbol: string; color: string }>;
     revenueByProductIdData: Array<{ productId: string; value: number }>;
+    paymentCountDistributionInHourData: Array<{ hourStr: string; value: number }>;
 } => {
     const tokenColors: { [key: string]: string } = {
         eth: "#6DC41F",
@@ -67,10 +69,19 @@ const handlePaymentRecordsData = (
         },
     };
     const revenueByProductId: { [key: string]: { productId: string; value: number } } = {};
+    const paymentCountInHour: { [key: string]: { hourStr: string; value: number } } = {};
 
     rangeDays.forEach(dayStr => {
         revenueByDayData[dayStr] = {
             dateStr: dayStr,
+            value: 0,
+        };
+    });
+
+    Array.from({ length: 24 }, (_value, index) => index).forEach(hourNumber => {
+        const key = `${("00" + hourNumber).slice(-2)}`;
+        paymentCountInHour[key] = {
+            hourStr: key,
             value: 0,
         };
     });
@@ -106,9 +117,10 @@ const handlePaymentRecordsData = (
             default:
                 break;
         }
-        // revenue by day data
         if (item.recordTimestamp) {
-            const dateStr = dayjs(item.recordTimestamp).format("DD/MM");
+            const dateTime = dayjs(item.recordTimestamp);
+            // revenue by day data
+            const dateStr = dateTime.format("DD/MM");
 
             if (revenueByDayData[dateStr]) {
                 revenueByDayData[dateStr].value += valueInUSD;
@@ -117,6 +129,12 @@ const handlePaymentRecordsData = (
                     dateStr: dateStr,
                     value: valueInUSD,
                 };
+            }
+
+            //payment count in hour data
+            const hourStr = dateTime.format("HH");
+            if (paymentCountInHour[hourStr]) {
+                paymentCountInHour[hourStr].value += 1;
             }
         }
         // revenue by productId
@@ -149,6 +167,7 @@ const handlePaymentRecordsData = (
             };
         }),
         revenueByProductIdData: Object.keys(revenueByProductId).map(key => revenueByProductId[key]),
+        paymentCountDistributionInHourData: Object.keys(paymentCountInHour).map(key => paymentCountInHour[key]),
     };
 };
 
@@ -171,10 +190,11 @@ const BusinessOverview = () => {
     const [revenueByDayChartData, setRevenueByDayChartData] = useState<Array<{ dateStr: string; value: number }>>();
     const [avgPriceData, setAvgPriceData] = useState<Array<{ avgPrice: number; tokenSymbol: string; color: string }>>();
     const [revenueByProductIdData, setRevenueByProductIdData] = useState<Array<{ productId: string; value: number }>>();
+    const [paymentCountInHourData, setPaymentCountInHourData] = useState<Array<{ hourStr: string; value: number }>>();
 
     const getPaymentRecords = useCallback(
         async (projectId: string, dateRange: RangeValue) => {
-            console.log("fetching records...");
+            // console.log("fetching records...");
             ["hour", "minute", "second", "millisecond"].forEach((unit: string) => {
                 dateRange?.[0]?.set(unit as UnitType, 0);
                 dateRange?.[1]?.set(unit as UnitType, 0);
@@ -234,6 +254,7 @@ const BusinessOverview = () => {
                 setRevenueByDayChartData(handledResult.revenueByDayChartData);
                 setAvgPriceData(handledResult.avgPrices);
                 setRevenueByProductIdData(handledResult.revenueByProductIdData);
+                setPaymentCountInHourData(handledResult.paymentCountDistributionInHourData);
                 // set other chart datas
             } catch (error) {
                 console.error(error);
@@ -395,8 +416,11 @@ const BusinessOverview = () => {
                                 </PanelItemCard>
                             </div>
                             <div className="panel-line">
-                                <PanelItemCard title="Revenue by product" style={{ flexGrow: "1" }}>
+                                <PanelItemCard title="Revenue by product" style={{ width: "48%" }}>
                                     <RevenueByProductIdChart chartData={revenueByProductIdData ?? []} />
+                                </PanelItemCard>
+                                <PanelItemCard title="Payment count in hours" style={{ flexGrow: "1" }}>
+                                    <PaymentCountInHour chartData={paymentCountInHourData ?? []} />
                                 </PanelItemCard>
                             </div>
                         </div>
