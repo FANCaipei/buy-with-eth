@@ -148,6 +148,8 @@ const addApp = async (
     secretPhrase: string
 ): Promise<string> => {
     const db = getFirestore();
+    // create new doc incase it not created
+    await db.collection("userAppConfigs").doc(uid).set({}, { merge: true });
     const res = await db.collection(`userAppConfigs/${uid}/apps`).add({
         name: name,
         paymentAddress: paymentAddress,

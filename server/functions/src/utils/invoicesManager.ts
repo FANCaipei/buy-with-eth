@@ -3,11 +3,14 @@ import * as logger from "firebase-functions/logger";
 import { getPaymentRecord } from "./firestoreUtils";
 import { decodeReceiptId } from "./general";
 import { getFirestore } from "firebase-admin/firestore";
+import { sendBillingEmailWithTemplate } from "./mailManager";
+import { getAuth } from "firebase-admin/auth";
+import Configs from "../config";
 
 /*some constant for updateVipInfo function*/
 // uid & project id for console project
-const consoleProjectUserId = "7eOuUvMKqhOiYjFBPgrxu050Wno1";
-const consoleProjectAppId = "zLO6MpxSlR0uL8IvDwRU";
+const consoleProjectUserId = Configs.ConsoleProjectUserId;
+const consoleProjectAppId = Configs.ConsoleProjectAppId;
 /**/
 
 const verifyInvoicePaymentReceipt = async (receiptId: string): Promise<any> => {
@@ -143,11 +146,25 @@ const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
             bill: bill,
             paied: bill > 0 ? false : true,
         });
+
+    // send bill email, don't await
+    if (bill > 0) {
+        getAuth()
+            .getUser(uid)
+            .then(user => {
+                if (user.email) {
+                    sendBillingEmailWithTemplate(invoiceMonthStr, parseFloat(bill.toFixed(2)), user.email);
+                }
+            })
+            .catch(err => {
+                logger.error(err);
+            });
+    }
 };
 
 const scheduledGenerateAllUserInvoices = async (): Promise<void> => {
     const db = getFirestore();
-    const uidWithPaymentRecords = await db.collection("paymentRecords").select().get();
+    const uidWithPaymentRecords = await db.collection("userAppConfigs").select().get();
     uidWithPaymentRecords.forEach(async docRef => {
         try {
             await generatePreviewMonthInvoice(docRef.id);

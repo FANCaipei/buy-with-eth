@@ -9,7 +9,7 @@ import { BuyWithCrypto } from "payWithCrypto";
 // init firebase
 FirebaseManager.init();
 
-BuyWithCrypto.init({ appId: "7eOuUvMKqhOiYjFBPgrxu050Wno1-zLO6MpxSlR0uL8IvDwRU" });
+BuyWithCrypto.init({ appId: "dmbXL9DtjzWrT1II3ZVD7ylchBx1-d6sa15TBCubkwDEdT3Hb" });
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(

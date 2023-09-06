@@ -25,6 +25,7 @@ const routeConfig = [
             { path: "paymentPreview", Component: PaymentPreview },
         ],
     },
+    { path: "/", Component: DashboardPage },
     { path: "*", Component: NotFoundPage },
 ];
 

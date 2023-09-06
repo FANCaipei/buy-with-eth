@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Select, Spin, message } from "antd";
+import { Button, Divider, Input, Select, Spin } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import SelfLogo from "../assets/images/logos/logo.svg";
 import DotLoading from "../assets/images/icons/dot-loading.svg";
 
 const PaymentPage = () => {
-    const [messageApi, contextHolder] = message.useMessage();
+    // const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
     const paramsFromUrl = useUrlParamsConfig((state: any) => state.paramsFromUrl);
     const { state: params } = useLocation();
@@ -30,8 +30,8 @@ const PaymentPage = () => {
     const [isFetchingPrice, setIsFetchingPrice] = useState<boolean>(false);
     const [isPaying, setIsPaying] = useState<boolean>(false);
 
-    const [responseToOrigin] = useState(params?.responseToOrigin);
-    const [responseToId] = useState(params?.responseToId);
+    const [responseToOrigin, setResponseToOrigin] = useState(params?.responseToOrigin);
+    const [responseToId, setResponseToId] = useState(params?.responseToId);
 
     const [targetAddress, setTargetAddress] = useState();
     const [logoUrl, setLogoUrl] = useState();
@@ -197,7 +197,6 @@ const PaymentPage = () => {
         responseToOrigin,
         currencyPaymentConfig,
         paymentConfigParams?.productId,
-        messageApi,
     ]);
     // const cancel = useCallback(() => {
     //     send(
@@ -209,6 +208,11 @@ const PaymentPage = () => {
     //         responseToOrigin
     //     );
     // }, [responseToId, responseToOrigin]);
+
+    useEffect(() => {
+        setResponseToOrigin(params?.responseToOrigin);
+        setResponseToId(params?.responseToId);
+    }, [params?.responseToOrigin, params?.responseToId]);
 
     useEffect(() => {
         console.log("state: ", params);
@@ -255,7 +259,7 @@ const PaymentPage = () => {
 
     return (
         <Spin spinning={isLoading} size="large">
-            {contextHolder}
+            {/* {contextHolder} */}
             <StyledContainer>
                 <GlobalStyle />
 

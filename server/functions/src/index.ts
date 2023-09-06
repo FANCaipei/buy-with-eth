@@ -20,6 +20,7 @@ import {
     scheduledSetUnpaiedState,
     verifyInvoicePaymentReceipt,
 } from "./utils/invoicesManager";
+import { sendBillingEmailWithTemplate } from "./utils/mailManager";
 
 // firstly init firestore
 initFirestore();
@@ -138,6 +139,16 @@ export const testScheduledSetUnpaiedState = onRequest({ cors: true }, async (req
     try {
         const result = await scheduledSetUnpaiedState();
         response.send({ success: true, updateUids: result });
+    } catch (error) {
+        logger.error(error);
+        response.status(500).send(error);
+    }
+});
+
+export const testSendBillEmail = onRequest({ cors: true }, async (request, response) => {
+    try {
+        await sendBillingEmailWithTemplate("202308", 12.89, "fancaipei@gmail.com");
+        response.send({ success: true });
     } catch (error) {
         logger.error(error);
         response.status(500).send(error);

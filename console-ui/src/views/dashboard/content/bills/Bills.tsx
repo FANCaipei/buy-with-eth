@@ -118,7 +118,7 @@ const Bills = () => {
                     tempBills.push({ ...doc.data(), id: doc.id });
                 }
             });
-            setTotalUnpaid(tempTotal);
+            setTotalUnpaid(parseFloat(tempTotal.toFixed(2)));
             setUnpaidBills(tempBills);
         } catch (error) {
             // do nothing
