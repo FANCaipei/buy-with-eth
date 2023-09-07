@@ -10,8 +10,8 @@
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
-import { getReceiveAccoutWithAppId, initFirestore, savePaymentRecord, addApp } from "./utils/firestoreUtils";
-import { decodeReceiptId } from "./utils/general";
+import { getAppConfig, initFirestore, savePaymentRecord, addApp } from "./utils/firestoreUtils";
+import { decodeReceiptId, sendPaymentResult } from "./utils/general";
 import { ethers } from "ethers";
 import {
     calcInvoicesBillAmount,
@@ -49,7 +49,7 @@ export const checkPaymentAndSave = onRequest({ cors: true }, async (request, res
     try {
         const queryResult = await Promise.all([
             getTransactionDetails(rpcUrl, txHash, isErc20, chainId),
-            getReceiveAccoutWithAppId(appId),
+            getAppConfig(appId),
         ]);
 
         const txInfo = queryResult[0];
@@ -58,8 +58,8 @@ export const checkPaymentAndSave = onRequest({ cors: true }, async (request, res
             return;
         }
         // check if receive address equals app paymentAddress
-        const appPaymentAddr: string = queryResult[1];
-        if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr.toLocaleLowerCase()) {
+        const appPaymentAddr: string = queryResult[1]?.paymentAddress;
+        if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr?.toLocaleLowerCase()) {
             response.status(400).send(`Transaction receive address is not correct`);
             return;
         }
@@ -73,7 +73,11 @@ export const checkPaymentAndSave = onRequest({ cors: true }, async (request, res
         const receiptId = `${appId}#${savedRecord.txHash}#${savedRecord.chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
             productId ?? ""
         }`;
-        response.send({ ...savedRecord, receiptId: receiptId });
+        const result = { ...savedRecord, receiptId: receiptId };
+        // call callback api if configed
+        sendPaymentResult(appId, queryResult[1], result);
+
+        response.send(result);
     } catch (error) {
         logger.error(error);
         response.status(500).send(error);
@@ -99,7 +103,7 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
     try {
         const queryResult = await Promise.all([
             getTransactionDetails(rpcUrl, txHash, isErc20, chainId),
-            getReceiveAccoutWithAppId(appId),
+            getAppConfig(appId),
         ]);
 
         const txInfo = queryResult[0];
@@ -108,8 +112,8 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
             return;
         }
         // check if receive address equals app paymentAddress
-        const appPaymentAddr: string = queryResult[1];
-        if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr.toLocaleLowerCase()) {
+        const appPaymentAddr: string = queryResult[1]?.paymentAddress;
+        if (txInfo.receiveAddress?.toLocaleLowerCase() !== appPaymentAddr?.toLocaleLowerCase()) {
             response.status(400).send(`Transaction receive address is not correct`);
             return;
         }
@@ -163,7 +167,7 @@ export const testSendBillEmail = onRequest({ cors: true }, async (request, respo
 //         return;
 //     }
 //     try {
-//         const addr = await getReceiveAccoutWithAppId(appId);
+//         const addr = await getAppConfig(appId);
 //         response.send({
 //             address: addr,
 //         });

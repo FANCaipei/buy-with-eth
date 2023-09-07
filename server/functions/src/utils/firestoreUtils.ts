@@ -9,7 +9,7 @@ const initFirestore = () => {
     initializeApp();
 };
 
-const getReceiveAccoutWithAppId = async (appId: string): Promise<string> => {
+const getAppConfig = async (appId: string): Promise<any> => {
     // appId format: {user document id}-{app document id}
     const documentIds = appId?.split("-");
     if ((documentIds?.length ?? 0) < 2) {
@@ -19,8 +19,29 @@ const getReceiveAccoutWithAppId = async (appId: string): Promise<string> => {
     const appDocId = documentIds[1];
     const db = getFirestore();
     const appConfig = await db.collection("userAppConfigs").doc(userDocId).collection("apps").doc(appDocId).get();
-    const address = appConfig.data()?.paymentAddress;
-    return address != null && address !== "" ? address : Promise.reject();
+    // paymentAddress
+    return appConfig.data();
+};
+
+const getAppSecretPhrase = async (appId: string): Promise<string> => {
+    // appId format: {user document id}-{app document id}
+    const documentIds = appId?.split("-");
+    if ((documentIds?.length ?? 0) < 2) {
+        return Promise.reject();
+    }
+    const userDocId = documentIds[0];
+    const appDocId = documentIds[1];
+    const db = getFirestore();
+    const appPrivateConfig = await db
+        .collection("userAppConfigs")
+        .doc(userDocId)
+        .collection("apps")
+        .doc(appDocId)
+        .collection("private")
+        .doc("privateInfo")
+        .get();
+    const secretPhrase = appPrivateConfig.data()?.secretPhrase;
+    return secretPhrase != null && secretPhrase !== "" ? secretPhrase : Promise.reject();
 };
 
 const savePaymentRecord = async (
@@ -167,4 +188,4 @@ const addApp = async (
 //     // TODO: calculate vip info & expired date
 // };
 
-export { initFirestore, getReceiveAccoutWithAppId, savePaymentRecord, getPaymentRecord, addApp };
+export { initFirestore, getAppConfig, savePaymentRecord, getPaymentRecord, addApp, getAppSecretPhrase };

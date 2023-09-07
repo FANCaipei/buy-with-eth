@@ -1,3 +1,7 @@
+import axios from "axios";
+import { getAppSecretPhrase } from "./firestoreUtils";
+import * as CryptoJS from "crypto-js";
+
 const decodeReceiptId = (
     receiptId: string
 ): {
@@ -44,4 +48,19 @@ const decodeReceiptId = (
     };
 };
 
-export { decodeReceiptId };
+const sendPaymentResult = async (appId: string, appConfigs: any, result: any) => {
+    const url = appConfigs?.callbackApi;
+    const secretPhrase = await getAppSecretPhrase(appId);
+    if (!url || !secretPhrase || !result) {
+        return;
+    }
+    const resultJsonStr = JSON.stringify(result);
+    const checkHash = CryptoJS.SHA256(secretPhrase + resultJsonStr);
+
+    axios.post<any>(url, {
+        resultJsonStr: resultJsonStr,
+        checkHexStr: checkHash.toString(CryptoJS.enc.Hex),
+    });
+};
+
+export { decodeReceiptId, sendPaymentResult };
