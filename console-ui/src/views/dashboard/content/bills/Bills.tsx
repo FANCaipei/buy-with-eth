@@ -55,7 +55,11 @@ const Bills = () => {
                     goOverview(times.startTimestamp, times.endTimestamp);
                 };
 
-                return <span onClick={navFn}>{text}</span>;
+                return (
+                    <span onClick={navFn} style={{ color: "rgb(22, 119, 255)", cursor: "pointer" }}>
+                        {text}
+                    </span>
+                );
             },
         },
         {
@@ -82,7 +86,11 @@ const Bills = () => {
                     goOverview(times.startTimestamp, times.endTimestamp);
                 };
 
-                return <span onClick={navFn}> {text}</span>;
+                return (
+                    <span onClick={navFn} style={{ color: "rgb(22, 119, 255)", cursor: "pointer" }}>
+                        {text}
+                    </span>
+                );
             },
         },
         {
