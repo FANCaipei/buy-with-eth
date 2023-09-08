@@ -154,7 +154,8 @@ const WalletManager = {
                     );
                     return Promise.resolve(savedPaymentRecord.data);
                 } catch (error) {
-                    const receiptId = error.data?.error?.receiptId;
+                    // console.error("save error: ", error);
+                    const receiptId = error?.response?.data?.error?.receiptId;
                     return Promise.reject({
                         receiptId: receiptId,
                         errorMsg: "save payment info failed",
