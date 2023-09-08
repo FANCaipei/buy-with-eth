@@ -42,7 +42,8 @@ const WalletManager = {
         toAddr: string,
         isErc20: boolean,
         productId?: string,
-        onProgressChanged?: (progress: string) => void
+        onProgressChanged?: (progress: string) => void,
+        extraInfo?: string
     ): Promise<any> {
         const currentProvider = EthereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
@@ -61,7 +62,7 @@ const WalletManager = {
         if (!currentTokenConfig?.symbol || currentTokenConfig?.symbol == "") {
             return Promise.reject("chain not support");
         }
-        const tokenSymbol: string = currentTokenConfig.symbol.includes("USDT") ? "USDT" : currentTokenConfig.symbol;
+
         // check & switch chain
         const currentChainId = await currentProvider.request({
             method: "eth_chainId",
@@ -91,7 +92,6 @@ const WalletManager = {
         const signer = provider.getSigner();
 
         let tx;
-        let paymentReceiptId = "";
         if (isErc20) {
             if (!currentTokenConfig.contractAddr) {
                 return Promise.reject("config not correct: no contract address");
@@ -112,11 +112,9 @@ const WalletManager = {
         } else {
             onProgressChanged?.("Paying");
             tx = await signer.sendTransaction(txParams);
-            paymentReceiptId = `${BuyWithCrypto.appId}#${tx.hash}#${chainId}#${tokenSymbol}#${isErc20 ? 1 : 0}#${
-                productId ?? ""
-            }`;
         }
 
+        // tray save max 3 times
         try {
             onProgressChanged?.("Validating on chain");
             await tx.wait(); // wait until transaction minted
@@ -127,14 +125,42 @@ const WalletManager = {
                 chainId,
                 BuyWithCrypto.appId,
                 isErc20,
-                productId
+                productId,
+                extraInfo
             );
             return Promise.resolve(savedPaymentRecord.data);
         } catch (error) {
-            return Promise.reject({
-                receiptId: paymentReceiptId,
-                errorMsg: "transaction not confirmed or saved failed, you can verify payment with receiptId later",
-            });
+            try {
+                onProgressChanged?.("Retrying save payment info first time");
+                const savedPaymentRecord = await RestService.savePaymentInfo(
+                    tx.hash,
+                    chainId,
+                    BuyWithCrypto.appId,
+                    isErc20,
+                    productId,
+                    extraInfo
+                );
+                return Promise.resolve(savedPaymentRecord.data);
+            } catch (error) {
+                try {
+                    onProgressChanged?.("Retrying save payment info 2nd time");
+                    const savedPaymentRecord = await RestService.savePaymentInfo(
+                        tx.hash,
+                        chainId,
+                        BuyWithCrypto.appId,
+                        isErc20,
+                        productId,
+                        extraInfo
+                    );
+                    return Promise.resolve(savedPaymentRecord.data);
+                } catch (error) {
+                    const receiptId = error.data?.error?.receiptId;
+                    return Promise.reject({
+                        receiptId: receiptId,
+                        errorMsg: "save payment info failed",
+                    });
+                }
+            }
         }
     },
     async getAccountWithCurrentProvider(): Promise<string> {

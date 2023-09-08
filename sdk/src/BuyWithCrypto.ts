@@ -12,6 +12,7 @@ interface PaymentConfig {
     valueInUSD?: number;
     defaultTokenCode?: "eth" | "matic" | "usdt-eth" | "usdt-polygon";
     productId?: string;
+    extraInfo?: string;
 }
 
 const BuyWithCrypto: {

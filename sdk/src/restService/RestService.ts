@@ -44,8 +44,22 @@ const RestService = {
             "https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/tokenConfigs%2FtokenConfig.json?alt=media"
         );
     },
-    savePaymentInfo: (txHash: string, chainId: string, appId: string, isErc20: boolean, productId?: string) => {
-        const params = { txHash: txHash, chainId: chainId, appId: appId, isErc20: isErc20, productId: productId };
+    savePaymentInfo: (
+        txHash: string,
+        chainId: string,
+        appId: string,
+        isErc20: boolean,
+        productId?: string,
+        extraInfo?: string
+    ) => {
+        const params = {
+            txHash: txHash,
+            chainId: chainId,
+            appId: appId,
+            isErc20: isErc20,
+            productId: productId,
+            extraInfo: extraInfo,
+        };
         return Axios.post("https://checkpaymentandsave-cjurgglvma-uc.a.run.app", params);
     },
 };

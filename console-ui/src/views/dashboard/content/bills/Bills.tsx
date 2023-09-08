@@ -30,14 +30,17 @@ const Bills = () => {
     const [paymentUrl, setPaymentUrl] = useState<string>();
     const payIframeRef = useRef<HTMLIFrameElement>(null);
 
-    const goOverview = useCallback((startTimestamp: number, endTimestamp: number) => {
-        navigate("/dashboard/overview", {
-            state: {
-                fromTimestamp: startTimestamp,
-                toTimestamp: endTimestamp,
-            },
-        });
-    }, []);
+    const goOverview = useCallback(
+        (startTimestamp: number, endTimestamp: number) => {
+            navigate("/dashboard/overview", {
+                state: {
+                    fromTimestamp: startTimestamp,
+                    toTimestamp: endTimestamp,
+                },
+            });
+        },
+        [navigate]
+    );
 
     const [historyPaiedTableColumns] = useState([
         {
@@ -52,7 +55,7 @@ const Bills = () => {
                     goOverview(times.startTimestamp, times.endTimestamp);
                 };
 
-                return <a onClick={navFn}> {text}</a>;
+                return <span onClick={navFn}>{text}</span>;
             },
         },
         {
@@ -79,7 +82,7 @@ const Bills = () => {
                     goOverview(times.startTimestamp, times.endTimestamp);
                 };
 
-                return <a onClick={navFn}> {text}</a>;
+                return <span onClick={navFn}> {text}</span>;
             },
         },
         {
@@ -181,7 +184,11 @@ const Bills = () => {
                     const payResult = await BuyWithCrypto.request(
                         {
                             method: "request_payment",
-                            params: { valueInUSD: totalAmount, defaultTokenCode: "usdt-polygon" },
+                            params: {
+                                valueInUSD: totalAmount,
+                                defaultTokenCode: "usdt-polygon",
+                                extraInfo: `${user?.uid}#${JSON.stringify(billPeriods)}`,
+                            },
                         },
                         payIframeRef.current
                     );
@@ -224,7 +231,7 @@ const Bills = () => {
                 // setIsPaymentModalOpen(false);
             }, 0);
         },
-        [getUnpaidBills, getHistoryBills, messageApi]
+        [getUnpaidBills, getHistoryBills, messageApi, user?.uid]
     );
 
     useEffect(() => {

@@ -39,6 +39,7 @@ const PaymentPage = () => {
     const [paymentConfigParams, setPaymentConfigParams] = useState(params?.params ?? paramsFromUrl ?? {});
     const [preSetValueInUSD, setPreSetValueInUSD] = useState(paymentConfigParams?.valueInUSD);
     const [currencyTypeCode, setCurrencyTypeCode] = useState(paymentConfigParams?.defaultTokenCode);
+    const [paymentExtraInfo, setPaymentExtraInfo] = useState(paymentConfigParams?.extraInfo);
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
 
     const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
@@ -159,7 +160,8 @@ const PaymentPage = () => {
                     targetAddress,
                     currencyPaymentConfig?.symbol?.includes("USDT"),
                     paymentConfigParams?.productId,
-                    onPaymentProgressChanged
+                    onPaymentProgressChanged,
+                    paymentExtraInfo
                 );
                 console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
@@ -197,6 +199,7 @@ const PaymentPage = () => {
         responseToOrigin,
         currencyPaymentConfig,
         paymentConfigParams?.productId,
+        paymentExtraInfo,
     ]);
     // const cancel = useCallback(() => {
     //     send(
@@ -220,6 +223,10 @@ const PaymentPage = () => {
         setPaymentConfigParams(tempParams);
         setPreSetValueInUSD(tempParams.valueInUSD);
     }, [params, paramsFromUrl]);
+
+    useEffect(() => {
+        setPaymentExtraInfo(paymentConfigParams?.extraInfo);
+    }, [paymentConfigParams?.extraInfo]);
 
     useEffect(() => {
         console.log("payment params: ", paymentConfigParams);

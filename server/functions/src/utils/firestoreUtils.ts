@@ -55,7 +55,8 @@ const savePaymentRecord = async (
         currentPrice: number;
         valueInUSD: number;
     },
-    productId?: string
+    productId?: string,
+    extraInfo?: string
 ): Promise<{
     appId: string;
     txHash: string;
@@ -67,6 +68,7 @@ const savePaymentRecord = async (
     recordTimestamp: number;
     receiveAddress: string;
     productId: string | number;
+    extraInfo: string;
 }> => {
     const documentIds = appId?.split("-");
     if ((documentIds?.length ?? 0) < 2) {
@@ -93,6 +95,7 @@ const savePaymentRecord = async (
             recordTimestamp: (recordDocData as any).recordTimestamp,
             receiveAddress: (recordDocData as any).receiveAddress,
             productId: (recordDocData as any).productId,
+            extraInfo: (recordDocData as any).extraInfo,
         };
     }
 
@@ -108,6 +111,7 @@ const savePaymentRecord = async (
         recordTimestamp: Date.now(),
         receiveAddress: txInfo.receiveAddress,
         productId: productId ?? "",
+        extraInfo: extraInfo ?? "",
     };
     try {
         await db
@@ -132,6 +136,7 @@ const savePaymentRecord = async (
  *      appId: string,
  *      chainId: string,
  *      productId: string,
+ *      extraInfo: string,
  *      receiveAddress: string,
  *      recordPrice: number,
  *      recordTimestamp: timestamp

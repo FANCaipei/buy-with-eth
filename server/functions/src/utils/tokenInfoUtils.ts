@@ -98,12 +98,12 @@ const getTransactionDetails = async (
 
     try {
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-        const queryResult = await Promise.allSettled([
+        const queryResult = await Promise.all([
             provider.getTransaction(txHash),
             getTokenPrice(isErc20 ? "USDT" : nativeTokenSymbols[chainId]),
         ]);
-        const txInfo = queryResult[0]?.status === "fulfilled" ? queryResult[0].value : null;
-        const price = queryResult[1]?.status === "fulfilled" ? queryResult[1].value : null;
+        const txInfo = queryResult[0];
+        const price = queryResult[1];
 
         if (!txInfo) {
             return Promise.reject("Transaction not exist or has not been mined");
