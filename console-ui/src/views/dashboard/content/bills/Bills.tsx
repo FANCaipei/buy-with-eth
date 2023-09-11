@@ -202,26 +202,30 @@ const Bills = () => {
                     );
                     console.log("pay result: ", payResult);
                     if (payResult?.receiptId) {
-                        try {
-                            const result = await FirebaseManager.serverCallFunctions.payBills({
-                                receiptId: payResult?.receiptId,
-                                periods: billPeriods,
-                                paymentType: "crypto",
-                            });
-                            if (result?.data?.success) {
-                                // success
-                                getUnpaidBills();
-                                getHistoryBills();
-                                setIsPaymentModalOpen(false);
-                            } else {
-                                // TODO: show receiptId and verify link
-                                message.error("Unknown error");
-                            }
-                        } catch (error: any) {
-                            console.error(error);
-                            // TODO: show receiptId and verify link
-                            message.error(error?.message);
-                        }
+                        setTimeout(() => {
+                            getUnpaidBills();
+                            getHistoryBills();
+                        }, 1000);
+                        // try {
+                        //     const result = await FirebaseManager.serverCallFunctions.payBills({
+                        //         receiptId: payResult?.receiptId,
+                        //         periods: billPeriods,
+                        //         paymentType: "crypto",
+                        //     });
+                        //     if (result?.data?.success) {
+                        //         // success
+                        //         getUnpaidBills();
+                        //         getHistoryBills();
+                        //         setIsPaymentModalOpen(false);
+                        //     } else {
+                        //         // TODO: show receiptId and verify link
+                        //         message.error("Unknown error");
+                        //     }
+                        // } catch (error: any) {
+                        //     console.error(error);
+                        //     // TODO: show receiptId and verify link
+                        //     message.error(error?.message);
+                        // }
                     } else {
                         // some thing wrong
                         messageApi.error("Payment failed");

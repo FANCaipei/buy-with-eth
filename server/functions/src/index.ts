@@ -9,6 +9,7 @@
 
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
+import * as CryptoJS from "crypto-js";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
 import { getAppConfig, initFirestore, savePaymentRecord, addApp, getPaymentRecord } from "./utils/firestoreUtils";
 import { decodeReceiptId, generateReceiptId, sendPaymentResult } from "./utils/general";
@@ -21,17 +22,13 @@ import {
     verifyInvoicePaymentReceipt,
 } from "./utils/invoicesManager";
 import { sendBillingEmailWithTemplate } from "./utils/mailManager";
+import Configs from "./config";
 
 // firstly init firestore
 initFirestore();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
-
-export const helloWorld = onRequest((request, response) => {
-    logger.info("Hello logs!", { structuredData: true });
-    response.send("Hello from Firebase!");
-});
 
 export const checkPaymentAndSave = onRequest({ cors: true }, async (request, response) => {
     const { txHash, chainId, appId, isErc20, productId, extraInfo } = request.body ?? {};
@@ -106,7 +103,7 @@ export const checkPaymentAndSave = onRequest({ cors: true }, async (request, res
     }
 });
 
-export const verifyPaymentReceiptAndSave = onRequest(async (request, response) => {
+export const verifyPaymentReceiptAndSave = onRequest({ cors: true }, async (request, response) => {
     const { receiptId } = request.body ?? {};
     if (!receiptId) {
         response.status(400).send("Params invalid");
@@ -147,6 +144,45 @@ export const verifyPaymentReceiptAndSave = onRequest(async (request, response) =
         // save record
         const savedRecord = await savePaymentRecord(appId, txHash, chainId, tokenSymbol, txInfo, productId, extraInfo);
         response.send({ ...savedRecord, receiptId: receiptId });
+    } catch (error) {
+        logger.error(error);
+        response.status(500).send(error);
+    }
+});
+
+export const billPayCallback = onRequest({ cors: true }, async (request, response) => {
+    const { resultJsonStr, checkHexStr } = request.body ?? {};
+    if (!resultJsonStr || !checkHexStr) {
+        response.status(400).send("Params invalid");
+        return;
+    }
+    // verify result data string
+    const verifyHash = CryptoJS.SHA256(Configs.PaymenstResultVerifySecret + resultJsonStr).toString(CryptoJS.enc.Hex);
+    if (checkHexStr !== verifyHash) {
+        response.status(400).send("Data verification not passed");
+        return;
+    }
+
+    try {
+        const paymentData = JSON.parse(resultJsonStr);
+        const { receiptId, extraInfo } = paymentData;
+        const [paymentUserId, periodStr] = (extraInfo ?? "").split("#");
+        const periods = JSON.parse(periodStr);
+
+        if (!receiptId || !paymentUserId || !periods || !periods.length) {
+            response.status(400).send("Missing some detail info");
+            return;
+        }
+
+        const paymentInfo = await verifyInvoicePaymentReceipt(receiptId);
+        const shouldPayAmount = await calcInvoicesBillAmount(paymentUserId, periods);
+        if (shouldPayAmount > paymentInfo.recordValueInUSD * 1.02 /** 2% price buffer */) {
+            response.status(400).send("Payment amount error");
+        }
+        await saveInvoicesPaiedState(paymentUserId, periods, receiptId);
+
+        response.send({ success: true });
+        return;
     } catch (error) {
         logger.error(error);
         response.status(500).send(error);

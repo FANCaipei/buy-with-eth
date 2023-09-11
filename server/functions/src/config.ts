@@ -6,6 +6,7 @@ const Configs = {
     ConsoleProjectUserId: "dmbXL9DtjzWrT1II3ZVD7ylchBx1",
     ConsoleProjectAppId: "d6sa15TBCubkwDEdT3Hb",
     ReceiptEncryptPassword: "2Qv9G5M^fbZXHYhbGhnJvdtC7Yg8iodB", // do not change it once set
+    PaymenstResultVerifySecret: "pay-with-crypto",
 };
 
 export default Configs;
