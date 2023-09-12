@@ -9,6 +9,7 @@ import HandleRequests from "./messageManager/requestHandlers/HandleRequests";
 import useUrlParamsConfig from "./common/golbalStates/urlParamsConfigState";
 import { Spin } from "antd";
 import LoadingIndicator from "./common/components/LoadingIndicator";
+import useAuthorityCheck from "./common/golbalStates/authorityCheckState";
 
 // 设置全局spin的indicator
 Spin.setDefaultIndicator(<LoadingIndicator indicatorWidth="40px" />);
@@ -38,7 +39,14 @@ const StyledContainer = styled.div.attrs({ className: "pay-ui-root" })`
 
 function Index() {
     const element = useRoutes(routeConfig);
+    const canAccessProject = useAuthorityCheck((state: any) => state.canAccessProject);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!canAccessProject) {
+            navigate("/access-deny", { replace: true });
+        }
+    }, [navigate, canAccessProject]);
 
     useEffect(() => {
         if (!(window as any).buyWithCrypto.appId) {

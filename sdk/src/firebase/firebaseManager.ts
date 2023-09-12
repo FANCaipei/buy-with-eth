@@ -40,16 +40,29 @@ const FirebaseManager = {
         const userDocId = documentIds[0];
         const appDocId = documentIds[1];
         try {
-            const configDoc = await getDoc(
-                doc(FirebaseManager.firebaseDB, "userAppConfigs", userDocId, "apps", appDocId)
-            );
+            const [configDoc, userAppConfigDoc] = await Promise.all([
+                getDoc(doc(FirebaseManager.firebaseDB, "userAppConfigs", userDocId, "apps", appDocId)),
+                getDoc(doc(FirebaseManager.firebaseDB, "userAppConfigs", userDocId)),
+            ]);
+
+            let banned = false;
+            if (!userAppConfigDoc.exists) {
+                banned = true;
+            } else if (userAppConfigDoc.data()?.hasUnpaiedBill) {
+                banned = true;
+            }
+
+            if (banned) {
+                return Promise.reject({ errorCode: 4003, msg: `access project config denied` });
+            }
+
             if (configDoc.exists) {
                 return configDoc.data();
             } else {
-                return Promise.reject(`can't get app config`);
+                return Promise.reject(`can't get project config`);
             }
         } catch (error) {
-            return Promise.reject(`can't get app config`);
+            return Promise.reject(`can't get project config`);
         }
     },
 };

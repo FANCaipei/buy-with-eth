@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import useAuthorityCheck from "./common/golbalStates/authorityCheckState";
 
 // get configs from url
 let appConfigs: any = {};
@@ -19,9 +20,16 @@ try {
 }
 
 if (appConfigs.appId) {
-    (window as any).buyWithCrypto.init({
-        appId: appConfigs.appId,
-    });
+    (window as any).buyWithCrypto
+        .init({
+            appId: appConfigs.appId,
+        })
+        .catch((err: any) => {
+            console.error("init error: ", err);
+            if (err.errorCode === 4003) {
+                useAuthorityCheck.setState({ canAccessProject: false });
+            }
+        });
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);

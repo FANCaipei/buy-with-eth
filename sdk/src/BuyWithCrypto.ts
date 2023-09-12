@@ -64,7 +64,7 @@ const BuyWithCrypto: {
             BuyWithCrypto.isFetchingAppConfigOrFailed = true;
             const configData = await FirebaseManager.getAppConfig(option.appId);
             if (!configData?.paymentAddress) {
-                Utils.throwError("app config not correct, please verify your app config");
+                Utils.throwError("project config not correct, please verify your project config");
                 return Promise.reject();
             }
             BuyWithCrypto.isFetchingAppConfigOrFailed = false;
@@ -87,7 +87,12 @@ const BuyWithCrypto: {
             };
             runReadyCallbacks();
         } catch (error) {
-            Utils.throwError("get app config failed");
+            if (error.errorCode === 4003) {
+                // Utils.throwError("access project config denied");
+                return Promise.reject({ errorCode: 4003, msg: `access project config denied` });
+            }
+
+            Utils.throwError("get project config failed");
             return Promise.reject();
         }
     },

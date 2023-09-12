@@ -3,29 +3,30 @@ import NotFoundImg from "../assets/images/icons/not-found.jpg";
 
 const ConsoleHost = process.env.REACT_APP_CONSOLE_DOMAIN;
 
-const AppIdNotSetPage = () => {
+const AccessBannedPage = () => {
     return (
         <StyledContainer>
             <img className="oops-img" src={NotFoundImg} alt="" />
-            <div className="title">Oops!</div>
+            <div className="title">Access denied</div>
             <div className="desc">
-                <span className="text">Invalid params. Get correct url from </span>
-                <a target="_blank" rel="noreferrer" href={`${ConsoleHost}/dashboard/projects`}>
-                    your project
+                <span className="text">If you are admin, please check </span>
+                <a target="_blank" rel="noreferrer" href={`${ConsoleHost}/dashboard/bills`}>
+                    your bills
                 </a>
             </div>
         </StyledContainer>
     );
 };
 
-const StyledContainer = styled.div.attrs({ className: "appid-miss-page" })`
+const StyledContainer = styled.div.attrs({ className: "access-deny-page" })`
     display: flex;
+    height: 100%;
     align-items: center;
     flex-direction: column;
     justify-content: center;
 
     .oops-img {
-        margin-top: 60px;
+        margin-top: -40px;
         height: 120px;
     }
     .title {
@@ -46,4 +47,4 @@ const StyledContainer = styled.div.attrs({ className: "appid-miss-page" })`
     }
 `;
 
-export default AppIdNotSetPage;
+export default AccessBannedPage;
