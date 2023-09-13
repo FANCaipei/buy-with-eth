@@ -8,6 +8,7 @@
  */
 
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
+import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 import * as CryptoJS from "crypto-js";
 import { getTransactionDetails, nativeTokenSymbols, rpcUrlConfig } from "./utils/tokenInfoUtils";
@@ -21,7 +22,7 @@ import {
     scheduledSetUnpaiedState,
     verifyInvoicePaymentReceipt,
 } from "./utils/invoicesManager";
-import { sendBillingEmailWithTemplate } from "./utils/mailManager";
+// import { sendBillingEmailWithTemplate } from "./utils/mailManager";
 import Configs from "./config";
 
 // firstly init firestore
@@ -189,37 +190,38 @@ export const billPayCallback = onRequest({ cors: true }, async (request, respons
     }
 });
 
-export const testScheduledGenerateInvoices = onRequest({ cors: true }, async (request, response) => {
-    try {
-        await scheduledGenerateAllUserInvoices();
-        response.send({ success: true });
-    } catch (error) {
-        logger.error(error);
-        response.status(500).send(error);
-    }
-});
-
-export const testScheduledSetUnpaiedState = onRequest({ cors: true }, async (request, response) => {
-    try {
-        const result = await scheduledSetUnpaiedState();
-        response.send({ success: true, updateUids: result });
-    } catch (error) {
-        logger.error(error);
-        response.status(500).send(error);
-    }
-});
-
-export const testSendBillEmail = onRequest({ cors: true }, async (request, response) => {
-    try {
-        await sendBillingEmailWithTemplate("202308", 12.89, "fancaipei@gmail.com");
-        response.send({ success: true });
-    } catch (error) {
-        logger.error(error);
-        response.status(500).send(error);
-    }
-});
-
 // for api uni test
+
+// export const testScheduledGenerateInvoices = onRequest({ cors: true }, async (request, response) => {
+//     try {
+//         await scheduledGenerateAllUserInvoices();
+//         response.send({ success: true });
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });
+
+// export const testScheduledSetUnpaiedState = onRequest({ cors: true }, async (request, response) => {
+//     try {
+//         const result = await scheduledSetUnpaiedState();
+//         response.send({ success: true, updateUids: result });
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });
+
+// export const testSendBillEmail = onRequest({ cors: true }, async (request, response) => {
+//     try {
+//         await sendBillingEmailWithTemplate("202308", 12.89, "fancaipei@gmail.com");
+//         response.send({ success: true });
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });
+
 // export const getAppAddrExample = onRequest(async (request, response) => {
 //     const { appId } = request.body ?? {};
 //     if (!appId) {
@@ -328,3 +330,12 @@ export const createApp = onCall({ cors: true }, async request => {
         throw new HttpsError("internal", "create failed", error);
     }
 });
+
+/**
+ * schedule functions
+ *
+ * schedule expression format: 'minute hour dayOfMonth month dayOfWeek'
+ * https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format
+ */
+export const generateInvoices = onSchedule("0 0 1 * *", scheduledGenerateAllUserInvoices); // every 1st day of month
+export const setUnpaiedState = onSchedule("0 0 8 * *", scheduledSetUnpaiedState); // every 7th day of month
