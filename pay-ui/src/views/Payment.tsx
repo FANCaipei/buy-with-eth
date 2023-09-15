@@ -7,7 +7,7 @@ import { send } from "../messageManager/MessageManager";
 import { Utils, ResponseErrorType } from "../common/Utils";
 import RestService from "../common/restService/RestService";
 import useUrlParamsConfig from "../common/golbalStates/urlParamsConfigState";
-import SelfLogo from "../assets/images/logos/logo.svg";
+import SelfLogo from "../assets/images/logos/logo.png";
 import DotLoading from "../assets/images/icons/dot-loading.svg";
 
 const PaymentPage = () => {
