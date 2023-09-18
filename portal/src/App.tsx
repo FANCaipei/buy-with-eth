@@ -4,6 +4,7 @@ import { BrowserRouter, useRoutes } from "react-router-dom";
 import { styled } from "styled-components";
 import routeConfig from "./common/routes/RouteConfig";
 import { Content, Header } from "antd/es/layout/layout";
+import OcelotHeader from "./common/components/OcelotHeader";
 
 function Index() {
     const element = useRoutes(routeConfig);
@@ -18,9 +19,10 @@ function Index() {
                     width: "100%",
                     display: "flex",
                     alignItems: "center",
+                    backgroundColor: "#fff",
                 }}
             >
-                HEAD
+                <OcelotHeader />
             </Header>
             <Content style={{ height: "calc(100% - 64px)" }}>{element}</Content>
         </ErrorBoundary>
