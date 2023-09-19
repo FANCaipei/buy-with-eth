@@ -1,3 +1,3 @@
-const IframeOrigin = "http://localhost:3000";
+const IframeOrigin = "https://app.ocelotpay.com";
 
 export { IframeOrigin };

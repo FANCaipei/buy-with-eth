@@ -38928,7 +38928,40 @@
                         t.exports = f;
                     })();
                 },
-                1: function (t, e, r) {
+                721: (t, e) => {
+                    "use strict";
+                    Object.defineProperty(e, "__esModule", { value: !0 });
+                    var r = {
+                        detectProviders: function () {
+                            var t, e, r;
+                            return (null === (t = window.ethereum) || void 0 === t ? void 0 : t.providerMap)
+                                ? {
+                                      metamask: window.ethereum.providerMap.get("MetaMask"),
+                                      coinbase: window.ethereum.providerMap.get("CoinbaseWallet"),
+                                  }
+                                : (null === (e = window.ethereum) || void 0 === e ? void 0 : e.isMetaMask)
+                                ? { metamask: window.ethereum, coinbase: null }
+                                : (null === (r = window.ethereum) || void 0 === r ? void 0 : r.isCoinbaseWallet)
+                                ? { coinbase: window.ethereum, metamask: null }
+                                : { metamask: null, coinbase: null };
+                        },
+                        getCurrentConnectedProvider: function () {
+                            var t = localStorage.getItem("buywithcrypto-provider-type");
+                            if (!t) return null;
+                            var e = r.detectProviders();
+                            switch (t) {
+                                case "metamask":
+                                    return e.metamask;
+                                case "coinbase":
+                                    return e.coinbase;
+                                default:
+                                    return null;
+                            }
+                        },
+                    };
+                    e.default = r;
+                },
+                541: function (t, e, r) {
                     "use strict";
                     var n =
                             (this && this.__awaiter) ||
@@ -39207,43 +39240,6 @@
                             cancelOnReadyCallback: function (t) {
                                 p.readyCallbacks[t] && (p.readyCallbacks[t] = null);
                             },
-                            initUI: function () {
-                                if (p.appId) {
-                                    if (!p.iframeEle) {
-                                        var t = document.createElement("style");
-                                        (t.innerText =
-                                            "\n                @keyframes paymentIframeShow {\n                    from {\n                        transform: scale(0);\n                    }\n                    to {\n                        transform: scale(1);\n                    }\n                }\n\n                @keyframes paymentIframeHide {\n                    from {\n                        transform: scale(1);\n                    }\n                    to {\n                        transform: scale(0);\n                    }\n                }\n            "),
-                                            document.body.appendChild(t);
-                                        var e = encodeURIComponent(JSON.stringify({ appId: p.appId })),
-                                            r = document.createElement("iframe");
-                                        (r.src = ""
-                                            .concat(u.IframeOrigin, "?from=")
-                                            .concat(encodeURIComponent(window.location.origin), "&params=")
-                                            .concat(e)),
-                                            (r.style.position = "fixed"),
-                                            (r.style.left = "0"),
-                                            (r.style.top = "0"),
-                                            (r.style.width = "0"),
-                                            (r.style.height = "0"),
-                                            (r.style.zIndex = "9999"),
-                                            (r.style.border = "none"),
-                                            (r.style.borderWidth = "0"),
-                                            document.body.appendChild(r),
-                                            (p.iframeEle = r);
-                                    }
-                                } else c.default.throwError("app id not set, please call init first");
-                            },
-                            showPayUI: function () {
-                                (p.iframeEle.style.height = "100%"),
-                                    (p.iframeEle.style.width = "100%"),
-                                    (p.iframeEle.style.animation = "cambrianWalletShow 0.2s forwards");
-                            },
-                            hidePayUI: function () {
-                                (p.iframeEle.style.animation = "cambrianWalletHide 0.2s forwards"),
-                                    setTimeout(function () {
-                                        (p.iframeEle.style.height = "0"), (p.iframeEle.style.width = "0");
-                                    }, 300);
-                            },
                             generatePaymentUrl: function (t) {
                                 if (t.productId && t.productId.includes("#"))
                                     return console.error("product id should not contain '#' "), null;
@@ -39425,39 +39421,6 @@
                         };
                     e.default = p;
                 },
-                721: (t, e) => {
-                    "use strict";
-                    Object.defineProperty(e, "__esModule", { value: !0 });
-                    var r = {
-                        detectProviders: function () {
-                            var t, e, r;
-                            return (null === (t = window.ethereum) || void 0 === t ? void 0 : t.providerMap)
-                                ? {
-                                      metamask: window.ethereum.providerMap.get("MetaMask"),
-                                      coinbase: window.ethereum.providerMap.get("CoinbaseWallet"),
-                                  }
-                                : (null === (e = window.ethereum) || void 0 === e ? void 0 : e.isMetaMask)
-                                ? { metamask: window.ethereum, coinbase: null }
-                                : (null === (r = window.ethereum) || void 0 === r ? void 0 : r.isCoinbaseWallet)
-                                ? { coinbase: window.ethereum, metamask: null }
-                                : { metamask: null, coinbase: null };
-                        },
-                        getCurrentConnectedProvider: function () {
-                            var t = localStorage.getItem("buywithcrypto-provider-type");
-                            if (!t) return null;
-                            var e = r.detectProviders();
-                            switch (t) {
-                                case "metamask":
-                                    return e.metamask;
-                                case "coinbase":
-                                    return e.coinbase;
-                                default:
-                                    return null;
-                            }
-                        },
-                    };
-                    e.default = r;
-                },
                 95: function (t, e, r) {
                     "use strict";
                     var n =
@@ -39593,8 +39556,8 @@
                     var o = r(903),
                         a = s(r(721)),
                         u = s(r(885)),
-                        c = s(r(1)),
-                        l = s(r(724)),
+                        c = s(r(724)),
+                        l = s(r(541)),
                         h = {
                             connectWallet: function (t, e) {
                                 return n(this, void 0, void 0, function () {
@@ -39649,7 +39612,7 @@
                                                 return (n = a.default.getCurrentConnectedProvider())
                                                     ? (null ==
                                                       (w = (
-                                                          null !== (m = c.default.tokenConfigs) && void 0 !== m ? m : []
+                                                          null !== (m = l.default.tokenConfigs) && void 0 !== m ? m : []
                                                       ).find(function (e) {
                                                           return (
                                                               e.chainId === t &&
@@ -39685,7 +39648,7 @@
                                                             ? w.decimals
                                                                 ? ((I = new o.ethers.Contract(
                                                                       w.contractAddr,
-                                                                      l.default,
+                                                                      c.default,
                                                                       _
                                                                   )),
                                                                   (T = o.ethers.utils.parseUnits(
@@ -39733,7 +39696,7 @@
                                                 return (
                                                     i.sent(),
                                                     null == f || f("Saving payment info"),
-                                                    [4, u.default.savePaymentInfo(S.hash, t, c.default.appId, h, d, p)]
+                                                    [4, u.default.savePaymentInfo(S.hash, t, l.default.appId, h, d, p)]
                                                 );
                                             case 10:
                                                 return (x = i.sent()), [2, Promise.resolve(x.data)];
@@ -39743,7 +39706,7 @@
                                                 return (
                                                     i.trys.push([12, 14, , 19]),
                                                     null == f || f("Retrying save payment info first time"),
-                                                    [4, u.default.savePaymentInfo(S.hash, t, c.default.appId, h, d, p)]
+                                                    [4, u.default.savePaymentInfo(S.hash, t, l.default.appId, h, d, p)]
                                                 );
                                             case 13:
                                                 return (x = i.sent()), [2, Promise.resolve(x.data)];
@@ -39753,7 +39716,7 @@
                                                 return (
                                                     i.trys.push([15, 17, , 18]),
                                                     null == f || f("Retrying save payment info 2nd time"),
-                                                    [4, u.default.savePaymentInfo(S.hash, t, c.default.appId, h, d, p)]
+                                                    [4, u.default.savePaymentInfo(S.hash, t, l.default.appId, h, d, p)]
                                                 );
                                             case 16:
                                                 return (x = i.sent()), [2, Promise.resolve(x.data)];
@@ -39826,7 +39789,7 @@
                     "use strict";
                     Object.defineProperty(e, "__esModule", { value: !0 }),
                         (e.IframeOrigin = void 0),
-                        (e.IframeOrigin = "http://localhost:3000");
+                        (e.IframeOrigin = "https://app.ocelotpay.com");
                 },
                 681: function (t, e, r) {
                     "use strict";
@@ -40045,11 +40008,11 @@
                         function (t) {
                             return t && t.__esModule ? t : { default: t };
                         };
-                    Object.defineProperty(e, "__esModule", { value: !0 }), (e.BuyWithCrypto = void 0);
-                    var i = n(r(1));
-                    (e.BuyWithCrypto = i.default),
+                    Object.defineProperty(e, "__esModule", { value: !0 }), (e.OcelotPay = void 0);
+                    var i = n(r(541));
+                    (e.OcelotPay = i.default),
                         n(r(681)).default.init(),
-                        (window.buyWithCrypto = i.default),
+                        (window.OcelotPay = i.default),
                         i.default.getTokenConfigs();
                 },
                 885: function (t, e, r) {
@@ -40114,7 +40077,7 @@
                     Object.defineProperty(e, "__esModule", { value: !0 });
                     var r = {
                         throwError: function (t) {
-                            throw (console.error("[BuyWithCrypto Error]: ".concat(t)), new Error(t));
+                            throw (console.error("[OcelotPay Error]: ".concat(t)), new Error(t));
                         },
                     };
                     e.default = r;

@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import EthereumProvider from "./EthereumProvider";
 import RestService from "./restService/RestService";
-import BuyWithCrypto from "./BuyWithCrypto";
 import erc20Abi from "./abiConfigs/erc20.json";
+import OcelotPay from "./OcelotPay";
 
 const WalletManager = {
     async connectWallet(provider: any, providerType: "metamask" | "coinbase"): Promise<string> {
@@ -49,7 +49,7 @@ const WalletManager = {
         if (!currentProvider) {
             return Promise.reject("no selected provider");
         }
-        const currentTokenConfig = (BuyWithCrypto.tokenConfigs ?? []).find(item => {
+        const currentTokenConfig = (OcelotPay.tokenConfigs ?? []).find(item => {
             if (item.chainId !== chainId) {
                 return false;
             } else {
@@ -123,7 +123,7 @@ const WalletManager = {
             const savedPaymentRecord = await RestService.savePaymentInfo(
                 tx.hash,
                 chainId,
-                BuyWithCrypto.appId,
+                OcelotPay.appId,
                 isErc20,
                 productId,
                 extraInfo
@@ -135,7 +135,7 @@ const WalletManager = {
                 const savedPaymentRecord = await RestService.savePaymentInfo(
                     tx.hash,
                     chainId,
-                    BuyWithCrypto.appId,
+                    OcelotPay.appId,
                     isErc20,
                     productId,
                     extraInfo
@@ -147,7 +147,7 @@ const WalletManager = {
                     const savedPaymentRecord = await RestService.savePaymentInfo(
                         tx.hash,
                         chainId,
-                        BuyWithCrypto.appId,
+                        OcelotPay.appId,
                         isErc20,
                         productId,
                         extraInfo

@@ -9,19 +9,19 @@ function ConnectWallet() {
     const navigate = useNavigate();
 
     const metamaskDetedcted = useCallback(() => {
-        return (window as any).buyWithCrypto.utils.ethereumProvider.detectProviders()?.metamask != null;
+        return (window as any).OcelotPay.utils.ethereumProvider.detectProviders()?.metamask != null;
     }, []);
 
     const coinbaseDetedcted = useCallback(() => {
-        return (window as any).buyWithCrypto.utils.ethereumProvider.detectProviders()?.coinbase != null;
+        return (window as any).OcelotPay.utils.ethereumProvider.detectProviders()?.coinbase != null;
     }, []);
 
     const connectMetamask = useCallback(async () => {
-        const metamaskProvider = (window as any).buyWithCrypto.utils.ethereumProvider.detectProviders()?.metamask;
+        const metamaskProvider = (window as any).OcelotPay.utils.ethereumProvider.detectProviders()?.metamask;
         if (!metamaskProvider) {
             window.open("https://metamask.io/download/", "_blank");
         } else {
-            const accountAddr = await (window as any).buyWithCrypto.utils.walletManager.connectWallet(
+            const accountAddr = await (window as any).OcelotPay.utils.walletManager.connectWallet(
                 metamaskProvider,
                 "metamask"
             );
@@ -34,11 +34,11 @@ function ConnectWallet() {
         }
     }, [params, navigate]);
     const connectCoinbase = useCallback(async () => {
-        const coinbaseProvider = (window as any).buyWithCrypto.utils.ethereumProvider.detectProviders()?.coinbase;
+        const coinbaseProvider = (window as any).OcelotPay.utils.ethereumProvider.detectProviders()?.coinbase;
         if (!coinbaseProvider) {
             window.open("https://www.coinbase.com/wallet/downloads", "_blank");
         } else {
-            const accountAddr = await (window as any).buyWithCrypto.utils.walletManager.connectWallet(
+            const accountAddr = await (window as any).OcelotPay.utils.walletManager.connectWallet(
                 coinbaseProvider,
                 "coinbase"
             );

@@ -10,12 +10,12 @@ import { nanoid } from "nanoid";
 
 interface PaymentConfig {
     valueInUSD?: number;
-    defaultTokenCode?: "eth" | "matic" | "usdt-eth" | "usdt-polygon";
+    defaultTokenCode?: "eth" | "matic" | "usdt-eth";
     productId?: string;
     extraInfo?: string;
 }
 
-const BuyWithCrypto: {
+const OcelotPay: {
     appId?: string;
     tokenConfigs?: Array<any>;
     isFetchingTokenConfigOrFailed: boolean;
@@ -34,9 +34,9 @@ const BuyWithCrypto: {
     cancelOnReadyCallback: (cid: string) => void;
     readyCallbacks: { [key: string]: Function | null };
     connectWallet: (walletType: "metamask" | "coinbase") => void;
-    initUI: () => void;
-    showPayUI: () => void;
-    hidePayUI: () => void;
+    // initUI: () => void;
+    // showPayUI: () => void;
+    // hidePayUI: () => void;
     getTokenConfigs: () => void;
     getTokenPriceInUSD: (tokenSymbol: string) => Promise<number>;
     generatePaymentUrl: (config: PaymentConfig) => string;
@@ -58,24 +58,24 @@ const BuyWithCrypto: {
         if (!option.appId) {
             Utils.throwError("appId must be provided");
         }
-        BuyWithCrypto.appId = option.appId;
+        OcelotPay.appId = option.appId;
         // get config with appId
         try {
-            BuyWithCrypto.isFetchingAppConfigOrFailed = true;
+            OcelotPay.isFetchingAppConfigOrFailed = true;
             const configData = await FirebaseManager.getAppConfig(option.appId);
             if (!configData?.paymentAddress) {
                 Utils.throwError("project config not correct, please verify your project config");
                 return Promise.reject();
             }
-            BuyWithCrypto.isFetchingAppConfigOrFailed = false;
-            BuyWithCrypto.targetAddr = configData.paymentAddress;
-            BuyWithCrypto.logoUrl = configData.logoUrl;
+            OcelotPay.isFetchingAppConfigOrFailed = false;
+            OcelotPay.targetAddr = configData.paymentAddress;
+            OcelotPay.logoUrl = configData.logoUrl;
             // other configs here
 
             // run readyCallbacks when ready
             const runReadyCallbacks = () => {
-                if (BuyWithCrypto.isReady()) {
-                    const cbs = Object.keys(BuyWithCrypto.readyCallbacks).map(key => BuyWithCrypto.readyCallbacks[key]);
+                if (OcelotPay.isReady()) {
+                    const cbs = Object.keys(OcelotPay.readyCallbacks).map(key => OcelotPay.readyCallbacks[key]);
                     cbs.forEach(callback => {
                         callback?.();
                     });
@@ -98,7 +98,7 @@ const BuyWithCrypto: {
     },
 
     isReady(): boolean {
-        if (BuyWithCrypto.isFetchingAppConfigOrFailed || BuyWithCrypto.isFetchingTokenConfigOrFailed) {
+        if (OcelotPay.isFetchingAppConfigOrFailed || OcelotPay.isFetchingTokenConfigOrFailed) {
             return false;
         }
 
@@ -106,17 +106,17 @@ const BuyWithCrypto: {
     },
 
     async getTokenConfigs() {
-        BuyWithCrypto.isFetchingTokenConfigOrFailed = true;
+        OcelotPay.isFetchingTokenConfigOrFailed = true;
         try {
             let configs = (await RestService.getTokenConfig()).data ?? [];
             if (typeof configs === "string") {
                 configs = JSON.parse(configs);
             }
-            BuyWithCrypto.tokenConfigs = configs;
-            BuyWithCrypto.isFetchingTokenConfigOrFailed = false;
+            OcelotPay.tokenConfigs = configs;
+            OcelotPay.isFetchingTokenConfigOrFailed = false;
         } catch (error) {
             Utils.throwError("get app config failed");
-            BuyWithCrypto.tokenConfigs = [];
+            OcelotPay.tokenConfigs = [];
         }
     },
     async getTokenPriceInUSD(tokenSymbol: string): Promise<number> {
@@ -133,105 +133,105 @@ const BuyWithCrypto: {
     },
 
     connectWallet(walletType: "metamask" | "coinbase") {
-        if (!BuyWithCrypto.isReady()) {
+        if (!OcelotPay.isReady()) {
             return;
         }
         //
     },
 
     onReady(callback: Function): string | null {
-        if (BuyWithCrypto.isReady()) {
+        if (OcelotPay.isReady()) {
             callback();
             return null;
         }
         // const timeoutID = window.setTimeout(() => {
-        //     BuyWithCrypto.onReady(callback);
+        //     OcelotPay.onReady(callback);
         // }, 100);
         const cid: string = nanoid(8);
-        BuyWithCrypto.readyCallbacks[cid] = callback;
+        OcelotPay.readyCallbacks[cid] = callback;
         return cid;
     },
 
     cancelOnReadyCallback(cid: string): void {
-        if (!BuyWithCrypto.readyCallbacks[cid]) {
+        if (!OcelotPay.readyCallbacks[cid]) {
             return;
         } else {
-            BuyWithCrypto.readyCallbacks[cid] = null;
+            OcelotPay.readyCallbacks[cid] = null;
         }
     },
 
     // ui controllers
-    initUI() {
-        if (!BuyWithCrypto.appId) {
-            Utils.throwError("app id not set, please call init first");
-            return;
-        }
-        if (BuyWithCrypto.iframeEle) {
-            return;
-        } else {
-            const animationStyle = document.createElement("style");
-            animationStyle.innerText = `
-                @keyframes paymentIframeShow {
-                    from {
-                        transform: scale(0);
-                    }
-                    to {
-                        transform: scale(1);
-                    }
-                }
+    // initUI() {
+    //     if (!OcelotPay.appId) {
+    //         Utils.throwError("app id not set, please call init first");
+    //         return;
+    //     }
+    //     if (OcelotPay.iframeEle) {
+    //         return;
+    //     } else {
+    //         const animationStyle = document.createElement("style");
+    //         animationStyle.innerText = `
+    //             @keyframes paymentIframeShow {
+    //                 from {
+    //                     transform: scale(0);
+    //                 }
+    //                 to {
+    //                     transform: scale(1);
+    //                 }
+    //             }
 
-                @keyframes paymentIframeHide {
-                    from {
-                        transform: scale(1);
-                    }
-                    to {
-                        transform: scale(0);
-                    }
-                }
-            `;
-            document.body.appendChild(animationStyle);
+    //             @keyframes paymentIframeHide {
+    //                 from {
+    //                     transform: scale(1);
+    //                 }
+    //                 to {
+    //                     transform: scale(0);
+    //                 }
+    //             }
+    //         `;
+    //         document.body.appendChild(animationStyle);
 
-            const encodedParams = encodeURIComponent(JSON.stringify({ appId: BuyWithCrypto.appId }));
-            const paymentIframe = document.createElement("iframe");
-            paymentIframe.src = `${IframeOrigin}?from=${encodeURIComponent(
-                window.location.origin
-            )}&params=${encodedParams}`;
-            paymentIframe.style.position = "fixed";
-            paymentIframe.style.left = "0";
-            paymentIframe.style.top = "0";
-            paymentIframe.style.width = "0";
-            paymentIframe.style.height = "0";
-            paymentIframe.style.zIndex = "9999";
-            paymentIframe.style.border = "none";
-            paymentIframe.style.borderWidth = "0";
+    //         const encodedParams = encodeURIComponent(JSON.stringify({ appId: OcelotPay.appId }));
+    //         const paymentIframe = document.createElement("iframe");
+    //         paymentIframe.src = `${IframeOrigin}?from=${encodeURIComponent(
+    //             window.location.origin
+    //         )}&params=${encodedParams}`;
+    //         paymentIframe.style.position = "fixed";
+    //         paymentIframe.style.left = "0";
+    //         paymentIframe.style.top = "0";
+    //         paymentIframe.style.width = "0";
+    //         paymentIframe.style.height = "0";
+    //         paymentIframe.style.zIndex = "9999";
+    //         paymentIframe.style.border = "none";
+    //         paymentIframe.style.borderWidth = "0";
 
-            document.body.appendChild(paymentIframe);
-            BuyWithCrypto.iframeEle = paymentIframe;
-        }
-    },
-    showPayUI() {
-        BuyWithCrypto.iframeEle.style.height = "100%";
-        BuyWithCrypto.iframeEle.style.width = "100%";
-        BuyWithCrypto.iframeEle.style.animation = "cambrianWalletShow 0.2s forwards";
-    },
-    hidePayUI() {
-        BuyWithCrypto.iframeEle.style.animation = "cambrianWalletHide 0.2s forwards";
-        setTimeout(() => {
-            BuyWithCrypto.iframeEle.style.height = "0";
-            BuyWithCrypto.iframeEle.style.width = "0";
-        }, 300);
-    },
+    //         document.body.appendChild(paymentIframe);
+    //         OcelotPay.iframeEle = paymentIframe;
+    //     }
+    // },
+    // showPayUI() {
+    //     OcelotPay.iframeEle.style.height = "100%";
+    //     OcelotPay.iframeEle.style.width = "100%";
+    //     OcelotPay.iframeEle.style.animation = "cambrianWalletShow 0.2s forwards";
+    // },
+    // hidePayUI() {
+    //     OcelotPay.iframeEle.style.animation = "cambrianWalletHide 0.2s forwards";
+    //     setTimeout(() => {
+    //         OcelotPay.iframeEle.style.height = "0";
+    //         OcelotPay.iframeEle.style.width = "0";
+    //     }, 300);
+    // },
     generatePaymentUrl(config: PaymentConfig): string | null {
         if (config.productId && config.productId.includes("#")) {
             console.error(`product id should not contain '#' `);
             return null;
         }
-        if (!BuyWithCrypto.appId) {
+        if (!OcelotPay.appId) {
             return null;
         }
         try {
             const paramObj = {
-                appId: BuyWithCrypto.appId,
+                appId: OcelotPay.appId,
             };
             if (config.valueInUSD) {
                 (paramObj as any).valueInUSD = config.valueInUSD;
@@ -303,7 +303,7 @@ const BuyWithCrypto: {
             return Promise.reject("Iframe content window not detected");
         }
         try {
-            const isUIReady = await BuyWithCrypto.checkPayUIIframeReady(iframeEle);
+            const isUIReady = await OcelotPay.checkPayUIIframeReady(iframeEle);
             if (!isUIReady) {
                 return Promise.reject("Payment UI not ready");
             }
@@ -351,4 +351,4 @@ const BuyWithCrypto: {
     },
 };
 
-export default BuyWithCrypto;
+export default OcelotPay;

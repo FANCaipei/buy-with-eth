@@ -80,9 +80,7 @@ const PaymentPage = () => {
         (selectCode: string) => {
             console.log(selectCode);
             setCurrencyTypeCode(selectCode);
-            const currencyConfig = (window as any).buyWithCrypto.tokenConfigs.find(
-                (item: any) => item.code === selectCode
-            );
+            const currencyConfig = (window as any).OcelotPay.tokenConfigs.find((item: any) => item.code === selectCode);
             setCurrencyPaymentConfig(currencyConfig);
             getCurrentCurrencyPrice(currencyConfig);
         },
@@ -104,7 +102,7 @@ const PaymentPage = () => {
     }, [sendValue, currentCurrencyPrice]);
 
     const clearConnectInfo = useCallback(() => {
-        (window as any).buyWithCrypto.utils.walletManager.clearConnectInfo();
+        (window as any).OcelotPay.utils.walletManager.clearConnectInfo();
         navigate("/connect-wallet", { replace: true, state: params });
     }, [navigate, params]);
 
@@ -126,7 +124,7 @@ const PaymentPage = () => {
 
     const pay = useCallback(async () => {
         setIsPaying(true);
-        const currentProvider = (window as any).buyWithCrypto.utils.ethereumProvider.getCurrentConnectedProvider();
+        const currentProvider = (window as any).OcelotPay.utils.ethereumProvider.getCurrentConnectedProvider();
         if (!currentProvider) {
             // nav to connect wallet with params
             navigate("/connect-wallet", { replace: true, state: params });
@@ -143,7 +141,7 @@ const PaymentPage = () => {
         };
         let fromAddr: string | null = null;
         try {
-            fromAddr = await (window as any).buyWithCrypto.utils.walletManager.getAccountWithCurrentProvider();
+            fromAddr = await (window as any).OcelotPay.utils.walletManager.getAccountWithCurrentProvider();
         } catch (error) {
             goConnectWallet();
         }
@@ -153,7 +151,7 @@ const PaymentPage = () => {
         } else {
             // transaction
             try {
-                const tx = await (window as any).buyWithCrypto.utils.walletManager.requestTransfer(
+                const tx = await (window as any).OcelotPay.utils.walletManager.requestTransfer(
                     currencyPaymentConfig.chainId,
                     sendValue,
                     fromAddr,
@@ -232,9 +230,9 @@ const PaymentPage = () => {
         console.log("payment params: ", paymentConfigParams);
         setIsLoading(true);
         const onPaySDKReady = () => {
-            setTargetAddress((window as any).buyWithCrypto.targetAddr);
-            setLogoUrl((window as any).buyWithCrypto.logoUrl);
-            const AvailableCurrencyTypes: Array<any> = (window as any).buyWithCrypto.tokenConfigs ?? [];
+            setTargetAddress((window as any).OcelotPay.targetAddr);
+            setLogoUrl((window as any).OcelotPay.logoUrl);
+            const AvailableCurrencyTypes: Array<any> = (window as any).OcelotPay.tokenConfigs ?? [];
             const currencyConfig =
                 AvailableCurrencyTypes.find(item => item.code === paymentConfigParams?.defaultTokenCode) ??
                 AvailableCurrencyTypes.find(item => item.isDefault) ??
@@ -245,10 +243,10 @@ const PaymentPage = () => {
             setIsLoading(false);
         };
 
-        const cid = (window as any).buyWithCrypto.onReady(onPaySDKReady);
+        const cid = (window as any).OcelotPay.onReady(onPaySDKReady);
         if (cid) {
             return () => {
-                (window as any).buyWithCrypto.cancelOnReadyCallback(cid);
+                (window as any).OcelotPay.cancelOnReadyCallback(cid);
             };
         }
     }, [navigate, paymentConfigParams, getCurrentCurrencyPrice]);
@@ -284,7 +282,7 @@ const PaymentPage = () => {
                             onChange={onCurrencyTypeChange}
                             disabled={isFetchingPrice}
                         >
-                            {((window as any).buyWithCrypto.tokenConfigs ?? []).map((item: any) => (
+                            {((window as any).OcelotPay.tokenConfigs ?? []).map((item: any) => (
                                 <Select.Option value={item.code} key={item.code}>
                                     <div className="token-option">
                                         <img className="token-logo" src={item.iconUrl} alt="" />

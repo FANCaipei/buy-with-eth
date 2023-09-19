@@ -20,16 +20,14 @@ try {
 }
 
 if (appConfigs.appId) {
-    (window as any).buyWithCrypto
-        .init({
-            appId: appConfigs.appId,
-        })
-        .catch((err: any) => {
-            console.error("init error: ", err);
-            if (err.errorCode === 4003) {
-                useAuthorityCheck.setState({ canAccessProject: false });
-            }
-        });
+    (window as any).OcelotPay.init({
+        appId: appConfigs.appId,
+    }).catch((err: any) => {
+        console.error("init error: ", err);
+        if (err.errorCode === 4003) {
+            useAuthorityCheck.setState({ canAccessProject: false });
+        }
+    });
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);

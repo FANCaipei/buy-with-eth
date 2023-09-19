@@ -1,7 +1,7 @@
 {
-    "name": "buy-with-crypto-sdk",
+    "name": "ocelot-pay-sdk",
     "version": "0.0.1",
-    "description": "buy with crypto sdk",
+    "description": "ocelot pay sdk",
     "main": "index.ts",
     "scripts": {
         "localBuild": "webpack --mode=production",
@@ -13,6 +13,8 @@
         "eth",
         "crypto",
         "buy",
+        "pay",
+        "ocelot",
         "sdk"
     ],
     "author": "caipei",

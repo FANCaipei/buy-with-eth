@@ -49,7 +49,7 @@ function Index() {
     }, [navigate, canAccessProject]);
 
     useEffect(() => {
-        if (!(window as any).buyWithCrypto.appId) {
+        if (!(window as any).OcelotPay.appId) {
             navigate("/app-id-missing", { replace: true });
         }
     }, [navigate]);
