@@ -6,6 +6,7 @@
     "scripts": {
         "localBuild": "webpack --mode=production",
         "prepublishOnly": "webpack --mode=production",
+        "build": "webpack --mode=production",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [

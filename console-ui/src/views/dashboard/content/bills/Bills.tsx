@@ -1,5 +1,5 @@
 import { createGlobalStyle, styled } from "styled-components";
-import { BuyWithCrypto } from "payWithCrypto";
+import { OcelotPay } from "ocelot-pay-sdk";
 import useFirebaseAuth from "../../../../common/zustand/useFirebaseAuth";
 import PanelTitle from "../../../../componets/dashboard/PanelTitle";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -189,7 +189,7 @@ const Bills = () => {
                     return;
                 }
                 try {
-                    const payResult = await BuyWithCrypto.request(
+                    const payResult = await OcelotPay.request(
                         {
                             method: "request_payment",
                             params: {
@@ -256,14 +256,14 @@ const Bills = () => {
 
     useEffect(() => {
         const generatePaymentUrl = () => {
-            const url = BuyWithCrypto.generatePaymentUrl({});
+            const url = OcelotPay.generatePaymentUrl({});
             setPaymentUrl(url);
         };
-        const cid = BuyWithCrypto.onReady(generatePaymentUrl);
+        const cid = OcelotPay.onReady(generatePaymentUrl);
 
         return () => {
             if (cid) {
-                BuyWithCrypto.cancelOnReadyCallback(cid);
+                OcelotPay.cancelOnReadyCallback(cid);
             }
         };
     }, []);

@@ -4,12 +4,12 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import FirebaseManager from "./common/firebase/FirebaseManager";
-import { BuyWithCrypto } from "payWithCrypto";
+import { OcelotPay } from "ocelot-pay-sdk";
 
 // init firebase
 FirebaseManager.init();
 
-BuyWithCrypto.init({ appId: "dmbXL9DtjzWrT1II3ZVD7ylchBx1-d6sa15TBCubkwDEdT3Hb" });
+OcelotPay.init({ appId: "dmbXL9DtjzWrT1II3ZVD7ylchBx1-d6sa15TBCubkwDEdT3Hb" });
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
