@@ -10,7 +10,7 @@ import { nanoid } from "nanoid";
 
 interface PaymentConfig {
     valueInUSD?: number;
-    defaultTokenCode?: "eth" | "matic" | "usdt-eth";
+    defaultTokenCode?: "eth" | "matic" | "usdt-eth" | "usdt-polygon";
     productId?: string;
     extraInfo?: string;
 }
