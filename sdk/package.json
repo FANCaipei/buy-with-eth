@@ -1,12 +1,13 @@
 {
     "name": "ocelot-pay-sdk",
-    "version": "0.2.1",
+    "version": "0.2.7",
     "description": "ocelot pay sdk",
     "main": "index.ts",
     "scripts": {
         "localBuild": "webpack --mode=production",
-        "prepublishOnly": "webpack --mode=production",
         "build": "webpack --mode=production",
+        "prepub": "rm -rf lib && npm run build && node setupLibPublishPackage.js",
+        "pub": "cd lib && npm publish",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
@@ -30,8 +31,5 @@
         "ts-loader": "^9.4.4",
         "typescript": "^5.1.6",
         "webpack-cli": "^4.10.0"
-    },
-    "files": [
-        "lib/"
-    ]
+    }
 }

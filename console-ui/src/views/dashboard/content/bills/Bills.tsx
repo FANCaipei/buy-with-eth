@@ -1,5 +1,5 @@
 import { createGlobalStyle, styled } from "styled-components";
-import { OcelotPay } from "ocelot-pay-sdk/lib";
+import { OcelotPay } from "ocelot-pay-sdk";
 import useFirebaseAuth from "../../../../common/zustand/useFirebaseAuth";
 import PanelTitle from "../../../../componets/dashboard/PanelTitle";
 import { useCallback, useEffect, useRef, useState } from "react";

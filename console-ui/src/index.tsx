@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import FirebaseManager from "./common/firebase/FirebaseManager";
-import { OcelotPay } from "ocelot-pay-sdk/lib";
+import { OcelotPay } from "ocelot-pay-sdk";
 
 // init firebase
 FirebaseManager.init();
