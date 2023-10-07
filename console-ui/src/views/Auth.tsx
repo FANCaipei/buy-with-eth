@@ -78,7 +78,7 @@ const AuthPage = () => {
         <StyledContainer>
             {contextHolder}
             <div className="container">
-                <div className="title">Title</div>
+                <div className="title">Ocelot Pay</div>
                 <div className="auth-card">
                     <Form form={formInstace} layout={"vertical"} size="large">
                         <Form.Item
