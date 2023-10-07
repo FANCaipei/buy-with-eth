@@ -53,7 +53,7 @@ const DashboardPage = () => {
             if (!item?.key) {
                 return;
             }
-            navigate(item.key);
+            navigate(`/dashboard/${item.key}`);
         },
         [navigate]
     );
@@ -83,7 +83,7 @@ const DashboardPage = () => {
                     okText: "Go",
                     cancelText: "cancel",
                     onOk() {
-                        navigate("bills");
+                        navigate("/dashboard/bills");
                     },
                     onCancel() {
                         // console.log("Cancel");
@@ -97,9 +97,9 @@ const DashboardPage = () => {
 
     useEffect(() => {
         const paths = (pathname ?? "").split("/");
-        if (paths[1] !== "dashboard") {
-            return;
-        }
+        // if (paths[1] !== "dashboard") {
+        //     return;
+        // }
         const panelKey = paths[2];
         const availablePath = MenuItemsData.map(item => item?.key);
         if (availablePath.includes(panelKey)) {
@@ -107,7 +107,7 @@ const DashboardPage = () => {
         }
         if (!AllowedSubPaths.includes(panelKey)) {
             // default panel
-            navigate("overview", { replace: true });
+            navigate("/dashboard/overview", { replace: true });
         }
     }, [pathname, navigate]);
 
