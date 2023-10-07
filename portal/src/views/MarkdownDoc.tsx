@@ -3,76 +3,22 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import MarkdownNavbar from "markdown-navbar";
 import { styled } from "styled-components";
 import "markdown-navbar/dist/navbar.css";
+import { useEffect, useState } from "react";
+
+const DocPath = require("../constants/IntegrationDoc.md");
 
 const { Content, Sider } = Layout;
 
-// Mock data
-const article = `# Markdown-Navbar Demo
- 
-## Chicken Chicken 1
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
- 
-### Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-#### Chicken Chicken Chicken Chicken
-##### tertet
- 
-Chicken Chicken Chicken Chicken Chicken Chicken.
-## Chicken Chicken 2
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
- 
-### Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-#### Chicken Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken Chicken.
-## Chicken Chicken 3
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
- 
-### Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-#### Chicken Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken Chicken.
-## Chicken Chicken 4
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
-* Chicken Chicken Chicken Chicken Chicken.
- 
-### Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken.
- 
-#### Chicken Chicken Chicken Chicken
- 
-Chicken Chicken Chicken Chicken Chicken Chicken.
-`;
-
 const MarkDownDoc = () => {
+    const [article, setArticle] = useState<string>("");
+
+    useEffect(() => {
+        fetch(DocPath).then(resp => {
+            resp.text().then(content => {
+                setArticle(content);
+            });
+        });
+    }, []);
     return (
         <StyledContainer>
             <Layout hasSider style={{ height: "100%", backgroundColor: "transparent" }}>
