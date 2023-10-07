@@ -53,6 +53,10 @@ const MarkDownDoc = () => {
 
 const StyledContainer = styled.div.attrs({ className: "markdown-doc" })`
     height: 100%;
+
+    img {
+        max-width: 400px;
+    }
 `;
 
 export default MarkDownDoc;

@@ -1,4 +1,32 @@
-## Chicken Chicken ~
+## Introduction
+
+Ocelot Pay is a payment tool with which user can pay in several crypto coins.
+
+Unlike traditional 3rd party payment tool, we don't hold any assets traded and all payments are sent directly to your cryptocurrency account.
+
+Ocelot Pay is very easy to integrate, all you need to do is:
+
+1. Create and configure your project on [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects)
+2. Get integration link or code, integrate with iframe or Ocelot Pay SDK
+
+## Create and configure project
+
+At project menu on [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects), click "Add Project", fill all fields and save. The newly created project will display on your projects panel.
+
+![new project](https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/docImages%2FnewProject.png?alt=media&token=0952fee5-e9e6-4cc7-a7be-d0437284df28&_gl=1*1qinefw*_ga*MTgzOTI5ODcyOS4xNjg1MzUzMzA2*_ga_CW55HF8NVT*MTY5NjY2NDY1MC4xNjkuMS4xNjk2NjY0NzA4LjIuMC4w)
+
+## Get payment url
+
+To get your payment url or appId, click your project at projects panel, your will see the follwing page:
+
+![payment config](https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/docImages%2FconfigPayment.png?alt=media&token=4e3b2f05-9ee1-4039-8e4f-dde548712e3e&_gl=1*2f9ns1*_ga*MTgzOTI5ODcyOS4xNjg1MzUzMzA2*_ga_CW55HF8NVT*MTY5NjY2NzA3OC4xNzAuMS4xNjk2NjY3MDg4LjUwLjAuMA..)
+
+Your can find your appId at left (which is required for SDK integration).
+
+Config your payment params at left, click "Generate url" the payment preview ui will update at right.
+And the follwing url and iframe code will update too. Thus you can use the url or iframe code to integrate Ocelot Pay.
+
+## Integration Without SDK
 
 Chicken Chicken Chicken Chicken Chicken.
 
@@ -12,27 +40,9 @@ Chicken Chicken Chicken Chicken Chicken.
 
 #### Chicken Chicken Chicken Chicken
 
-##### tertet
-
 Chicken Chicken Chicken Chicken Chicken Chicken.
 
-## Chicken Chicken 2
-
-Chicken Chicken Chicken Chicken Chicken.
-
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
-
-### Chicken Chicken Chicken
-
-Chicken Chicken Chicken Chicken Chicken.
-
-#### Chicken Chicken Chicken Chicken
-
-Chicken Chicken Chicken Chicken Chicken Chicken.
-
-## Chicken Chicken 3
+## Integration With SDK
 
 Chicken Chicken Chicken Chicken Chicken.
 

@@ -8,7 +8,7 @@ import { CopyBlock, paraisoLight } from "react-code-blocks";
 import useProtectedPath from "../../../../../common/hooks/useProtectedPath";
 import CustomFormLabel from "../../../../../componets/CustomFormLabel";
 
-const PaymentUIHost = "http://localhost:3000";
+const PaymentUIHost = "https://app.ocelotpay.com";
 
 const GeneratePayUIUrl = (appId: string, valueInUSD: any, defaultTokenType: any, productId: any): string => {
     const paramObj = {

@@ -366,7 +366,12 @@ const PaymentPage = () => {
                 </div>
                 <div className="spacer"></div>
                 <div className="bottom-block">
-                    <span className="text">Powered by xxxx</span>
+                    <span className="text">
+                        Powered by{" "}
+                        <a target="_blank" rel="noreferrer" href="https://ocelotpay.com">
+                            Ocelot Pay
+                        </a>
+                    </span>
                     <img className="logo-img" src="" alt="" />
                 </div>
             </StyledContainer>
