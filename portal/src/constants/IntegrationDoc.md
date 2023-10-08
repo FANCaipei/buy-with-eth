@@ -23,53 +23,37 @@ To get your payment url or appId, click your project at projects panel, your wil
 
 Your can find your appId at left (which is required for SDK integration).
 
-Config your payment params at left, click "Generate url" the payment preview ui will update at right.
-And the follwing url and iframe code will update too. Thus you can use the url or iframe code to integrate Ocelot Pay.
+Configure your payment params at left, click "Generate url" button the payment preview ui will update at right.
+The follwing url and iframe code will update too. Thus you can use the url or iframe code to integrate Ocelot Pay.
 
 ## Integration Without SDK
 
-Chicken Chicken Chicken Chicken Chicken.
+We highly recomand you use Ocelot Pay SDK
 
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
+### Integrate using iframe
 
-### Chicken Chicken Chicken
+### Listen payment result message
 
-Chicken Chicken Chicken Chicken Chicken.
-
-#### Chicken Chicken Chicken Chicken
-
-Chicken Chicken Chicken Chicken Chicken Chicken.
+### Payment success callback api
 
 ## Integration With SDK
 
-Chicken Chicken Chicken Chicken Chicken.
+### 1. Install SDK
 
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
+#### use CDN
 
-### Chicken Chicken Chicken
+#### use npm
 
-Chicken Chicken Chicken Chicken Chicken.
+### 2. Init SDK with AppId
 
-#### Chicken Chicken Chicken Chicken
+### 3. onReady callback
 
-Chicken Chicken Chicken Chicken Chicken Chicken.
+### 4. Generate payment url
 
-## Chicken Chicken 4
+### 5. Update or create iframe
 
-Chicken Chicken Chicken Chicken Chicken.
+### 6. Launch payment & wait for result
 
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
--   Chicken Chicken Chicken Chicken Chicken.
+### 7. Payment success callback api
 
-### Chicken Chicken Chicken
-
-Chicken Chicken Chicken Chicken Chicken.
-
-#### Chicken Chicken Chicken Chicken
-
-Chicken Chicken Chicken Chicken Chicken Chicken.
+## SDK APIS

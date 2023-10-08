@@ -114,7 +114,7 @@ const WalletManager = {
             tx = await signer.sendTransaction(txParams);
         }
 
-        // tray save max 3 times
+        // try save max 3 times
         try {
             onProgressChanged?.("Validating on chain");
             await tx.wait(); // wait until transaction minted

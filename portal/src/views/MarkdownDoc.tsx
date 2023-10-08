@@ -23,6 +23,7 @@ const MarkDownDoc = () => {
         <StyledContainer>
             <Layout hasSider style={{ height: "100%", backgroundColor: "transparent" }}>
                 <Sider
+                    width={300}
                     style={{
                         overflow: "auto",
                         height: "100vh",
@@ -34,12 +35,12 @@ const MarkDownDoc = () => {
                         backgroundColor: "#fff",
                     }}
                 >
-                    <MarkdownNavbar source={article} />
+                    <MarkdownNavbar source={article} className="m-nav" />
                 </Sider>
                 <Content
                     style={{
                         padding: "0 40px 20px",
-                        marginLeft: "200px",
+                        marginLeft: "300px",
                         height: "100%",
                         // overflow: "scroll",
                     }}
@@ -56,6 +57,9 @@ const StyledContainer = styled.div.attrs({ className: "markdown-doc" })`
 
     img {
         max-width: 400px;
+    }
+
+    .m-nav {
     }
 `;
 
