@@ -59,6 +59,22 @@ const StyledContainer = styled.div.attrs({ className: "markdown-doc" })`
         max-width: 400px;
     }
 
+    pre {
+        background: #f7f7f7;
+        padding: 15px;
+        border-radius: 12px;
+    }
+    code {
+        font-family: MyFancyCustomFont, monospace;
+        font-size: inherit;
+        word-wrap: break-word;
+        box-decoration-break: clone;
+        padding: 0.1rem 0.3rem 0.2rem;
+        border-radius: 0.2rem;
+        white-space: pre;
+        overflow-x: scroll;
+    }
+
     .m-nav {
     }
 `;

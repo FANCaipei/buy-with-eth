@@ -28,11 +28,52 @@ The follwing url and iframe code will update too. Thus you can use the url or if
 
 ## Integration Without SDK
 
-We highly recomand you use Ocelot Pay SDK
+We highly recommend you to use OcelotPay SDK. But if you just want to provide a crypto token payment way for single product lightweight integration is a good option.
 
 ### Integrate using iframe
 
+-   Get your payment url or iframe code by following previous [guide](#heading-2)
+-   Custom your iframe with payment url or based on our iframe code
+-   Integrate iframe into your page
+
 ### Listen payment result message
+
+You can get payment result by listening post message event from Ocelot Pay.
+
+```
+window.addEventListener("message", (event) => {
+    if (event.origin !== "https://app.ocelotpay.com"){
+        return;
+    }
+    if (event?.data?.type === "buy-with-crypto" && event?.data?.subType === "buy-with-crypto-request") {
+        switch (event?.data?.data?.method) {
+            case "request_payment":
+                // your code here
+                ...
+                return;
+            default:
+                return;
+        }
+    }
+});
+```
+
+The successful response:
+
+```
+appId: string;  // your appId
+txHash: string; // on chain transaction hash
+chainId: string; // hex string of payment chain, ex: 0x1
+tokenSymbol: string; // payment token symbol
+value: number; // amount of token
+recordPrice: number; // token price(in USD) at record moment
+recordValueInUSD: number; // value(in USD) calculated with recordPrice
+recordTimestamp: number;
+receiveAddress: string; // receiver crypto account address
+productId: string | number; // the productId, maybe empty
+extraInfo: string; // any custom info you set for this payment, maybe empty
+receiptId: string; // unique receipt id
+```
 
 ### Payment success callback api
 
