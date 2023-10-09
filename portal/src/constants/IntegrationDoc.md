@@ -191,11 +191,54 @@ The param structure
 
 ### Update or create iframe
 
+Once you have the payment url, you can update the iframe url and show the payment ui to your user
+
 ### Launch payment & wait for result
+
+At this step, user can already access the payment ui and pay to your account.
+
+But what if you want to update payment config, or get the payment result at frontend. You can use OcelotPay.request() to do it.
+
+```
+try {
+    const payResult = await OcelotPay.request(
+        {
+            method: "request_payment",  // do not change the method filed
+            // params is the same as generatePaymentUrl method param
+            params: {
+                valueInUSD: 12,
+                defaultTokenCode: "usdt-polygon",
+                produckId: 'example product id',
+                extraInfo: 'example extraInfo',
+            },
+        },
+        payIframeRef.current // your payment iframe dom element, this code is just an example
+    );
+
+    if (payResult?.receiptId) {
+        // payment success, your code here
+        ...
+    } else {
+        // some thing wrong, you may notice user payment failed
+        ...
+    }
+} catch (error) {
+    if (error?.receiptId) {
+        // transaction maybe validat on chain but not saved on OcelotPay
+        // you can save the receiptId and verify receipId (see the following "Verify receiptId" block)
+        ...
+    } else {
+        // some thing wrong, you may notice user payment failed
+        ...
+    }
+}
+```
 
 ### Payment success callback api
 
-### Build your own payment ui
+### Verify receiptId
+
+### Build your own payment ui (Advanced)
 
 ---
 
