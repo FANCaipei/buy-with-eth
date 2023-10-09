@@ -9,11 +9,15 @@ Ocelot Pay is very easy to integrate, all you need to do is:
 1. Create and configure your project on [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects)
 2. Get integration link or code, integrate with iframe or Ocelot Pay SDK
 
+---
+
 ## Create and configure project
 
 At project menu on [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects), click "Add Project", fill all fields and save. The newly created project will display on your projects panel.
 
 ![new project](https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/docImages%2FnewProject.png?alt=media&token=0952fee5-e9e6-4cc7-a7be-d0437284df28&_gl=1*1qinefw*_ga*MTgzOTI5ODcyOS4xNjg1MzUzMzA2*_ga_CW55HF8NVT*MTY5NjY2NDY1MC4xNjkuMS4xNjk2NjY0NzA4LjIuMC4w)
+
+---
 
 ## Get payment url
 
@@ -25,6 +29,8 @@ Your can find your appId at left (which is required for SDK integration).
 
 Configure your payment params at left, click "Generate url" button the payment preview ui will update at right.
 The follwing url and iframe code will update too. Thus you can use the url or iframe code to integrate Ocelot Pay.
+
+---
 
 ## Integration Without SDK
 
@@ -38,7 +44,7 @@ We highly recommend you to use OcelotPay SDK. But if you just want to provide a 
 
 ### Listen payment result message
 
-You can get payment result by listening post message event from Ocelot Pay.
+You can get payment result by listening "message" event from Ocelot Pay.
 
 ```
 window.addEventListener("message", (event) => {
@@ -77,24 +83,36 @@ receiptId: string; // unique receipt id
 
 ### Payment success callback api
 
+See the [following part](#heading-14)
+
+---
+
 ## Integration With SDK
 
-### 1. Install SDK
+### Install SDK
 
-#### use CDN
+-   use CDN
 
-#### use npm
+    > come soon
 
-### 2. Init SDK with AppId
+-   use npm ([npm package link](https://www.npmjs.com/package/ocelot-pay-sdk))
 
-### 3. onReady callback
+    > **npm i ocelot-pay-sdk**
 
-### 4. Generate payment url
+### Init SDK with AppId
 
-### 5. Update or create iframe
+### onReady callback
 
-### 6. Launch payment & wait for result
+### Generate payment url
 
-### 7. Payment success callback api
+### Update or create iframe
+
+### Launch payment & wait for result
+
+### Payment success callback api
+
+### Build your own payment ui
+
+---
 
 ## SDK APIS
