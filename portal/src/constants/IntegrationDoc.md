@@ -93,17 +93,101 @@ See the [following part](#heading-14)
 
 -   use CDN
 
-    > come soon
+    Coming soon  
+    You can get OcelotPay under window object
+
+    ```
+    const OcelotPay = window.OcelotPay;
+    ```
 
 -   use npm ([npm package link](https://www.npmjs.com/package/ocelot-pay-sdk))
 
-    > **npm i ocelot-pay-sdk**
+    **npm i ocelot-pay-sdk**
+
+    ```
+    import { OcelotPay } from "ocelot-pay-sdk";
+    ```
 
 ### Init SDK with AppId
 
+-   Get your appId by following [previous guide](#heading-2)
+-   Init OcelotPay with your appId
+
+If installed with npm
+
+```
+import { OcelotPay } from "ocelot-pay-sdk";
+
+const myAppId = ''; // your appId here
+OcelotPay.init({ appId: myAppId });
+```
+
+If installed with CDN
+
+```
+const myAppId = ''; // your appId here
+window.OcelotPay.init({ appId: myAppId });
+```
+
 ### onReady callback
 
+OcelotPay init is an async function, it returns a boolean type promise.
+But event init finished there may be some async http requests running, at this moment OcelotPay is not ready to be used. You can check OcelotPay ready status by calling `OcelotPay.isReady()`.
+
+For your convenient, we provide the onReady callback. The onReady callback will be called once OcelotPay is ready.
+
+For example you can just init OcelotPay at the root of your app, and use onReady callback in your components.
+
+Here is an example code of react
+
+```
+// at your app root
+OcelotPay.init({ appId: "" }); // your appId here
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+root.render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+);
+
+---------------------------------------------------------------------------------
+
+// at your component
+useEffect(() => {
+    const generatePaymentUrl = () => {
+        const url = OcelotPay.generatePaymentUrl({});
+        setPaymentUrl(url);
+    };
+    const cid = OcelotPay.onReady(generatePaymentUrl);
+
+    return () => {
+        // Don't forget to cancelOnReadyCallback, or it may execute multi times
+        if (cid) {
+            OcelotPay.cancelOnReadyCallback(cid);
+        }
+    };
+}, []);
+```
+
 ### Generate payment url
+
+To integrate our payment ui, you must generate payment url first
+
+```
+const url = OcelotPay.generatePaymentUrl({});
+```
+
+The param structure
+
+```
+{
+    valueInUSD?: number; // fixed payment value; if null, user can edit the payment amount by them self
+    defaultTokenCode?: "eth" | "matic" | "usdt-eth" | "usdt-polygon"; // default selected token type
+    productId?: string; // your product id, helps you to identify which product be consumed
+    extraInfo?: string; // your custom info, will be returned in response, can be a json format string. For example, you can put user id here to identify which user owns this payment
+}
+```
 
 ### Update or create iframe
 

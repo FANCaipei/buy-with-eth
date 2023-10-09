@@ -65,6 +65,8 @@ const StyledContainer = styled.div.attrs({ className: "markdown-doc" })`
         border-radius: 12px;
     }
     code {
+        display: inline-block;
+        width: 100%;
         font-family: MyFancyCustomFont, monospace;
         font-size: inherit;
         word-wrap: break-word;
