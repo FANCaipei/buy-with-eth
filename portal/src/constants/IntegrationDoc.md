@@ -236,6 +236,51 @@ try {
 
 ### Payment success callback api
 
+If you configured the "Callback Api" in your project. You can receive every successful payment result by this api. We highly recommend you set up the "Callback Api".
+
+-   Configure on creating or editing project
+    > The secret phrase and Callback Api must both configed
+    > The api url must support POST method and accept the two properties: resultJsonStr, checkHexStr in body
+-   Verify the message is from OcelotPay
+
+    > The Callback api request body will be like
+
+    ```
+    {
+        resultJsonStr: string, // payment result in json format string
+        checkHexStr: string, // hex string, hash result of project configured secret phrase + resultJsonStr
+    }
+    ```
+
+    > Verify hash string
+    >
+    > 1. compare hashed result
+    > 2. parse result json string
+
+    Example code for js. [CryptoJS](https://www.npmjs.com/package/crypto-js) is required
+
+    ```
+    // get data from request body
+    const checkHexStr = ''; // get from request body
+    const resultJsonStr = ''; // get from request body
+
+    const secretPhrase = ''; // configured secret phrase for your project
+    const checkHash = CryptoJS.SHA256(secretPhrase + resultJsonStr);
+
+    // parse to hex string
+    const hashHex = checkHash.toString(CryptoJS.enc.Hex);
+
+    if(checkHexStr === hashHex){
+        // request is from OcelotPay, you can trust it
+        const result = JSON.parse(resultJsonStr);
+        return result;
+    }
+    else{
+        // request is not from OcelotPay!
+        return null;
+    }
+    ```
+
 ### Verify receiptId
 
 ### Build your own payment ui (Advanced)
