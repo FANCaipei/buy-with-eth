@@ -367,3 +367,89 @@ const tx = await OcelotPay.utils.walletManager.requestTransfer(
 ---
 
 ## SDK APIS
+
+### OcelotPay
+
+> **_Properties_**
+>
+> -   **appId**: string
+> -   **tokenConfigs**: Array<any>
+> -   **isFetchingTokenConfigOrFailed**: boolean
+> -   **isFetchingAppConfigOrFailed**: boolean
+> -   **logoUrl**: string
+> -   **targetAddr**: string
+> -   **iframeEle**: HTMLIFrameElement
+> -   **readyCallbacks**: { [key: string]: Function | null }
+> -   **utils**: {walletManager: typeof [WalletManager](#heading-20); ethereumProvider: typeof [EthereumProvider](#heading-19) }
+
+> **_Methods_**
+>
+> -   **init**: (option: [InitOption](#heading-21)) => void
+> -   **isReady**: () => boolean
+> -   **onReady**: (callback: Function) => string | null
+> -   **cancelOnReadyCallback**: (cid: string) => void;
+> -   **connectWallet**: (walletType: "metamask" | "coinbase") => void
+> -   **getTokenConfigs**: () => void
+> -   **getTokenPriceInUSD**: (tokenSymbol: string) => Promise<number>
+> -   **generatePaymentUrl**: (config: [PaymentConfig](#heading-21)) => string
+> -   **checkPayUIIframeReady**: (iframeEle: HTMLIFrameElement) => Promise<boolean>
+> -   **request**: ({ method, params }: { method: string; params: [PaymentConfig](#heading-21) },iframeEle: HTMLIFrameElement) => Promise<any>
+
+### EthereumProvider
+
+> **_Methods_**
+>
+> -   **detectProviders**: () => [WalletTypes](#heading-21)
+> -   **getCurrentConnectedProvider**: () => any
+
+### WalletManager
+
+> **_Methods_**
+>
+> -   **connectWallet**: (provider: any, providerType: "metamask" | "coinbase") => Promise<string>
+> -   **clearConnectInfo**: () => void
+> -   **getAccountWithCurrentProvider**: () => Promise<string>
+> -   **requestTransfer**:
+
+```
+(
+    chainId: string /**in hex format */,
+    value: number /**token amount*/,
+    fromAddr: string,
+    toAddr: string,
+    isErc20: boolean,
+    productId?: string,
+    onProgressChanged?: (progress: string) => void,
+    extraInfo?: string
+) => Promise<any>
+```
+
+### Types
+
+**InitOption**
+
+```
+interface InitOption {
+    appId: string;
+}
+```
+
+**PaymentConfig**
+
+```
+interface PaymentConfig {
+    valueInUSD?: number;
+    defaultTokenCode?: "eth" | "matic" | "usdt-eth" | "usdt-polygon";
+    productId?: string;
+    extraInfo?: string;
+}
+```
+
+**WalletTypes**
+
+```
+interface WalletTypes {
+    metamask: any,
+    coinbase: any
+}
+```
