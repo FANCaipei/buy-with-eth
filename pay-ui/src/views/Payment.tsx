@@ -130,7 +130,7 @@ const PaymentPage = () => {
             navigate("/connect-wallet", { replace: true, state: params });
         }
         if (!currencyPaymentConfig) {
-            console.error("not payment config: TODO: send error back");
+            console.error("not payment config");
             return;
         }
         const goConnectWallet = () => {
@@ -161,7 +161,7 @@ const PaymentPage = () => {
                     onPaymentProgressChanged,
                     paymentExtraInfo
                 );
-                console.log("request transfer ok: ", tx);
+                // console.log("request transfer ok: ", tx);
                 send("buy-with-crypto-response", responseToId, tx, responseToOrigin);
                 navToResult(true, tx.receiptId);
             } catch (error: any) {

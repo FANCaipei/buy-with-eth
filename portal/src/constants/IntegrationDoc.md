@@ -299,6 +299,71 @@ You must call the api with **POST** method and **receiptId** in body:
 
 ### Build your own payment ui (Advanced)
 
+Though use our provided payment ui is very convenient, you may want to custom your own payment view. In this case, you can use OcelotPay SDK to build your personalized view. Actually our payment ui is buit with OcelotPay SDK.
+
+You can following those steps to build your own ui:
+
+-   Init OcelotPay with your appId
+
+```
+const myAppId = ''; // your appId here
+OcelotPay.init({ appId: myAppId });
+```
+
+-   Use **ethereumProvider** and **walletManager** to detect and connect wallet
+
+```
+// currently support metamask and coinbase, here is an example of metamsk
+const metamaskProvider = OcelotPay.utils.ethereumProvider.detectProviders()?.metamask;
+
+if(metamaskProvider){
+    const accountAddr = await OcelotPay.utils.walletManager.connectWallet(metamaskProvider, "metamask");
+    if (accountAddr) {
+        // wallet connected
+    }
+}
+
+```
+
+-   Get available tokens from **OcelotPay.tokenConfigs**
+
+    Token configuration structure be like:
+
+```
+{
+    "chainId": "0x1",
+    "type": "erc20", // erc20 or origin
+    "symbol": "USDT-ETH",
+    "code": "usdt-eth",
+    "contractAddr": "0xdAC17F958D2ee523a2206206994597C13D831ec7",  // only erc20 has contractAddr
+    "decimals": 6,
+    "iconUrl": "" // token icon url
+}
+```
+
+-   Get real-time token price
+
+```
+let tokenSymbol = '' // support 'USDT', 'ETH', 'MATIC'
+OcelotPay.getTokenPriceInUSD(tokenSymbol);
+```
+
+-   Request to pay
+
+```
+// Example code for reqest a payment
+const tx = await OcelotPay.utils.walletManager.requestTransfer(
+    chainId, // chain id
+    value, // the amount of token to be sent
+    fromAddr, // from which address (normally is the accountAddr you got after connecting wallet)
+    OcelotPay.targetAddr, // your configured payment address
+    isErc20, // is token is erc20, you can get from token configuration data
+    productId, // your product id, can be null
+    onPaymentProgressChanged, // callback function when payment progress changed. Function(progress: string) => void
+    paymentExtraInfo // customed extra info, can be null
+);
+```
+
 ---
 
 ## SDK APIS
