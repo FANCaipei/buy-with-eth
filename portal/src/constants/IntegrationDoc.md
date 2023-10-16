@@ -132,9 +132,11 @@ window.OcelotPay.init({ appId: myAppId });
 ### onReady callback
 
 OcelotPay init is an async function, it returns a boolean type promise.
-But event init finished there may be some async http requests running, at this moment OcelotPay is not ready to be used. You can check OcelotPay ready status by calling `OcelotPay.isReady()`.
+But event init finished there may be some async http requests running, at this moment OcelotPay is not ready to be used. You can check OcelotPay ready status by calling:
 
-For your convenient, we provide the onReady callback. The onReady callback will be called once OcelotPay is ready.
+`OcelotPay.isReady()`
+
+For your convenient, we provide the **onReady** callback. The onReady callback will be called once OcelotPay is ready.
 
 For example you can just init OcelotPay at the root of your app, and use onReady callback in your components.
 
@@ -236,11 +238,11 @@ try {
 
 ### Payment success callback api
 
-If you configured the "Callback Api" in your project. You can receive every successful payment result by this api. We highly recommend you set up the "Callback Api".
+If you configured the "Callback Api" in your project. You can receive every successful payment result from this api. We highly recommend you set up the "Callback Api".
 
 -   Configure on creating or editing project
     > The secret phrase and Callback Api must both configed
-    > The api url must support POST method and accept the two properties: resultJsonStr, checkHexStr in body
+    > The api url must support POST method and accept two properties: resultJsonStr, checkHexStr in body params
 -   Verify the message is from OcelotPay
 
     > The Callback api request body will be like
@@ -254,7 +256,8 @@ If you configured the "Callback Api" in your project. You can receive every succ
 
     > Verify hash string
     >
-    > 1. compare hashed result
+    > 1. compare hashed result; use secretPhrase + resultJsonStr string as input of SHA256 algorithm to generate a hashed hexString output and compare it with checkHexStr to verify the request is from OcelotPay
+
     > 2. parse result json string
 
     Example code for js. [CryptoJS](https://www.npmjs.com/package/crypto-js) is required
@@ -282,6 +285,17 @@ If you configured the "Callback Api" in your project. You can receive every succ
     ```
 
 ### Verify receiptId
+
+Even it occurs very rarely, some network problems may cause that the payment transaction confirmed on chain but not not saved by OcelotPay server. At this case, you will get an unique receipt id in payment response. You can verify and save this payment with the receipt id by calling this api:
+[https://verifypaymentreceiptandsave-cjurgglvma-uc.a.run.app](https://verifypaymentreceiptandsave-cjurgglvma-uc.a.run.app)
+
+You must call the api with **POST** method and **receiptId** in body:
+
+```
+{
+    receiptId: '' // The receiptId you received
+}
+```
 
 ### Build your own payment ui (Advanced)
 
