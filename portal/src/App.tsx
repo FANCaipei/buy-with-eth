@@ -13,7 +13,7 @@ function Index() {
         <ErrorBoundary>
             <Header
                 style={{
-                    position: "sticky",
+                    position: "fixed",
                     top: 0,
                     zIndex: 1,
                     width: "100%",
@@ -24,7 +24,7 @@ function Index() {
             >
                 <OcelotHeader />
             </Header>
-            <Content style={{ height: "calc(100% - 64px)" }}>{element}</Content>
+            <Content style={{ height: "100%", paddingTop: "64px" }}>{element}</Content>
         </ErrorBoundary>
     );
 }

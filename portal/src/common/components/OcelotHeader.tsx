@@ -1,11 +1,27 @@
 import { Button } from "antd";
 import styled from "styled-components";
 import Logo from "../../assets/imgs/logo.png";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 const OcelotHeader = () => {
+    const navigate = useNavigate();
+
+    const goHome = useCallback(() => {
+        navigate("/home");
+    }, [navigate]);
+
+    const goDoc = useCallback(() => {
+        navigate("/doc");
+    }, [navigate]);
+
+    const goConsole = useCallback(() => {
+        window.open("https://console.ocelotpay.com/", "_blank");
+    }, []);
+
     return (
         <StyledContainer>
-            <div className="logo-block">
+            <div className="logo-block" onClick={goHome}>
                 <img src={Logo} alt="" className="logo" />
                 <span className="text">Ocelot Pay</span>
             </div>
@@ -16,10 +32,10 @@ const OcelotHeader = () => {
                 <Button type="text" size="large">
                     Pricing
                 </Button>
-                <Button type="text" size="large">
+                <Button type="text" size="large" onClick={goDoc}>
                     Docs
                 </Button>
-                <Button type="primary" size="large">
+                <Button type="primary" size="large" onClick={goConsole}>
                     Console
                 </Button>
             </div>

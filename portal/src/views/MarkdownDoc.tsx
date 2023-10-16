@@ -39,7 +39,7 @@ const MarkDownDoc = () => {
                 </Sider>
                 <Content
                     style={{
-                        padding: "0 40px 20px",
+                        padding: "0 40px 40px",
                         marginLeft: "300px",
                         height: "100%",
                         // overflow: "scroll",
