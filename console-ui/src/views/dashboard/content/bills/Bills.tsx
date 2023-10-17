@@ -268,6 +268,11 @@ const Bills = () => {
         };
     }, []);
 
+    useEffect(() => {
+        const url = OcelotPay.generatePaymentUrl({});
+        setPaymentUrl(url);
+    }, [OcelotPay.appId]);
+
     return (
         <StyledContainer>
             {contextHolder}

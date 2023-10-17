@@ -87,6 +87,7 @@ const OcelotPay: {
             };
             runReadyCallbacks();
         } catch (error) {
+            console.error(error);
             if (error.errorCode === 4003) {
                 // Utils.throwError("access project config denied");
                 return Promise.reject({ errorCode: 4003, msg: `access project config denied` });
