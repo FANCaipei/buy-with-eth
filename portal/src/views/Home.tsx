@@ -17,12 +17,17 @@ const Home = () => {
                 <div className="home-title">Features</div>
                 <div className="home-block">
                     <div className="feature-block block-content">
-                        <img className="deco-img" src={PlaceHolderImg} alt="" />
-                        <div className="text-block right">
-                            <div className="title">Best payment experience</div>
-                            <div className="divider"></div>
+                        <div className="feature-item">
+                            <img className="icon" src="" alt="" />
+                            <div className="title">Best cryptocurrency payment experience</div>
+                            <div className="desc">User friendly payment view, one click to pay with crypto tokens.</div>
+                        </div>
+                        <div className="feature-item">
+                            <img className="icon" src="" alt="" />
+                            <div className="title">Easy to integrate</div>
                             <div className="desc">
-                                User friendly payment view, one click to pay. Never confuse end-users.
+                                No code (low code) integration. It only take 3 steps to let your website be able to
+                                accept crypto token payment.{" "}
                             </div>
                         </div>
                     </div>
@@ -85,38 +90,35 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
             }
         }
         .feature-block {
-            display: flex;
-            align-items: center;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: repeat(2, 1fr);
+            column-gap: 20px;
+            row-gap: 20px;
 
-            .deco-img {
-                width: 70%;
-            }
-            .text-block {
-                width: 30%;
-                display: flex;
-                flex-direction: column;
+            .feature-item {
+                padding: 48px;
+                background-color: #fff;
+                border-radius: 16px;
+                box-shadow: rgba(12, 8, 0, 0.3) 0px 2px 8px -1px;
 
-                &.left {
-                    align-items: flex-start;
+                .icon {
+                    width: 55px;
+                    height: 55px;
+                    display: block;
+                    margin-bottom: 30px;
                 }
-                &.right {
-                    align-items: flex-end;
-                }
-
                 .title {
-                    font-size: 32px;
+                    font-size: 20px;
                     font-weight: bold;
-                    color: rgb(0, 158, 255);
-                }
-                .divider {
-                    height: 1px;
-                    width: 30%;
-                    margin: 10px 0;
-                    background-color: rgb(0, 158, 255);
+                    color: #000;
+                    margin-bottom: 16px;
                 }
                 .desc {
-                    font-size: 20px;
-                    color: rgba(0, 0, 0, 0.88);
+                    font-size: 16px;
+                    line-height: 24px;
+                    color: rgb(87, 87, 87);
                 }
             }
         }
