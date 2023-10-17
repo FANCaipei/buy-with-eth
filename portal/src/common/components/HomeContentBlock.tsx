@@ -6,7 +6,7 @@ const HomeContentBlock = ({ children }: { children: any }) => {
 
 const StyledContainer = styled.div.attrs({ className: "home-content-block" })`
     height: 35vh;
-    padding: 60px 20px;
+    /* padding: 60px 20px; */
 `;
 
 export default HomeContentBlock;
