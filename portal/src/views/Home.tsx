@@ -10,8 +10,13 @@ import GoogleLogo from "../assets/imgs/home/support-logos/google.svg";
 import AwsLogo from "../assets/imgs/home/support-logos/aws.svg";
 import EthLogo from "../assets/imgs/home/support-logos/ethereum.svg";
 import PolygonLogo from "../assets/imgs/home/support-logos/polygon.png";
+import { useCallback } from "react";
 
 const Home = () => {
+    const goConsole = useCallback(() => {
+        window.open("https://console.ocelotpay.com/", "_blank");
+    }, []);
+
     return (
         <StyledContainer>
             <div className="home-content">
@@ -94,6 +99,17 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
+                <div className="home-block" style={{ backgroundColor: "rgb(99, 99, 172)" }}>
+                    <div className="start-block">
+                        <div className="main-desc">
+                            Hundreds apps are completing thousands payments every day on Ocelot Pay
+                        </div>
+                        <div className="sub-desc">Don't want to wait anymore</div>
+                        <div className="start-btn" onClick={goConsole}>
+                            Start now
+                        </div>
+                    </div>
+                </div>
             </div>
         </StyledContainer>
     );
@@ -103,7 +119,6 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
     .home-content {
         width: 100%;
         margin: 0 auto;
-        padding-bottom: 48px;
         background-color: rgb(248, 249, 250);
 
         .home-title {
@@ -208,6 +223,44 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
 
                 .logo-item {
                     height: 40px;
+                }
+            }
+        }
+        .start-block {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #fff;
+
+            .main-desc {
+                margin-top: 48px;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            .sub-desc {
+                margin-top: 32px;
+                font-size: 16px;
+            }
+            .start-btn {
+                margin-top: 80px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+                padding: 20px 60px;
+                background-color: rgb(140, 206, 134);
+                border-bottom: 2px solid #6abf62;
+                border-right: 2px solid #6abf62;
+                transition: all 0.3s ease-in-out;
+
+                &:hover {
+                    background-color: #73b0f4;
+                    border-right: 2px solid #4495f0;
+                    border-bottom: 2px solid #4495f0;
                 }
             }
         }
