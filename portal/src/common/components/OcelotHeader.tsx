@@ -1,11 +1,13 @@
 import { Button } from "antd";
 import styled from "styled-components";
 import Logo from "../../assets/imgs/logo.png";
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const OcelotHeader = () => {
     const navigate = useNavigate();
+    const [isAtHomePage, setIsAtHomePage] = useState(true);
+    const location = useLocation();
 
     const goHome = useCallback(() => {
         navigate("/home");
@@ -19,27 +21,41 @@ const OcelotHeader = () => {
         window.open("https://console.ocelotpay.com/", "_blank");
     }, []);
 
+    useEffect(() => {
+        if (location.pathname?.includes("/home")) {
+            setIsAtHomePage(true);
+        } else {
+            setIsAtHomePage(false);
+        }
+    }, [location]);
+
     return (
-        <StyledContainer>
+        <StyledContainer style={{ maxWidth: isAtHomePage ? "1200px" : "100vw" }}>
             <div className="logo-block" onClick={goHome}>
                 <img src={Logo} alt="" className="logo" />
                 <span className="text">Ocelot Pay</span>
             </div>
             <div className="nav-items">
-                <a href="#features">
-                    <Button type="text" size="large">
-                        Why Ocelot Pay
+                {isAtHomePage ? (
+                    <a href="#features">
+                        <Button type="text" size="large">
+                            Why Ocelot Pay
+                        </Button>
+                    </a>
+                ) : null}
+                {isAtHomePage ? (
+                    <a href="#price">
+                        <Button type="text" size="large">
+                            Pricing
+                        </Button>
+                    </a>
+                ) : null}
+                {isAtHomePage ? (
+                    <Button type="text" size="large" onClick={goDoc}>
+                        Docs
                     </Button>
-                </a>
-                <a href="#price">
-                    <Button type="text" size="large">
-                        Pricing
-                    </Button>
-                </a>
+                ) : null}
 
-                <Button type="text" size="large" onClick={goDoc}>
-                    Docs
-                </Button>
                 <Button type="primary" size="large" onClick={goConsole}>
                     Console
                 </Button>
@@ -50,6 +66,8 @@ const OcelotHeader = () => {
 
 const StyledContainer = styled.div.attrs({ className: "ocelot-header" })`
     width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
