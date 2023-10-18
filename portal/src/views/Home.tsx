@@ -6,6 +6,10 @@ import IntegrationIcon from "../assets/imgs/home/icons/puzzle-icon.svg";
 import ControlIcon from "../assets/imgs/home/icons/cryptocurrency-bitcoin-icon.svg";
 import DashboardIcon from "../assets/imgs/home/icons/dashboard-report-icon.svg";
 import TokensIcon from "../assets/imgs/home/icons/token-icon.svg";
+import GoogleLogo from "../assets/imgs/home/support-logos/google.svg";
+import AwsLogo from "../assets/imgs/home/support-logos/aws.svg";
+import EthLogo from "../assets/imgs/home/support-logos/ethereum.svg";
+import PolygonLogo from "../assets/imgs/home/support-logos/polygon.png";
 
 const Home = () => {
     return (
@@ -66,8 +70,30 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-                <div className="home-title">Princing</div>
-                <div className="home-title">Support By</div>
+                <div className="home-block" style={{ backgroundColor: "rgb(11, 22, 63)" }}>
+                    <div className="price-block">
+                        <div className="home-title">Pricing</div>
+                        <div className="title">Pay as you go, no transaction no fee.</div>
+                        <div className="desc">
+                            <div>$0.1/transaction for first 1000 transactions per month</div>
+                            <div>$0.05/transaction for first 10000 transactions per month</div>
+                            <div>$0.03/transaction for first 100000 transactions per month</div>
+                            <div>Bill will be generated on the 1st day of next month</div>
+                            <div>No transaction, no bill. No cost for trying</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="home-block">
+                    <div className="support-block">
+                        <div className="home-title">Supported By</div>
+                        <div className="logo-containers">
+                            <img className="logo-item" src={GoogleLogo} alt="Google" />
+                            <img className="logo-item" src={AwsLogo} alt="AWS" />
+                            <img className="logo-item" src={EthLogo} alt="Ethereum" />
+                            <img className="logo-item" src={PolygonLogo} alt="Polygon" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </StyledContainer>
     );
@@ -78,6 +104,7 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
         width: 100%;
         margin: 0 auto;
         padding-bottom: 48px;
+        background-color: rgb(248, 249, 250);
 
         .home-title {
             font-size: 48px;
@@ -91,6 +118,7 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
             min-height: 45vh;
             background-size: cover;
             background-repeat: no-repeat;
+            margin-top: 48px;
 
             .block-content {
                 min-height: 45vh;
@@ -164,6 +192,22 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                     font-size: 16px;
                     line-height: 24px;
                     color: rgb(87, 87, 87);
+                }
+            }
+        }
+        .support-block {
+            .logo-containers {
+                width: 100%;
+                filter: grayscale(100%);
+                padding: 40px;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-column-gap: 20px;
+                justify-items: center;
+                align-items: center;
+
+                .logo-item {
+                    height: 40px;
                 }
             }
         }
