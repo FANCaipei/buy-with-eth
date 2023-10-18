@@ -27,8 +27,10 @@ const Home = () => {
                         <div className="sub-slogan">Cryptocurrency payment saas platform</div>
                     </div>
                 </div>
-                <div className="home-title">Features</div>
+                <div id="features"></div>
                 <div className="home-block">
+                    <div className="feature-small-title">Features</div>
+                    <div className="feature-big-title">Why Ocelot Pay</div>
                     <div className="feature-block block-content">
                         <div className="feature-item">
                             <div className="icon-wrapper" style={{ backgroundColor: "rgba(92, 201, 167, 0.2)" }}>
@@ -75,16 +77,18 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
+                <div id="price"></div>
                 <div className="home-block" style={{ backgroundColor: "rgb(11, 22, 63)" }}>
                     <div className="price-block">
-                        <div className="home-title">Pricing</div>
-                        <div className="title">Pay as you go, no transaction no fee.</div>
+                        <div className="price-home-title">Pricing</div>
+                        <div className="title">Pay as you go, no transaction no fee. No cost for trying</div>
                         <div className="desc">
-                            <div>$0.1/transaction for first 1000 transactions per month</div>
-                            <div>$0.05/transaction for first 10000 transactions per month</div>
-                            <div>$0.03/transaction for first 100000 transactions per month</div>
-                            <div>Bill will be generated on the 1st day of next month</div>
-                            <div>No transaction, no bill. No cost for trying</div>
+                            <ul>
+                                <li>$0.1/transaction for first 1000 transactions per month</li>
+                                <li>$0.05/transaction for first 10000 transactions per month</li>
+                                <li>$0.03/transaction for first 100000 transactions per month</li>
+                                <li>Bill will be generated on the 1st day of next month</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -169,6 +173,20 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 color: rgba(0, 0, 0, 0.88);
             }
         }
+        .feature-small-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: rgb(255, 177, 22);
+            padding: 48px 0 0px;
+        }
+        .feature-big-title {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            color: rgb(11, 22, 63);
+            padding-bottom: 48px;
+        }
         .feature-block {
             width: 100%;
             display: grid;
@@ -176,6 +194,7 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
             grid-template-rows: repeat(2, 1fr);
             column-gap: 20px;
             row-gap: 20px;
+            padding-bottom: 48px;
 
             .feature-item {
                 padding: 48px;
@@ -208,6 +227,32 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                     line-height: 24px;
                     color: rgb(87, 87, 87);
                 }
+            }
+        }
+        .price-block {
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 48px;
+
+            .price-home-title {
+                font-size: 20px;
+                font-weight: bold;
+                width: 100%;
+                text-align: center;
+                color: rgb(255, 107, 107);
+                padding: 48px 0 0px;
+            }
+            .title {
+                font-size: 36px;
+                font-weight: bold;
+            }
+            .desc {
+                margin-top: 20px;
+                font-size: 16px;
+                line-height: 32px;
             }
         }
         .support-block {

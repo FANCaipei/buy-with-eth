@@ -26,12 +26,17 @@ const OcelotHeader = () => {
                 <span className="text">Ocelot Pay</span>
             </div>
             <div className="nav-items">
-                <Button type="text" size="large">
-                    Why Ocelot Pay
-                </Button>
-                <Button type="text" size="large">
-                    Pricing
-                </Button>
+                <a href="#features">
+                    <Button type="text" size="large">
+                        Why Ocelot Pay
+                    </Button>
+                </a>
+                <a href="#price">
+                    <Button type="text" size="large">
+                        Pricing
+                    </Button>
+                </a>
+
                 <Button type="text" size="large" onClick={goDoc}>
                     Docs
                 </Button>
