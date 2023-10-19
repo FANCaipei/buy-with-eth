@@ -271,6 +271,7 @@ const Bills = () => {
     useEffect(() => {
         const url = OcelotPay.generatePaymentUrl({});
         setPaymentUrl(url);
+        // eslint-disable-next-line
     }, [OcelotPay.appId]);
 
     return (

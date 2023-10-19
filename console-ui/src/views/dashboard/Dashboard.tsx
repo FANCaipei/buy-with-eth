@@ -10,6 +10,7 @@ import {
     FileTextFilled,
     LogoutOutlined,
     ExclamationCircleFilled,
+    CommentOutlined,
 } from "@ant-design/icons";
 import { Content, Header } from "antd/es/layout/layout";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -37,9 +38,14 @@ const MenuItemsData: MenuProps["items"] = [
         icon: React.createElement(FileDoneOutlined),
         label: `Bills`,
     },
+    {
+        key: "feedback", // the path
+        icon: React.createElement(CommentOutlined),
+        label: `Feedback`,
+    },
 ];
 
-const AllowedSubPaths = ["overview", "projects", "bills", "projectSetting", "paymentPreview"];
+const AllowedSubPaths = ["overview", "projects", "bills", "projectSetting", "paymentPreview", "feedback"];
 
 const DashboardPage = () => {
     const navigate = useNavigate();
@@ -95,6 +101,10 @@ const DashboardPage = () => {
         }
     }, [user?.uid, navigate]);
 
+    const goDoc = useCallback(() => {
+        window.open("https://ocelotpay.com/doc", "_blank");
+    }, []);
+
     useEffect(() => {
         const paths = (pathname ?? "").split("/");
         // if (paths[1] !== "dashboard") {
@@ -136,7 +146,7 @@ const DashboardPage = () => {
                         <span className="email">{user?.email}</span>
                         <div className="action-btns">
                             <Tooltip title="Doc">
-                                <Button type="text" icon={<FileTextFilled />}></Button>
+                                <Button type="text" icon={<FileTextFilled />} onClick={goDoc}></Button>
                             </Tooltip>
                             <Tooltip title="SignOut">
                                 <Button type="text" icon={<LogoutOutlined />} onClick={Logout}></Button>

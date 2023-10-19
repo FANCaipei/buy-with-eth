@@ -7,6 +7,7 @@ import BusinessOverview from "../../views/dashboard/content/businessOverview/Bus
 import ProjectEdit from "../../views/dashboard/content/appManagement/subViews/ProjectEdit";
 import PaymentPreview from "../../views/dashboard/content/appManagement/subViews/PaymentPreview";
 import Bills from "../../views/dashboard/content/bills/Bills";
+import Feedback from "../../views/dashboard/content/feedback/Feedback";
 
 const routeConfig = [
     { path: "/auth", Component: AuthPage },
@@ -23,6 +24,7 @@ const routeConfig = [
             { path: "bills", Component: Bills },
             { path: "projectSetting", Component: ProjectEdit },
             { path: "paymentPreview", Component: PaymentPreview },
+            { path: "feedback", Component: Feedback },
         ],
     },
     { path: "/", Component: DashboardPage },
