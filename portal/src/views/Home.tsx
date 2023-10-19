@@ -31,11 +31,11 @@ const Home = () => {
                 >
                     <div className={cn("slogan-block", "block-content")}>
                         {/* <div className="title">Ocelot Pay</div> */}
-                        <div className="slogan">Make sure your business touch millions crypto holders</div>
+                        <div className="slogan">Reach millions of cryptocurrency holders with ease</div>
                         {/* <div className="sub-slogan">Cryptocurrency payment saas platform</div> */}
-                        <div className="sub-slogan">By integrate Ocelot Pay</div>
+                        <div className="sub-slogan">By seamlessly incorporating Ocelot Pay</div>
                         <div className="sub-slogan" style={{ marginTop: "0" }}>
-                            a cryptocurrency payment saas platform
+                            your go-to cryptocurrency payment SaaS platform for businesses
                         </div>
                     </div>
                 </div>
