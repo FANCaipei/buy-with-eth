@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import SloganBg from "../assets/imgs/home/slogan-bg.jpeg";
+// import SloganBg from "../assets/imgs/home/slogan-bg.jpeg";
 import cn from "classnames";
 import EasyIcon from "../assets/imgs/home/icons/cliqz-icon.svg";
 import IntegrationIcon from "../assets/imgs/home/icons/puzzle-icon.svg";
@@ -20,11 +20,23 @@ const Home = () => {
     return (
         <StyledContainer>
             <div className="home-content">
-                <div className="home-block" style={{ backgroundImage: `url(${SloganBg})` }}>
+                <div
+                    className="home-block"
+                    style={{
+                        marginTop: "0",
+                        height: "70vh",
+                        // backgroundImage: `url(${SloganBg})`,
+                        background: "linear-gradient(140deg,rgb(16,131,241),rgb(24,34,109))",
+                    }}
+                >
                     <div className={cn("slogan-block", "block-content")}>
                         {/* <div className="title">Ocelot Pay</div> */}
                         <div className="slogan">Make sure your business touch millions crypto holders</div>
-                        <div className="sub-slogan">Cryptocurrency payment saas platform</div>
+                        {/* <div className="sub-slogan">Cryptocurrency payment saas platform</div> */}
+                        <div className="sub-slogan">By integrate Ocelot Pay</div>
+                        <div className="sub-slogan" style={{ marginTop: "0" }}>
+                            a cryptocurrency payment saas platform
+                        </div>
                     </div>
                 </div>
                 <div id="features"></div>
@@ -164,13 +176,16 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 font-size: 32px;
                 font-weight: bold;
                 margin-top: 40px;
-                color: rgb(22, 116, 174);
+                text-align: center;
+                /* color: rgb(22, 116, 174); */
+                color: #fff;
             }
             .sub-slogan {
                 font-size: 20px;
                 font-weight: bold;
                 margin-top: 20px;
-                color: rgba(0, 0, 0, 0.88);
+                /* color: rgba(0, 0, 0, 0.88); */
+                color: rgba(255, 255, 255, 0.8);
             }
         }
         .feature-small-title {
