@@ -17,6 +17,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useFirebaseAuth from "../../common/zustand/useFirebaseAuth";
 import FirebaseManager from "../../common/firebase/FirebaseManager";
 import { collection, getCountFromServer, query, where } from "firebase/firestore";
+import OcelotLogo from "../../assets/imgs/logos/logo.png";
 
 const { confirm } = Modal;
 
@@ -132,7 +133,10 @@ const DashboardPage = () => {
         <StyledContainer>
             <Layout hasSider>
                 <Sider collapsible className="left-slider">
-                    <div className="logo-container" />
+                    <div className="logo-container">
+                        <img className="logo" src={OcelotLogo} alt="Logo" />
+                        <span className="text">Ocelot Pay</span>
+                    </div>
                     <Menu
                         theme="dark"
                         mode="inline"
@@ -165,11 +169,43 @@ const DashboardPage = () => {
 const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
     .ant-layout-sider.left-slider {
         height: 100vh;
+
+        &.ant-layout-sider-collapsed {
+            .logo-container {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+                justify-content: center;
+                overflow-x: hidden;
+
+                .logo {
+                    margin-right: 0;
+                }
+
+                .text {
+                    display: none;
+                }
+            }
+        }
+
         .logo-container {
-            height: 32px;
             margin: 16px;
-            background: rgba(255, 255, 255, 0.2);
             border-radius: 6px;
+            display: flex;
+            align-items: center;
+            height: 32px;
+            overflow-y: hidden;
+
+            .logo {
+                width: 32px;
+                height: 32px;
+                margin-right: 8px;
+            }
+            .text {
+                font-size: 24px;
+                color: #fff;
+                font-weight: bold;
+            }
         }
     }
 
