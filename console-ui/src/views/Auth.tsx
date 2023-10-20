@@ -4,6 +4,7 @@ import { styled } from "styled-components";
 import FirebaseManager from "../common/firebase/FirebaseManager";
 import { useNavigate } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
+import BgImg from "../assets/imgs/home-bg.jpg";
 
 const AuthPage = () => {
     const [formInstace] = Form.useForm();
@@ -145,7 +146,7 @@ const AuthPage = () => {
     }, [countRef, setCountdownNumber]);
 
     return (
-        <StyledContainer>
+        <StyledContainer style={{ backgroundImage: `url(${BgImg})` }}>
             {contextHolder}
             <div className="container">
                 <div className="auth-card">
@@ -221,6 +222,9 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
     height: 100%;
     width: 100%;
     background-color: rgb(246, 247, 249);
+    background-size: cover;
+    /* background-position: 0%, center; */
+    background-repeat: no-repeat;
 
     .container {
         width: 440px;
@@ -240,7 +244,7 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
             color: rgb(17, 137, 255);
         }
         .auth-card {
-            margin-top: -10vh;
+            margin-top: -8vh;
             width: 400px;
             padding: 20px;
             border-radius: 12px;
