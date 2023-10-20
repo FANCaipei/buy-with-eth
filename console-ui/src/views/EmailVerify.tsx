@@ -99,7 +99,7 @@ const EmailVerifyPage = () => {
                     disabled={countdownNumber > 0 ? true : false}
                     className="action-btn"
                 >
-                    {countdownNumber > 0 ? countdownNumber : "Resend email"}
+                    {countdownNumber > 0 ? `${countdownNumber}s` : "Resend email"}
                 </Button>
                 <Button onClick={Logout} size="large" className="action-btn">
                     Change account

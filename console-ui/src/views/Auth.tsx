@@ -1,5 +1,5 @@
 import { Button, Form, Input, message } from "antd";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 import FirebaseManager from "../common/firebase/FirebaseManager";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,9 @@ const AuthPage = () => {
     const [isSignUpMode, setIsSignUpMode] = useState(false);
     const [isAuthing, setIsAuthing] = useState<boolean>(false);
     const [isResetPwdMode, setIsResetPwdMode] = useState(false);
+    const [isSendingMail, setIsSendingMail] = useState(false);
+    const countRef = useRef<number>(-1);
+    const [countdownNumber, setCountdownNumber] = useState<number>(-1);
 
     const toggleAuthMode = useCallback(() => {
         if (isAuthing) {
@@ -32,6 +35,31 @@ const AuthPage = () => {
         },
         [password]
     );
+
+    const sendResetEmail = useCallback(async () => {
+        await formInstace.validateFields();
+        setIsSendingMail(true);
+
+        FirebaseManager.sendRestPwdEmail(email)
+            .then(() => {
+                const countNumber = 60;
+                countRef.current = countNumber;
+                setCountdownNumber(countNumber);
+                messageApi.open({
+                    type: "success",
+                    content: "Email sent successfully",
+                });
+            })
+            .catch(() => {
+                messageApi.open({
+                    type: "error",
+                    content: "Send email failed",
+                });
+            })
+            .finally(() => {
+                setIsSendingMail(false);
+            });
+    }, [formInstace, email, messageApi]);
 
     const login = useCallback(async () => {
         await formInstace.validateFields();
@@ -79,8 +107,16 @@ const AuthPage = () => {
     const buildActionBtn = useCallback(() => {
         if (isResetPwdMode) {
             return (
-                <Button type="primary" className="form-btn" size="large" style={{ marginTop: "0px" }}>
-                    Send Email
+                <Button
+                    type="primary"
+                    onClick={sendResetEmail}
+                    className="form-btn"
+                    size="large"
+                    loading={isSendingMail}
+                    disabled={countdownNumber > 0}
+                    style={{ marginTop: "0px" }}
+                >
+                    {countdownNumber > 0 ? `Resend available in ${countdownNumber}s` : "Send Email"}
                 </Button>
             );
         } else {
@@ -94,7 +130,19 @@ const AuthPage = () => {
                 </Button>
             );
         }
-    }, [isResetPwdMode, isSignUpMode, isAuthing, login, signUp]);
+    }, [isResetPwdMode, isSignUpMode, isAuthing, login, signUp, sendResetEmail, countdownNumber, isSendingMail]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (countRef.current > 0) {
+                countRef.current--;
+                setCountdownNumber(countRef.current);
+            }
+        }, 1000);
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [countRef, setCountdownNumber]);
 
     return (
         <StyledContainer>

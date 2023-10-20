@@ -11,6 +11,7 @@ import {
     getAuth,
     onAuthStateChanged,
     sendEmailVerification,
+    sendPasswordResetEmail,
     signInWithEmailAndPassword,
 } from "firebase/auth";
 import useFirebaseAuth from "../zustand/useFirebaseAuth";
@@ -102,6 +103,13 @@ class FirebaseManager {
         }
 
         return sendEmailVerification(FirebaseManager.auth.currentUser);
+    }
+    static sendRestPwdEmail(email: string): Promise<void> {
+        if (!FirebaseManager.auth) {
+            return Promise.reject("firebase manager not be init");
+        }
+
+        return sendPasswordResetEmail(FirebaseManager.auth, email);
     }
     static uploadFileToFireStorage = (file: File, projectId: string): Promise<string> => {
         const currentUid = FirebaseManager.auth.currentUser?.uid;
