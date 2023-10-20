@@ -31,7 +31,9 @@ function Index() {
 
 function App() {
     useEffect(() => {
-        DisableDevtool();
+        DisableDevtool({
+            clearLog: false,
+        });
         let letters = "";
         const targetWords = "enable dev";
         const enableDevtool = (event: any) => {

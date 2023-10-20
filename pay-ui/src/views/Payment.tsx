@@ -40,8 +40,9 @@ const PaymentPage = () => {
     const [preSetValueInUSD, setPreSetValueInUSD] = useState(paymentConfigParams?.valueInUSD);
     const [currencyTypeCode, setCurrencyTypeCode] = useState(paymentConfigParams?.defaultTokenCode);
     const [paymentExtraInfo, setPaymentExtraInfo] = useState(paymentConfigParams?.extraInfo);
-    const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
+    const [hideProjectLogo, setHideProjectLogo] = useState(paymentConfigParams?.hideProjectLogo);
 
+    const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
     const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
     const getCurrentCurrencyPrice = useCallback(
         (currencyConfig: any) => {
@@ -227,6 +228,10 @@ const PaymentPage = () => {
     }, [paymentConfigParams?.extraInfo]);
 
     useEffect(() => {
+        setHideProjectLogo(paymentConfigParams?.hideProjectLogo);
+    }, [paymentConfigParams?.hideProjectLogo]);
+
+    useEffect(() => {
         console.log("payment params: ", paymentConfigParams);
         setIsLoading(true);
         const onPaySDKReady = () => {
@@ -269,8 +274,10 @@ const PaymentPage = () => {
                 <GlobalStyle />
 
                 <div className="logo-container">
-                    <img className="logo-img" src={logoUrl} alt="" />
-                    <Divider type="vertical" className="divider" />
+                    {hideProjectLogo ? null : <img className="logo-img" src={logoUrl} alt="" />}
+                    {/* <img className="logo-img" src={logoUrl} alt="" /> */}
+                    {/* <Divider type="vertical" className="divider" /> */}
+                    {hideProjectLogo ? null : <Divider type="vertical" className="divider" />}
                     <img className="logo-img" src={SelfLogo} alt="" />
                 </div>
                 <div className="token-selector-container">

@@ -10,11 +10,13 @@ let appConfigs: any = {};
 try {
     const searchParams = new URLSearchParams(window.location.search);
     const params = searchParams.get("params");
+    const hideProjectLogo = searchParams.get("noProjectLogo") === "true";
     console.log("searched params: ", params);
     if (params) {
         const decodedParams = decodeURIComponent(params);
         appConfigs = JSON.parse(decodedParams);
     }
+    appConfigs.hideProjectLogo = hideProjectLogo;
 } catch (error) {
     // do nothing
 }

@@ -256,7 +256,13 @@ const Bills = () => {
 
     useEffect(() => {
         const generatePaymentUrl = () => {
-            const url = OcelotPay.generatePaymentUrl({});
+            let url = OcelotPay.generatePaymentUrl({});
+            let logoParam = "noProjectLogo=true";
+            if (url.includes("?")) {
+                url += "&" + logoParam;
+            } else {
+                url += "?" + logoParam;
+            }
             setPaymentUrl(url);
         };
         const cid = OcelotPay.onReady(generatePaymentUrl);
@@ -269,7 +275,13 @@ const Bills = () => {
     }, []);
 
     useEffect(() => {
-        const url = OcelotPay.generatePaymentUrl({});
+        let url = OcelotPay.generatePaymentUrl({});
+        let logoParam = "noProjectLogo=true";
+        if (url.includes("?")) {
+            url += "&" + logoParam;
+        } else {
+            url += "?" + logoParam;
+        }
         setPaymentUrl(url);
         // eslint-disable-next-line
     }, [OcelotPay.appId]);

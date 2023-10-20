@@ -10,7 +10,6 @@ import useUrlParamsConfig from "./common/golbalStates/urlParamsConfigState";
 import { Spin } from "antd";
 import LoadingIndicator from "./common/components/LoadingIndicator";
 import useAuthorityCheck from "./common/golbalStates/authorityCheckState";
-import DisableDevtool from "disable-devtool";
 
 // 设置全局spin的indicator
 Spin.setDefaultIndicator(<LoadingIndicator indicatorWidth="40px" />);
@@ -87,31 +86,35 @@ function App({ appConfigs }: { appConfigs: any }) {
         initParamsFromUrl?.(appConfigs);
     }, [initParamsFromUrl, appConfigs]);
 
-    useEffect(() => {
-        DisableDevtool();
-        let letters = "";
-        const targetWords = "enable dev";
-        const enableDevtool = (event: any) => {
-            if (event?.key) {
-                letters = letters + event.key;
-            }
+    // !!!Do not use disable devtool, this will affect parent window !!!
+    // useEffect(() => {
+    //     DisableDevtool({
+    //         clearLog: false,
+    //         disableIframeParents: false,
+    //     });
+    //     let letters = "";
+    //     const targetWords = "enable dev";
+    //     const enableDevtool = (event: any) => {
+    //         if (event?.key) {
+    //             letters = letters + event.key;
+    //         }
 
-            if (letters === targetWords) {
-                // enable devtool
-                DisableDevtool.isSuspend = true;
-            }
+    //         if (letters === targetWords) {
+    //             // enable devtool
+    //             DisableDevtool.isSuspend = true;
+    //         }
 
-            if (letters.length >= targetWords.length) {
-                letters = "";
-            }
-        };
+    //         if (letters.length >= targetWords.length) {
+    //             letters = "";
+    //         }
+    //     };
 
-        window.addEventListener("keyup", enableDevtool);
+    //     window.addEventListener("keyup", enableDevtool);
 
-        return () => {
-            window.removeEventListener("keyup", enableDevtool);
-        };
-    }, []);
+    //     return () => {
+    //         window.removeEventListener("keyup", enableDevtool);
+    //     };
+    // }, []);
 
     return (
         <BrowserRouter>
