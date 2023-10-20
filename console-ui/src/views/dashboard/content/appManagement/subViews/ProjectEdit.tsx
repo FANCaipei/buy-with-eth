@@ -286,7 +286,7 @@ const ProjectEdit = () => {
                             label={
                                 <CustomFormLabel
                                     label="Secret Phrase"
-                                    tip="Secret phrase help you identify the payment response info is from us"
+                                    tip="The secret phrase helps you verify that the payment response information is indeed from us"
                                 />
                             }
                         >
