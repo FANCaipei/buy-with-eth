@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 import useProtectedPath from "../../common/hooks/useProtectedPath";
-import { Button, Layout, Menu, MenuProps, Tooltip, Modal } from "antd";
+import { Button, Layout, Menu, MenuProps, Tooltip, Modal, Form, Input, message } from "antd";
 import Sider from "antd/es/layout/Sider";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -51,7 +51,12 @@ const AllowedSubPaths = ["overview", "projects", "bills", "projectSetting", "pay
 const DashboardPage = () => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
+    const [messageApi, contextHolder] = message.useMessage();
     const [activeMenuKey, setActiveMenuKey] = useState("overview");
+    const [isChangePwdModalOpen, setIsChangePwdModalOpen] = useState(false);
+    const [formInstace] = Form.useForm();
+    const newPwd = Form.useWatch("newPassword", formInstace);
+    // const repeatNewPwd = Form.useWatch("repeatNewPassword", formInstace);
 
     const { user } = useFirebaseAuth() as any;
 
@@ -65,10 +70,34 @@ const DashboardPage = () => {
         [navigate]
     );
 
+    const repeatPwdValidator = useCallback(
+        (_: any, value: any) => {
+            if (value !== newPwd) {
+                return Promise.reject("Comfirm password is not the same as new password");
+            }
+            return Promise.resolve();
+        },
+        [newPwd]
+    );
+
     const Logout = useCallback(async () => {
         await FirebaseManager.auth.signOut();
         navigate("/auth", { replace: true });
     }, [navigate]);
+
+    const changePwd = useCallback(async () => {
+        await formInstace.validateFields();
+        return FirebaseManager.updatePassword(newPwd)
+            .then(() => {
+                Logout();
+            })
+            .catch(() => {
+                messageApi.open({
+                    type: "error",
+                    content: "Change password failed, you can reLogin and try again",
+                });
+            });
+    }, [formInstace, newPwd, Logout, messageApi]);
 
     const checkIfHasUnpaiedBill = useCallback(async () => {
         if (!user?.uid || isBillModalDisplayedOrQuering) {
@@ -131,6 +160,7 @@ const DashboardPage = () => {
 
     return (
         <StyledContainer>
+            {contextHolder}
             <Layout hasSider>
                 <Sider collapsible className="left-slider">
                     <div className="logo-container">
@@ -155,6 +185,7 @@ const DashboardPage = () => {
                             <Tooltip title="SignOut">
                                 <Button type="text" icon={<LogoutOutlined />} onClick={Logout}></Button>
                             </Tooltip>
+                            <Button onClick={() => setIsChangePwdModalOpen(true)}>test change pwd</Button>
                         </div>
                     </Header>
                     <Content className="panel-content">
@@ -162,6 +193,33 @@ const DashboardPage = () => {
                     </Content>
                 </Layout>
             </Layout>
+            <Modal
+                className="change-pwd-modal"
+                open={isChangePwdModalOpen}
+                onCancel={() => setIsChangePwdModalOpen(false)}
+                onOk={changePwd}
+                okText="Change password"
+            >
+                <Form form={formInstace} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} style={{ marginTop: "40px" }}>
+                    <Form.Item
+                        name="newPassword"
+                        rules={[{ required: true, message: "New password is required" }]}
+                        label="New Password"
+                    >
+                        <Input type="password" placeholder="New Password" />
+                    </Form.Item>
+                    <Form.Item
+                        name="newRepeatPassword"
+                        rules={[
+                            { required: true, message: "Confirm password is required" },
+                            { validator: repeatPwdValidator },
+                        ]}
+                        label="Confirm Password"
+                    >
+                        <Input type="password" placeholder="Confirm Password" />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </StyledContainer>
     );
 };

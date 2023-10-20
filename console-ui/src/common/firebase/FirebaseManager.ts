@@ -13,6 +13,7 @@ import {
     sendEmailVerification,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
+    updatePassword,
 } from "firebase/auth";
 import useFirebaseAuth from "../zustand/useFirebaseAuth";
 
@@ -110,6 +111,19 @@ class FirebaseManager {
         }
 
         return sendPasswordResetEmail(FirebaseManager.auth, email);
+    }
+    static updatePassword(newPassword: string): Promise<void> {
+        if (!newPassword || newPassword.trim() === "") {
+            return Promise.reject("empty password");
+        }
+        if (!FirebaseManager.auth) {
+            return Promise.reject("firebase manager not be init");
+        }
+        if (!FirebaseManager.auth.currentUser) {
+            return Promise.reject("no current user, please login or signIn first");
+        }
+
+        return updatePassword(FirebaseManager.auth.currentUser, newPassword);
     }
     static uploadFileToFireStorage = (file: File, projectId: string): Promise<string> => {
         const currentUid = FirebaseManager.auth.currentUser?.uid;
