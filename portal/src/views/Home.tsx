@@ -49,7 +49,10 @@ const Home = () => {
                                 <img className="icon" src={EasyIcon} alt="" style={{ color: "rgb(92, 201, 167)" }} />
                             </div>
                             <div className="title">Best cryptocurrency payment experience</div>
-                            <div className="desc">User friendly payment view, one click to pay with crypto tokens.</div>
+                            <div className="desc">
+                                Easily navigate our user-friendly payment interface, enabling one-click cryptocurrency
+                                token payments.
+                            </div>
                         </div>
                         <div className="feature-item">
                             <div className="icon-wrapper" style={{ backgroundColor: "rgba(104, 126, 255, 0.2)" }}>
@@ -57,8 +60,8 @@ const Home = () => {
                             </div>
                             <div className="title">Easy to integrate</div>
                             <div className="desc">
-                                No code (low code) integration. It only take 3 steps to let your website be able to
-                                accept crypto token payment.{" "}
+                                Seamless integration with minimal code. Transform your website to accept cryptocurrency
+                                token payments in just three simple steps.
                             </div>
                         </div>
                         <div className="feature-item">
@@ -67,8 +70,8 @@ const Home = () => {
                             </div>
                             <div className="title">Your assets at your control</div>
                             <div className="desc">
-                                We don't hold any assets, user directly pay to your crypto account.No more need to
-                                withdraw.
+                                Your assets, your control. Users make direct payments to your crypto account without the
+                                need for withdrawal.
                             </div>
                         </div>
                         <div className="feature-item">
@@ -76,15 +79,16 @@ const Home = () => {
                                 <img className="icon" src={DashboardIcon} alt="" />
                             </div>
                             <div className="title">Rich data dashboard</div>
-                            <div className="desc">Rich data dashboard let you know your customer deeply.</div>
+                            <div className="desc">Comprehensive data dashboard for in-depth customer insights.</div>
                         </div>
                         <div className="feature-item">
                             <div className="icon-wrapper" style={{ backgroundColor: "rgba(39, 158, 255, 0.2)" }}>
                                 <img className="icon" src={TokensIcon} alt="" />
                             </div>
-                            <div className="title">Multi cryptocurrency support</div>
+                            <div className="title">Diverse cryptocurrency compatibility</div>
                             <div className="desc">
-                                Multi-chain, multi-token and multi-wallet support, give users more choices.
+                                Enhanced flexibility with support for multiple chains, tokens, and wallets, providing
+                                users with a wide range of options.
                             </div>
                         </div>
                     </div>
@@ -96,10 +100,10 @@ const Home = () => {
                         <div className="title">Pay as you go, no transaction no fee. No cost for trying</div>
                         <div className="desc">
                             <ul>
-                                <li>$0.1/transaction for first 1000 transactions per month</li>
-                                <li>$0.05/transaction for first 10000 transactions per month</li>
-                                <li>$0.03/transaction for first 100000 transactions per month</li>
-                                <li>Bill will be generated on the 1st day of next month</li>
+                                <li>$0.10 per transaction for the initial 1,000 transactions each month.</li>
+                                <li>$0.05 per transaction for the initial 10,000 transactions each month.</li>
+                                <li>$0.03 per transaction for the initial 100,000 transactions each month.</li>
+                                <li>Invoices will be generated on the first day of the upcoming month.</li>
                             </ul>
                         </div>
                     </div>
@@ -118,9 +122,9 @@ const Home = () => {
                 <div className="home-block" style={{ backgroundColor: "rgb(99, 99, 172)" }}>
                     <div className="start-block">
                         <div className="main-desc">
-                            Hundreds apps are completing thousands payments every day on Ocelot Pay
+                            Ocelot Pay facilitates thousands of transactions daily across hundreds of applications.
                         </div>
-                        <div className="sub-desc">Don't want to wait anymore</div>
+                        <div className="sub-desc">No more waiting</div>
                         <div className="start-btn" onClick={goConsole}>
                             Start now
                         </div>
