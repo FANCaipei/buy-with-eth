@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { styled } from "styled-components";
 import FirebaseManager from "../common/firebase/FirebaseManager";
 import { useNavigate } from "react-router-dom";
+import { LeftOutlined } from "@ant-design/icons";
 
 const AuthPage = () => {
     const [formInstace] = Form.useForm();
@@ -13,6 +14,7 @@ const AuthPage = () => {
     const navigate = useNavigate();
     const [isSignUpMode, setIsSignUpMode] = useState(false);
     const [isAuthing, setIsAuthing] = useState<boolean>(false);
+    const [isResetPwdMode, setIsResetPwdMode] = useState(false);
 
     const toggleAuthMode = useCallback(() => {
         if (isAuthing) {
@@ -74,12 +76,44 @@ const AuthPage = () => {
             });
     }, [messageApi, navigate, password, repeatPwd, email, formInstace]);
 
+    const buildActionBtn = useCallback(() => {
+        if (isResetPwdMode) {
+            return (
+                <Button type="primary" className="form-btn" size="large" style={{ marginTop: "0px" }}>
+                    Send Email
+                </Button>
+            );
+        } else {
+            return isSignUpMode ? (
+                <Button type="primary" onClick={signUp} className="form-btn" size="large" loading={isAuthing}>
+                    SignUp
+                </Button>
+            ) : (
+                <Button type="primary" onClick={login} className="form-btn" size="large" loading={isAuthing}>
+                    Login
+                </Button>
+            );
+        }
+    }, [isResetPwdMode, isSignUpMode, isAuthing, login, signUp]);
+
     return (
         <StyledContainer>
             {contextHolder}
             <div className="container">
-                <div className="title">Ocelot Pay</div>
                 <div className="auth-card">
+                    {isResetPwdMode ? (
+                        <div className="forget-pwd-title-block">
+                            <LeftOutlined className="back-icon" onClick={() => setIsResetPwdMode(false)} />
+                            <div className="title-text">Rest Password</div>
+                            <div className="sub-text">
+                                Enter the email address associated with your account and we'll send you a link to reset
+                                your password.
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="title">Ocelot Pay</div>
+                    )}
+
                     <Form form={formInstace} layout={"vertical"} size="large">
                         <Form.Item
                             name="email"
@@ -91,14 +125,16 @@ const AuthPage = () => {
                         >
                             <Input type="email" placeholder="Email" />
                         </Form.Item>
-                        <Form.Item
-                            name="password"
-                            rules={[{ required: true, message: "Password is required" }]}
-                            label="Password"
-                        >
-                            <Input type="password" placeholder="Password" />
-                        </Form.Item>
-                        {isSignUpMode ? (
+                        {isResetPwdMode ? null : (
+                            <Form.Item
+                                name="password"
+                                rules={[{ required: true, message: "Password is required" }]}
+                                label="Password"
+                            >
+                                <Input type="password" placeholder="Password" />
+                            </Form.Item>
+                        )}
+                        {!isResetPwdMode && isSignUpMode ? (
                             <Form.Item
                                 name="repeat-password"
                                 rules={[
@@ -111,24 +147,23 @@ const AuthPage = () => {
                             </Form.Item>
                         ) : null}
                     </Form>
-                    {isSignUpMode ? (
-                        <Button type="primary" onClick={signUp} className="form-btn" size="large" loading={isAuthing}>
-                            SignUp
-                        </Button>
-                    ) : (
-                        <Button type="primary" onClick={login} className="form-btn" size="large" loading={isAuthing}>
-                            Login
-                        </Button>
-                    )}
+                    {buildActionBtn()}
                 </div>
-                <div className="toggle-mode-container">
-                    <span className="desc">
-                        {isSignUpMode ? "Already have an account? " : `Don't have an account? `}
-                    </span>
-                    <span className="toogle-btn" onClick={toggleAuthMode}>
-                        {isSignUpMode ? "Login" : "SignUp"}
-                    </span>
-                </div>
+                {isResetPwdMode ? null : (
+                    <div className="follow-row">
+                        <div className="toggle-mode-container">
+                            <span className="desc">
+                                {isSignUpMode ? "Already have an account? " : `Don't have an account? `}
+                            </span>
+                            <span className="toogle-btn" onClick={toggleAuthMode}>
+                                {isSignUpMode ? "Login" : "SignUp"}
+                            </span>
+                        </div>
+                        <div className="forget-password" onClick={() => setIsResetPwdMode(true)}>
+                            Forgot password?
+                        </div>
+                    </div>
+                )}
             </div>
         </StyledContainer>
     );
@@ -140,7 +175,7 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
     background-color: rgb(246, 247, 249);
 
     .container {
-        width: 400px;
+        width: 440px;
         height: 100%;
         margin: 0 auto;
         display: flex;
@@ -151,16 +186,45 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
         .title {
             font-size: 32px;
             font-weight: bold;
-            margin-bottom: 40px;
-            margin-top: -10vh;
+            margin-bottom: 60px;
             // font-style: italic;
+            text-align: center;
+            color: rgb(17, 137, 255);
         }
         .auth-card {
+            margin-top: -10vh;
             width: 400px;
             padding: 20px;
             border-radius: 12px;
             background-color: #fff;
             box-shadow: rgba(60, 66, 87, 0.2) 0px 8px 24px;
+
+            .forget-pwd-title-block {
+                position: relative;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                margin-bottom: 30px;
+                text-align: center;
+
+                .back-icon {
+                    font-size: 20px;
+                    cursor: pointer;
+                    position: absolute;
+                    left: 0;
+                    top: 4px;
+                }
+                .title-text {
+                    font-size: 24px;
+                    color: rgba(0, 0, 0, 0.9);
+                }
+                .sub-text {
+                    margin-top: 20px;
+                    font-size: 14px;
+                    line-height: 18px;
+                    color: rgba(0, 0, 0, 0.6);
+                }
+            }
 
             .ant-form {
                 .ant-form-item {
@@ -176,16 +240,28 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
                 margin-top: 40px;
             }
         }
-        .toggle-mode-container {
-            margin-top: 20px;
+        .follow-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             font-size: 14px;
+            margin-top: 20px;
             user-select: none;
 
-            .desc {
-                color: rgba(0, 0, 0, 0.25);
+            .toggle-mode-container {
+                .desc {
+                    color: rgba(0, 0, 0, 0.25);
+                }
+                .toogle-btn {
+                    margin-left: 8px;
+                    cursor: pointer;
+                    color: rgb(84, 105, 212);
+                }
             }
-            .toogle-btn {
-                margin-left: 8px;
+
+            .forget-password {
+                text-align: right;
                 cursor: pointer;
                 color: rgb(84, 105, 212);
             }
