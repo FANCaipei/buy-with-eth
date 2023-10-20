@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 import useProtectedPath from "../../common/hooks/useProtectedPath";
-import { Button, Layout, Menu, MenuProps, Tooltip, Modal, Form, Input, message } from "antd";
+import { Button, Layout, Menu, MenuProps, Tooltip, Modal, Form, Input, message, Dropdown } from "antd";
 import Sider from "antd/es/layout/Sider";
 import React, { useCallback, useEffect, useState } from "react";
 import {
@@ -8,7 +8,9 @@ import {
     AppstoreAddOutlined,
     FileDoneOutlined,
     FileTextFilled,
+    LockOutlined,
     LogoutOutlined,
+    UserOutlined,
     ExclamationCircleFilled,
     CommentOutlined,
 } from "@ant-design/icons";
@@ -135,6 +137,19 @@ const DashboardPage = () => {
         window.open("https://ocelotpay.com/doc", "_blank");
     }, []);
 
+    const [userDropDownItems] = useState([
+        {
+            key: "updatePwd",
+            label: <div onClick={() => setIsChangePwdModalOpen(true)}>Change Password</div>,
+            icon: <LockOutlined />,
+        },
+        {
+            key: "logout",
+            label: <div onClick={Logout}>Logout</div>,
+            icon: <LogoutOutlined />,
+        },
+    ]);
+
     useEffect(() => {
         const paths = (pathname ?? "").split("/");
         // if (paths[1] !== "dashboard") {
@@ -182,10 +197,9 @@ const DashboardPage = () => {
                             <Tooltip title="Doc">
                                 <Button type="text" icon={<FileTextFilled />} onClick={goDoc}></Button>
                             </Tooltip>
-                            <Tooltip title="SignOut">
-                                <Button type="text" icon={<LogoutOutlined />} onClick={Logout}></Button>
-                            </Tooltip>
-                            <Button onClick={() => setIsChangePwdModalOpen(true)}>test change pwd</Button>
+                            <Dropdown menu={{ items: userDropDownItems }}>
+                                <Button type="text" icon={<UserOutlined />}></Button>
+                            </Dropdown>
                         </div>
                     </Header>
                     <Content className="panel-content">
@@ -195,6 +209,7 @@ const DashboardPage = () => {
             </Layout>
             <Modal
                 className="change-pwd-modal"
+                title="Change Password"
                 open={isChangePwdModalOpen}
                 onCancel={() => setIsChangePwdModalOpen(false)}
                 onOk={changePwd}
