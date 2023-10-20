@@ -137,20 +137,22 @@ const AuthPage = () => {
 const StyledContainer = styled.div.attrs({ className: "auth-page" })`
     height: 100%;
     width: 100%;
+    background-color: rgb(246, 247, 249);
 
     .container {
         width: 400px;
+        height: 100%;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        justify-content: flex-start;
+        justify-content: center;
 
         .title {
             font-size: 32px;
             font-weight: bold;
             margin-bottom: 40px;
-            margin-top: 80px;
+            margin-top: -10vh;
             // font-style: italic;
         }
         .auth-card {
