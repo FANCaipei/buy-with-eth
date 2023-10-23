@@ -40,7 +40,7 @@ const PaymentPage = () => {
     const [preSetValueInUSD, setPreSetValueInUSD] = useState(paymentConfigParams?.valueInUSD);
     const [currencyTypeCode, setCurrencyTypeCode] = useState(paymentConfigParams?.defaultTokenCode);
     const [paymentExtraInfo, setPaymentExtraInfo] = useState(paymentConfigParams?.extraInfo);
-    const [hideProjectLogo, setHideProjectLogo] = useState(paymentConfigParams?.hideProjectLogo);
+    const [hideProjectLogo, setHideProjectLogo] = useState(paramsFromUrl?.hideProjectLogo);
 
     const [currencyPaymentConfig, setCurrencyPaymentConfig] = useState<any>();
     const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState<any>();
@@ -228,8 +228,8 @@ const PaymentPage = () => {
     }, [paymentConfigParams?.extraInfo]);
 
     useEffect(() => {
-        setHideProjectLogo(paymentConfigParams?.hideProjectLogo);
-    }, [paymentConfigParams?.hideProjectLogo]);
+        setHideProjectLogo(paramsFromUrl?.hideProjectLogo);
+    }, [paramsFromUrl?.hideProjectLogo]);
 
     useEffect(() => {
         console.log("payment params: ", paymentConfigParams);
