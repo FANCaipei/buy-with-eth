@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const OcelotHeader = () => {
     const navigate = useNavigate();
-    const [isAtHomePage, setIsAtHomePage] = useState(true);
+    const [isAtDocPage, setIsAtDocPage] = useState(true);
     const location = useLocation();
 
     const goHome = useCallback(() => {
@@ -22,35 +22,35 @@ const OcelotHeader = () => {
     }, []);
 
     useEffect(() => {
-        if (location.pathname?.includes("/home")) {
-            setIsAtHomePage(true);
+        if (location.pathname?.includes("/doc")) {
+            setIsAtDocPage(true);
         } else {
-            setIsAtHomePage(false);
+            setIsAtDocPage(false);
         }
     }, [location]);
 
     return (
-        <StyledContainer style={{ maxWidth: isAtHomePage ? "1200px" : "100vw" }}>
+        <StyledContainer style={{ maxWidth: isAtDocPage ? "100vw" : "1200px" }}>
             <div className="logo-block" onClick={goHome}>
                 <img src={Logo} alt="" className="logo" />
                 <span className="text">Ocelot Pay</span>
             </div>
             <div className="nav-items">
-                {isAtHomePage ? (
+                {!isAtDocPage ? (
                     <a href="#features">
                         <Button type="text" size="large">
                             Why Ocelot Pay
                         </Button>
                     </a>
                 ) : null}
-                {isAtHomePage ? (
+                {!isAtDocPage ? (
                     <a href="#price">
                         <Button type="text" size="large">
                             Pricing
                         </Button>
                     </a>
                 ) : null}
-                {isAtHomePage ? (
+                {!isAtDocPage ? (
                     <Button type="text" size="large" onClick={goDoc}>
                         Docs
                     </Button>

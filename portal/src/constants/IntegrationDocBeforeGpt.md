@@ -1,19 +1,19 @@
 ## Introduction
 
-Ocelot Pay offers a convenient way for users to make payments using various cryptocurrencies.
+Ocelot Pay is a payment tool with which user can pay in several crypto coins.
 
-In contrast to conventional third-party payment solutions, we do not retain any assets during transactions. Instead, all payments are directly transferred to your cryptocurrency account.
+Unlike traditional 3rd party payment tool, we don't hold any assets traded and all payments are sent directly to your cryptocurrency account.
 
-Integrating Ocelot Pay is a breeze. Simply follow these steps:
+Ocelot Pay is very easy to integrate, all you need to do is:
 
-1. Begin by setting up and customizing your project on the [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects)
-2. Once your project is configured, you can obtain an integration link or code. You can easily integrate it into your system using an iframe or the Ocelot Pay SDK.
+1. Create and configure your project on [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects)
+2. Get integration link or code, integrate with iframe or Ocelot Pay SDK
 
 ---
 
 ## Create and configure project
 
-In the project menu on the [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects), click on "Add Project". Fill in all the required fields, and then save your changes. Your newly created project will now appear in your projects panel.
+At project menu on [Ocelot Pay console](https://console.ocelotpay.com/dashboard/projects), click "Add Project", fill all fields and save. The newly created project will display on your projects panel.
 
 ![new project](https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/docImages%2FnewProject.png?alt=media&token=0952fee5-e9e6-4cc7-a7be-d0437284df28&_gl=1*1qinefw*_ga*MTgzOTI5ODcyOS4xNjg1MzUzMzA2*_ga_CW55HF8NVT*MTY5NjY2NDY1MC4xNjkuMS4xNjk2NjY0NzA4LjIuMC4w)
 
@@ -21,29 +21,30 @@ In the project menu on the [Ocelot Pay console](https://console.ocelotpay.com/da
 
 ## Get payment url
 
-To obtain your payment URL or App ID, simply click on your project within the projects panel. This action will take you to the following page:
+To get your payment url or appId, click your project at projects panel, your will see the follwing page:
 
 ![payment config](https://firebasestorage.googleapis.com/v0/b/paywithcrypto-9283c.appspot.com/o/docImages%2FconfigPayment.png?alt=media&token=4e3b2f05-9ee1-4039-8e4f-dde548712e3e&_gl=1*2f9ns1*_ga*MTgzOTI5ODcyOS4xNjg1MzUzMzA2*_ga_CW55HF8NVT*MTY5NjY2NzA3OC4xNzAuMS4xNjk2NjY3MDg4LjUwLjAuMA..)
 
-You can find your App ID on the left side (which is essential for SDK integration).
+Your can find your appId at left (which is required for SDK integration).
 
-Next, on the left, configure your payment parameters. After that, click the "Generate URL" button, and you'll notice the payment preview UI updating on the right. Additionally, the following URL and iframe code will also be updated. You can then use the URL or iframe code for seamless integration with Ocelot Pay.
+Configure your payment params at left, click "Generate url" button the payment preview ui will update at right.
+The follwing url and iframe code will update too. Thus you can use the url or iframe code to integrate Ocelot Pay.
 
 ---
 
 ## Integration Without SDK
 
-We strongly advise using the OcelotPay SDK for your integration needs. However, if you only need to offer a cryptocurrency payment option for a single product and prefer a more lightweight solution, it's a suitable choice.
+We highly recommend you to use OcelotPay SDK. But if you just want to provide a crypto token payment way for single product lightweight integration is a good option.
 
 ### Integrate using iframe
 
--   Obtain your payment URL or iframe code as instructed in the previous [guide](#heading-2)
--   Customize your iframe using the payment URL or our provided iframe code
--   Seamlessly integrate the iframe into your webpage
+-   Get your payment url or iframe code by following previous [guide](#heading-2)
+-   Custom your iframe with payment url or based on our iframe code
+-   Integrate iframe into your page
 
 ### Listen payment result message
 
-You can receive the payment result by listening for the "message" event from Ocelot Pay.
+You can get payment result by listening "message" event from Ocelot Pay.
 
 ```
 window.addEventListener("message", (event) => {
@@ -109,8 +110,8 @@ See the [following part](#heading-14)
 
 ### Init SDK with AppId
 
--   Obtain your App ID by following the instructions in the [previous guide](#heading-2)
--   Initialize OcelotPay with your App ID.
+-   Get your appId by following [previous guide](#heading-2)
+-   Init OcelotPay with your appId
 
 If installed with npm
 
@@ -130,15 +131,16 @@ window.OcelotPay.init({ appId: myAppId });
 
 ### onReady callback
 
-Initializing OcelotPay is an asynchronous operation, and it returns a promise of boolean type. However, even after the initialization is complete, there may be some ongoing asynchronous HTTP requests. During this period, OcelotPay may not be ready for use. You can check the readiness of OcelotPay by calling:
+OcelotPay init is an async function, it returns a boolean type promise.
+But event init finished there may be some async http requests running, at this moment OcelotPay is not ready to be used. You can check OcelotPay ready status by calling:
 
 `OcelotPay.isReady()`
 
-For your convenience, we offer the **onReady** callback. This callback will be triggered once OcelotPay is fully prepared for use.
+For your convenient, we provide the **onReady** callback. The onReady callback will be called once OcelotPay is ready.
 
-For instance, you can initialize OcelotPay at the root of your application and utilize the onReady callback in your components.
+For example you can just init OcelotPay at the root of your app, and use onReady callback in your components.
 
-Here's an example of React code:
+Here is an example code of react
 
 ```
 // at your app root
@@ -172,13 +174,13 @@ useEffect(() => {
 
 ### Generate payment url
 
-To incorporate our payment user interface, you need to create a payment URL initially.
+To integrate our payment ui, you must generate payment url first
 
 ```
 const url = OcelotPay.generatePaymentUrl({});
 ```
 
-The parameter structure
+The param structure
 
 ```
 {
@@ -191,11 +193,13 @@ The parameter structure
 
 ### Update or create iframe
 
-Once you obtain the payment URL, you can update the iframe URL and display the payment interface to your users.
+Once you have the payment url, you can update the iframe url and show the payment ui to your user
 
 ### Launch payment & wait for result
 
-At this point, users can already access the payment interface and make payments to your account. However, if you need to modify payment configurations or retrieve payment results directly from the frontend, you can use OcelotPay.request().
+At this step, user can already access the payment ui and pay to your account.
+
+But what if you want to update payment config, or get the payment result at frontend. You can use OcelotPay.request() to do it.
 
 ```
 try {
@@ -234,14 +238,14 @@ try {
 
 ### Payment success callback api
 
-If you have set up the "Callback API" in your project, you'll be able to receive every successful payment result through this API. We strongly recommend configuring the "Callback API."
+If you configured the "Callback Api" in your project. You can receive every successful payment result from this api. We highly recommend you set up the "Callback Api".
 
 -   Configure on creating or editing project
-    > Both the secret phrase and the Callback API must be configured.
-    > The API URL should support the POST method and be able to accept two properties, namely resultJsonStr and checkHexStr, in the body parameters.
+    > The secret phrase and Callback Api must both configed
+    > The api url must support POST method and accept two properties: resultJsonStr, checkHexStr in body params
 -   Verify the message is from OcelotPay
 
-    > The Callback API request body will appear as follows:
+    > The Callback api request body will be like
 
     ```
     {
@@ -250,13 +254,13 @@ If you have set up the "Callback API" in your project, you'll be able to receive
     }
     ```
 
-    > To verify the hash string:
+    > Verify hash string
     >
-    > 1. Compare the hashed result by using the secret phrase + resultJsonStr string as input for the SHA256 algorithm, generating a hashed hexString output. Then, compare this output with checkHexStr to confirm that the request is from OcelotPay.
+    > 1. compare hashed result; use secretPhrase + resultJsonStr string as input of SHA256 algorithm to generate a hashed hexString output and compare it with checkHexStr to verify the request is from OcelotPay
 
-    > 2. Parse the result JSON string.
+    > 2. parse result json string
 
-    For example, here's some JavaScript code for reference. Note that you may require[CryptoJS](https://www.npmjs.com/package/crypto-js)
+    Example code for js. [CryptoJS](https://www.npmjs.com/package/crypto-js) is required
 
     ```
     // get data from request body
@@ -282,10 +286,10 @@ If you have set up the "Callback API" in your project, you'll be able to receive
 
 ### Verify receiptId
 
-While it's a rare occurrence, certain network issues can sometimes result in a payment transaction being confirmed on the blockchain but not recorded by the OcelotPay server. In such cases, you will receive a unique receipt ID in the payment response. To address this situation, you can verify and store this payment by using the following API:
+Even it occurs very rarely, some network problems may cause that the payment transaction confirmed on chain but not not saved by OcelotPay server. At this case, you will get an unique receipt id in payment response. You can verify and save this payment with the receipt id by calling this api:
 [https://verifypaymentreceiptandsave-cjurgglvma-uc.a.run.app](https://verifypaymentreceiptandsave-cjurgglvma-uc.a.run.app)
 
-To proceed, make sure to use the **POST** method and include the **receiptId** in the request body:
+You must call the api with **POST** method and **receiptId** in body:
 
 ```
 {
@@ -295,18 +299,18 @@ To proceed, make sure to use the **POST** method and include the **receiptId** i
 
 ### Build your own payment ui (Advanced)
 
-While using our provided payment interface is very convenient, you may wish to create a customized payment view. In such instances, you can leverage the OcelotPay SDK to construct your unique user interface. In fact, our payment interface is constructed using the OcelotPay SDK.
+Though use our provided payment ui is very convenient, you may want to custom your own payment view. In this case, you can use OcelotPay SDK to build your personalized view. Actually our payment ui is buit with OcelotPay SDK.
 
-To build your own user interface, follow these steps:
+You can following those steps to build your own ui:
 
--   Initialize OcelotPay with your App ID.
+-   Init OcelotPay with your appId
 
 ```
 const myAppId = ''; // your appId here
 OcelotPay.init({ appId: myAppId });
 ```
 
--   Utilize **ethereumProvider** and **walletManager** to identify and connect a wallet.
+-   Use **ethereumProvider** and **walletManager** to detect and connect wallet
 
 ```
 // currently support metamask and coinbase, here is an example of metamsk
@@ -321,9 +325,9 @@ if(metamaskProvider){
 
 ```
 
--   Retrieve the available tokens from **OcelotPay.tokenConfigs**
+-   Get available tokens from **OcelotPay.tokenConfigs**
 
-    Here's an example structure of a token configuration:
+    Token configuration structure be like:
 
 ```
 {
@@ -337,14 +341,14 @@ if(metamaskProvider){
 }
 ```
 
--   Obtain the current token price in real-time
+-   Get real-time token price
 
 ```
 let tokenSymbol = '' // support 'USDT', 'ETH', 'MATIC'
 OcelotPay.getTokenPriceInUSD(tokenSymbol);
 ```
 
--   Initiate a payment request
+-   Request to pay
 
 ```
 // Example code for reqest a payment
