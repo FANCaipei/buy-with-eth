@@ -92,8 +92,9 @@ See the [following part](#heading-14)
 
 -   use CDN
 
-    Coming soon  
-    You can get OcelotPay under window object
+    <script src="https://cdn.jsdelivr.net/npm/ocelot-pay-sdk@1.0.2/index.js"></script>
+
+    You can access OcelotPay through the "window" object
 
     ```
     const OcelotPay = window.OcelotPay;
