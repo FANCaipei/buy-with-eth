@@ -1,6 +1,6 @@
 {
     "name": "ocelot-pay-sdk",
-    "version": "0.2.7",
+    "version": "1.0.0",
     "description": "ocelot pay sdk",
     "main": "index.ts",
     "scripts": {
