@@ -37,7 +37,7 @@ const MarkDownDoc = () => {
         return () => {
             window.removeEventListener("click", hideNav);
         };
-    }, []);
+    }, [hideNav]);
 
     useEffect(() => {
         const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
