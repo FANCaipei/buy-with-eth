@@ -16,7 +16,7 @@ function Index() {
                     position: "fixed",
                     top: 0,
                     zIndex: 1,
-                    width: "100%",
+                    width: "100vw",
                     display: "flex",
                     alignItems: "center",
                     backgroundColor: "#fff",
@@ -41,6 +41,13 @@ function App() {
 
 const AppRootStyledContainer = styled.div.attrs({ className: "app-root" })`
     height: 100%;
+    width: 100vw;
+
+    .ant-layout-header {
+        @media screen and (max-width: 800px) {
+            padding: 0 20px;
+        }
+    }
 `;
 
 export default App;

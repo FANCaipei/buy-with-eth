@@ -159,7 +159,8 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 min-height: 45vh;
                 height: 100%;
                 max-width: 1200px;
-                width: 100%;
+                /* width: 100%; */
+                width: 100vw;
                 margin: 0 auto;
             }
         }
@@ -190,6 +191,7 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 margin-top: 20px;
                 /* color: rgba(0, 0, 0, 0.88); */
                 color: rgba(255, 255, 255, 0.8);
+                text-align: center;
             }
         }
         .feature-small-title {
@@ -210,16 +212,25 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
             width: 100%;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: repeat(2, 1fr);
+            /* grid-template-rows: repeat(2, 1fr); */
             column-gap: 20px;
             row-gap: 20px;
             padding-bottom: 48px;
+
+            @media screen and (max-width: 800px) {
+                grid-template-columns: 1fr;
+            }
 
             .feature-item {
                 padding: 48px;
                 background-color: #fff;
                 border-radius: 16px;
                 box-shadow: rgba(12, 8, 0, 0.3) 0px 2px 8px -1px;
+
+                @media screen and (max-width: 800px) {
+                    padding: 20px;
+                    margin: 0 20px;
+                }
 
                 .icon-wrapper {
                     width: 55px;
@@ -267,6 +278,7 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
             .title {
                 font-size: 36px;
                 font-weight: bold;
+                text-align: center;
             }
             .desc {
                 margin-top: 20px;
@@ -285,8 +297,18 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 justify-items: center;
                 align-items: center;
 
+                @media screen and (max-width: 800px) {
+                    grid-template-columns: 1fr;
+                }
+
                 .logo-item {
                     height: 40px;
+
+                    @media screen and (max-width: 800px) {
+                        & + .logo-item {
+                            margin-top: 20px;
+                        }
+                    }
                 }
             }
         }
@@ -301,6 +323,7 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 margin-top: 48px;
                 font-size: 24px;
                 font-weight: bold;
+                text-align: center;
             }
             .sub-desc {
                 margin-top: 32px;

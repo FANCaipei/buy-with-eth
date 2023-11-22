@@ -1,4 +1,6 @@
-import { Button } from "antd";
+import { Button, Dropdown } from "antd";
+import type { MenuProps } from "antd";
+import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import Logo from "../../assets/imgs/logo.png";
 import { useCallback, useEffect, useState } from "react";
@@ -8,6 +10,7 @@ const OcelotHeader = () => {
     const navigate = useNavigate();
     const [isAtDocPage, setIsAtDocPage] = useState(true);
     const location = useLocation();
+    const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
     const goHome = useCallback(() => {
         navigate("/home");
@@ -21,6 +24,15 @@ const OcelotHeader = () => {
         window.open("https://console.ocelotpay.com/", "_blank");
     }, []);
 
+    const openDropdownMenu = useCallback(() => {
+        setIsDropdownMenuOpen(true);
+    }, []);
+    const closeDropdownMenu = useCallback(() => {
+        setIsDropdownMenuOpen(false);
+    }, []);
+
+    const [dropdownMenus, setDropdownMenus] = useState<MenuProps["items"]>();
+
     useEffect(() => {
         if (location.pathname?.includes("/doc")) {
             setIsAtDocPage(true);
@@ -28,6 +40,107 @@ const OcelotHeader = () => {
             setIsAtDocPage(false);
         }
     }, [location]);
+
+    useEffect(() => {
+        // if (isAtDocPage) {
+        //     setDropdownMenus([
+        //         {
+        //             key: "4",
+        //             label: (
+        //                 <Button type="primary" size="large" onClick={goConsole}>
+        //                     Console
+        //                 </Button>
+        //             ),
+        //         },
+        //     ]);
+        // } else {
+        //     setDropdownMenus([
+        //         {
+        //             key: "1",
+        //             label: (
+        //                 <a href="#features">
+        //                     <Button type="text" size="large">
+        //                         Why Ocelot Pay
+        //                     </Button>
+        //                 </a>
+        //             ),
+        //         },
+
+        //         {
+        //             key: "2",
+        //             label: (
+        //                 <a href="#price">
+        //                     <Button type="text" size="large">
+        //                         Pricing
+        //                     </Button>
+        //                 </a>
+        //             ),
+        //         },
+        //         {
+        //             key: "3",
+        //             label: (
+        //                 <Button type="text" size="large" onClick={goDoc}>
+        //                     Docs
+        //                 </Button>
+        //             ),
+        //         },
+        //         {
+        //             key: "4",
+        //             label: (
+        //                 <Button type="primary" size="large" onClick={goConsole}>
+        //                     Console
+        //                 </Button>
+        //             ),
+        //         },
+        //     ]);
+        // }
+        setDropdownMenus([
+            {
+                key: "1",
+                label: (
+                    <a href="#features">
+                        <Button type="text" size="large">
+                            Why Ocelot Pay
+                        </Button>
+                    </a>
+                ),
+            },
+
+            {
+                key: "2",
+                label: (
+                    <a href="#price">
+                        <Button type="text" size="large">
+                            Pricing
+                        </Button>
+                    </a>
+                ),
+            },
+            {
+                key: "3",
+                label: (
+                    <Button type="text" size="large" onClick={goDoc}>
+                        Docs
+                    </Button>
+                ),
+            },
+            {
+                key: "4",
+                label: (
+                    <Button type="primary" size="large" onClick={goConsole}>
+                        Console
+                    </Button>
+                ),
+            },
+        ]);
+    }, [goConsole, goDoc]);
+
+    useEffect(() => {
+        window.addEventListener("click", closeDropdownMenu);
+        return () => {
+            window.removeEventListener("click", closeDropdownMenu);
+        };
+    }, [closeDropdownMenu]);
 
     return (
         <StyledContainer style={{ maxWidth: isAtDocPage ? "100vw" : "1200px" }}>
@@ -60,6 +173,25 @@ const OcelotHeader = () => {
                     Console
                 </Button>
             </div>
+            {isAtDocPage ? null : (
+                <Dropdown
+                    className="dropdown-menu"
+                    trigger={["click"]}
+                    menu={{ items: dropdownMenus }}
+                    open={isDropdownMenuOpen}
+                >
+                    {isDropdownMenuOpen ? (
+                        <CloseOutlined />
+                    ) : (
+                        <MenuOutlined
+                            onClick={e => {
+                                e.stopPropagation();
+                                openDropdownMenu();
+                            }}
+                        />
+                    )}
+                </Dropdown>
+            )}
         </StyledContainer>
     );
 };
@@ -89,8 +221,19 @@ const StyledContainer = styled.div.attrs({ className: "ocelot-header" })`
     }
 
     .nav-items {
+        @media screen and (max-width: 800px) {
+            display: none;
+        }
+
         button {
             margin-left: 10px;
+        }
+    }
+
+    .dropdown-menu {
+        display: none;
+        @media screen and (max-width: 800px) {
+            display: block;
         }
     }
 `;
