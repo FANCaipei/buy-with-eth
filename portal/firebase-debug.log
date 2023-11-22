@@ -1,0 +1,124 @@
+[debug] [2023-11-22T09:33:55.124Z] ----------------------------------------------------------------------
+[debug] [2023-11-22T09:33:55.126Z] Command:       /Users/caipei/.nvm/versions/node/v19.8.1/bin/node /Users/caipei/.nvm/versions/node/v19.8.1/bin/firebase deploy --only hosting
+[debug] [2023-11-22T09:33:55.126Z] CLI Version:   12.4.2
+[debug] [2023-11-22T09:33:55.126Z] Platform:      darwin
+[debug] [2023-11-22T09:33:55.126Z] Node Version:  v19.8.1
+[debug] [2023-11-22T09:33:55.126Z] Time:          Wed Nov 22 2023 17:33:55 GMT+0800 (China Standard Time)
+[debug] [2023-11-22T09:33:55.126Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-11-22T09:33:55.129Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2023-11-22T09:33:55.179Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-11-22T09:33:55.179Z] > authorizing via signed-in user (fancaipei@gmail.com)
+[debug] [2023-11-22T09:33:55.179Z] [iam] checking project paywithcrypto-9283c for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-11-22T09:33:55.180Z] > refreshing access token with scopes: []
+[debug] [2023-11-22T09:33:55.181Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-11-22T09:33:55.181Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-22T09:33:56.096Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2023-11-22T09:33:56.096Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2023-11-22T09:35:02.161Z] ----------------------------------------------------------------------
+[debug] [2023-11-22T09:35:02.163Z] Command:       /Users/caipei/.nvm/versions/node/v19.8.1/bin/node /Users/caipei/.nvm/versions/node/v19.8.1/bin/firebase deploy --only hosting
+[debug] [2023-11-22T09:35:02.163Z] CLI Version:   12.4.2
+[debug] [2023-11-22T09:35:02.163Z] Platform:      darwin
+[debug] [2023-11-22T09:35:02.163Z] Node Version:  v19.8.1
+[debug] [2023-11-22T09:35:02.163Z] Time:          Wed Nov 22 2023 17:35:02 GMT+0800 (China Standard Time)
+[debug] [2023-11-22T09:35:02.163Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-11-22T09:35:02.198Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-11-22T09:35:02.199Z] > authorizing via signed-in user (fancaipei@gmail.com)
+[debug] [2023-11-22T09:35:02.199Z] [iam] checking project paywithcrypto-9283c for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2023-11-22T09:35:02.200Z] > refreshing access token with scopes: []
+[debug] [2023-11-22T09:35:02.201Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-11-22T09:35:02.201Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-22T09:35:03.658Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-11-22T09:35:03.658Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-22T09:35:03.675Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/paywithcrypto-9283c:testIamPermissions [none]
+[debug] [2023-11-22T09:35:03.675Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/paywithcrypto-9283c:testIamPermissions x-goog-quota-user=projects/paywithcrypto-9283c
+[debug] [2023-11-22T09:35:03.675Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/paywithcrypto-9283c:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-11-22T09:35:05.299Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/paywithcrypto-9283c:testIamPermissions 200
+[debug] [2023-11-22T09:35:05.299Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/paywithcrypto-9283c:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2023-11-22T09:35:05.300Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/paywithcrypto-9283c [none]
+[debug] [2023-11-22T09:35:07.190Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/paywithcrypto-9283c 200
+[debug] [2023-11-22T09:35:07.190Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/paywithcrypto-9283c {"projectId":"paywithcrypto-9283c","projectNumber":"1698450909","displayName":"payWithCrypto","name":"projects/paywithcrypto-9283c","resources":{"hostingSite":"paywithcrypto-9283c","storageBucket":"paywithcrypto-9283c.appspot.com","locationId":"us-central"},"state":"ACTIVE","etag":"1_483743b1-4584-475d-ba6c-5d85e1a44520"}
+[info] 
+[info] === Deploying to 'paywithcrypto-9283c'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2023-11-22T09:35:07.202Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions [none]
+[debug] [2023-11-22T09:35:07.202Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2023-11-22T09:35:10.054Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions 200
+[debug] [2023-11-22T09:35:10.054Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions {"name":"projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[paywithcrypto-9283c]: beginning deploy... 
+[info] i  hosting[paywithcrypto-9283c]: found 23 files in build 
+[debug] [2023-11-22T09:35:10.073Z] [hosting] uploading with 200 concurrency
+[debug] [2023-11-22T09:35:10.328Z] [hosting] hash cache [YnVpbGQ] stored for 23 files
+[debug] [2023-11-22T09:35:10.328Z] [hosting][hash queue][FINAL] {"max":247,"min":7,"avg":19.52173913043478,"active":0,"complete":23,"success":23,"errored":0,"retried":0,"total":23,"elapsed":251}
+[debug] [2023-11-22T09:35:10.329Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1:populateFiles [none]
+[debug] [2023-11-22T09:35:10.329Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1:populateFiles {"files":{"/asset-manifest.json":"afc2425e00a326132b6327014ee488a9dd3169af7cc23589a1ed205a6c7739f0","/index.html":"baffc3c668f362e25203fc7f272d71209721dc61b8c6f70c45927765ab3165bd","/favicon.ico":"1419dbfb0583a81e57de16dbbd2f1a88116c20ec739e47034094d7796a8e7a23","/logo192.png":"322c6bb14bd5f64eb52e4498566840e8c55c7b2312a099aed862dbeff8052aba","/logo512.png":"322c6bb14bd5f64eb52e4498566840e8c55c7b2312a099aed862dbeff8052aba","/robots.txt":"391d14b3c2f8c9143a27a28c7399585142228d4d1bdbe2c87ac946de411fa9a2","/static/css/main.d040ed55.css":"e6efd0a1f1cbe552062d5e3c3e5c4e39692472bcdf72ad41e93d4f99aecce3f4","/static/css/main.d040ed55.css.map":"d0c2d3ba1a4fe0601dad4a18a7584ae0fbedce8c3398cb18cc77bb3a73736f42","/static/js/787.fed13e9f.chunk.js":"1a90a455e1f1685599cd80f5bde84de1e5af89fa0181d283d36325a319912066","/static/js/main.a816c2a9.js.LICENSE.txt":"05abdee92e1de98be8250f72320db29d4def06af8c062873a8df31de9cae9b72","/static/js/787.fed13e9f.chunk.js.map":"3ce17ce4f9f8469a07489976a210e9e629b421529dcff999fe85d8e8b5fba0a3","/static/media/aws.cc38dbe9487d55943d42132de41bbf53.svg":"2fc97c9146e477bf673a38ff4f907ee52c8b587f65e94e7d2140da84deb9f03d","/manifest.json":"341d52628782f8ac9290bbfc43298afccb47b7cbfcee146ae30cf0f46bc30900","/static/media/cliqz-icon.5601c7b332f52d5bcee8d402e13f3905.svg":"44632cde104c8b69c62784853be64fe98f6181862921c8a55b5c37390bb6acf4","/static/media/cryptocurrency-bitcoin-icon.d089e8fcb1e79811fe5a5d9df6fac4c7.svg":"aa1d3a690d348eb7f4f5d6f493f59001725cfa52f2c1707c4781608556052b96","/static/media/dashboard-report-icon.73b4e969ff48b4558db2ef147981e30b.svg":"9a1645b78a6a5d79a38d5c2fee1bd1e5aa62c0e85a6519bd869570fabc57b5ea","/static/media/IntegrationDoc.6d4222b80a55fc343ffc.md":"5747decf248858501db14b6c9319d1d266eedb52ba6c65b9d2195e741fd7d7b4","/static/media/ethereum.5337a03fbbeca646eb532e549eea6051.svg":"db6c1f84df0dc75134dd5c97c3fe7dfbca728e42d21d47233b6ebed0b4b6b873","/static/media/google.a752048f91f0102c38eccddeb15760ae.svg":"5f640b56e4c61376de499e6b318ce5af7008b8d266486ef8973302d593ab5bea","/static/media/token-icon.17b48969eea5089e0b4ca6ac6ba34572.svg":"9535a233dc47e41f84ecce2d9973b26858cdc8fed6279bd2d2c02f4df8e1f4f8","/static/media/puzzle-icon.6d7679604c9f29988f9f96f7ebabb749.svg":"191826f17c2b3ae034fc36be13bebd5ed2ce4a679b5f539499592232a118f548","/static/js/main.a816c2a9.js":"9eec4c1ba1e077825f24f9f6f73b581b960ba31fa5479106c9a0c3f560e506a1","/static/js/main.a816c2a9.js.map":"62034a40b907e0fc3a532aee559507cb80ef65eb65bf00faf932e14f2e5a8b2d"}}
+[debug] [2023-11-22T09:35:12.445Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1:populateFiles 200
+[debug] [2023-11-22T09:35:12.445Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1:populateFiles {"uploadRequiredHashes":["9eec4c1ba1e077825f24f9f6f73b581b960ba31fa5479106c9a0c3f560e506a1","baffc3c668f362e25203fc7f272d71209721dc61b8c6f70c45927765ab3165bd","afc2425e00a326132b6327014ee488a9dd3169af7cc23589a1ed205a6c7739f0","62034a40b907e0fc3a532aee559507cb80ef65eb65bf00faf932e14f2e5a8b2d"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files"}
+[debug] [2023-11-22T09:35:12.448Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/9eec4c1ba1e077825f24f9f6f73b581b960ba31fa5479106c9a0c3f560e506a1 [none]
+[debug] [2023-11-22T09:35:12.448Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/9eec4c1ba1e077825f24f9f6f73b581b960ba31fa5479106c9a0c3f560e506a1 [stream]
+[debug] [2023-11-22T09:35:12.451Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/baffc3c668f362e25203fc7f272d71209721dc61b8c6f70c45927765ab3165bd [none]
+[debug] [2023-11-22T09:35:12.452Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/baffc3c668f362e25203fc7f272d71209721dc61b8c6f70c45927765ab3165bd [stream]
+[debug] [2023-11-22T09:35:12.453Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/afc2425e00a326132b6327014ee488a9dd3169af7cc23589a1ed205a6c7739f0 [none]
+[debug] [2023-11-22T09:35:12.453Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/afc2425e00a326132b6327014ee488a9dd3169af7cc23589a1ed205a6c7739f0 [stream]
+[debug] [2023-11-22T09:35:12.453Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/62034a40b907e0fc3a532aee559507cb80ef65eb65bf00faf932e14f2e5a8b2d [none]
+[debug] [2023-11-22T09:35:12.454Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/62034a40b907e0fc3a532aee559507cb80ef65eb65bf00faf932e14f2e5a8b2d [stream]
+[debug] [2023-11-22T09:35:12.455Z] [hosting][populate queue][FINAL] {"max":2121,"min":2121,"avg":2121,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":2128}
+[debug] [2023-11-22T09:35:12.455Z] [hosting] uploads queued: 4
+[debug] [2023-11-22T09:35:14.358Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/afc2425e00a326132b6327014ee488a9dd3169af7cc23589a1ed205a6c7739f0 200
+[debug] [2023-11-22T09:35:14.359Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/afc2425e00a326132b6327014ee488a9dd3169af7cc23589a1ed205a6c7739f0 [stream]
+[debug] [2023-11-22T09:35:14.411Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/baffc3c668f362e25203fc7f272d71209721dc61b8c6f70c45927765ab3165bd 200
+[debug] [2023-11-22T09:35:14.411Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/baffc3c668f362e25203fc7f272d71209721dc61b8c6f70c45927765ab3165bd [stream]
+[debug] [2023-11-22T09:35:15.569Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/9eec4c1ba1e077825f24f9f6f73b581b960ba31fa5479106c9a0c3f560e506a1 200
+[debug] [2023-11-22T09:35:15.569Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/9eec4c1ba1e077825f24f9f6f73b581b960ba31fa5479106c9a0c3f560e506a1 [stream]
+[debug] [2023-11-22T09:35:15.696Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/62034a40b907e0fc3a532aee559507cb80ef65eb65bf00faf932e14f2e5a8b2d 200
+[debug] [2023-11-22T09:35:15.696Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/paywithcrypto-9283c/versions/a243220f0e257ec1/files/62034a40b907e0fc3a532aee559507cb80ef65eb65bf00faf932e14f2e5a8b2d [stream]
+[debug] [2023-11-22T09:35:15.696Z] [hosting][upload queue][FINAL] {"max":3249,"min":1912,"avg":2562,"active":0,"complete":4,"success":4,"errored":0,"retried":0,"total":4,"elapsed":3250}
+[info] ✔  hosting[paywithcrypto-9283c]: file upload complete 
+[debug] [2023-11-22T09:35:15.697Z] [hosting] deploy completed after 5641ms
+[debug] [2023-11-22T09:35:15.698Z] [
+  {
+    "config": {
+      "site": "paywithcrypto-9283c",
+      "public": "build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    "version": "projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1"
+  }
+]
+[info] i  hosting[paywithcrypto-9283c]: finalizing version... 
+[debug] [2023-11-22T09:35:15.701Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions/a243220f0e257ec1 updateMask=status%2Cconfig
+[debug] [2023-11-22T09:35:15.701Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions/a243220f0e257ec1 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2023-11-22T09:35:38.467Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions/a243220f0e257ec1 200
+[debug] [2023-11-22T09:35:38.468Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/versions/a243220f0e257ec1 {"name":"projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2023-11-22T09:35:09.320417Z","createUser":{"email":"fancaipei@gmail.com"},"finalizeTime":"2023-11-22T09:35:38.362179Z","finalizeUser":{"email":"fancaipei@gmail.com"}}
+[debug] [2023-11-22T09:35:38.468Z] [hosting] finalized version for paywithcrypto-9283c:[object Object]
+[info] ✔  hosting[paywithcrypto-9283c]: version finalized 
+[info] i  hosting[paywithcrypto-9283c]: releasing new version... 
+[debug] [2023-11-22T09:35:38.469Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/channels/live/releases versionName=projects%2F1698450909%2Fsites%2Fpaywithcrypto-9283c%2Fversions%2Fa243220f0e257ec1
+[debug] [2023-11-22T09:35:38.470Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/channels/live/releases {}
+[debug] [2023-11-22T09:35:41.512Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/channels/live/releases 200
+[debug] [2023-11-22T09:35:41.512Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/paywithcrypto-9283c/channels/live/releases {"name":"projects/1698450909/sites/paywithcrypto-9283c/channels/live/releases/1700645740401000","version":{"name":"projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2023-11-22T09:35:09.320417Z","createUser":{"email":"fancaipei@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLJ6bZUYAeRrKkjzg83LlWMelJppp4YLY-uqJ80rz96pVQ"},"finalizeTime":"2023-11-22T09:35:38.362179Z","finalizeUser":{"email":"fancaipei@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLJ6bZUYAeRrKkjzg83LlWMelJppp4YLY-uqJ80rz96pVQ"}},"type":"DEPLOY","releaseTime":"2023-11-22T09:35:40.401Z","releaseUser":{"email":"fancaipei@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLJ6bZUYAeRrKkjzg83LlWMelJppp4YLY-uqJ80rz96pVQ"}}
+[debug] [2023-11-22T09:35:41.513Z] [hosting] release: {"name":"projects/1698450909/sites/paywithcrypto-9283c/channels/live/releases/1700645740401000","version":{"name":"projects/1698450909/sites/paywithcrypto-9283c/versions/a243220f0e257ec1","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2023-11-22T09:35:09.320417Z","createUser":{"email":"fancaipei@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLJ6bZUYAeRrKkjzg83LlWMelJppp4YLY-uqJ80rz96pVQ"},"finalizeTime":"2023-11-22T09:35:38.362179Z","finalizeUser":{"email":"fancaipei@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLJ6bZUYAeRrKkjzg83LlWMelJppp4YLY-uqJ80rz96pVQ"}},"type":"DEPLOY","releaseTime":"2023-11-22T09:35:40.401Z","releaseUser":{"email":"fancaipei@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocLJ6bZUYAeRrKkjzg83LlWMelJppp4YLY-uqJ80rz96pVQ"}}
+[info] ✔  hosting[paywithcrypto-9283c]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/paywithcrypto-9283c/overview
+[info] Hosting URL: https://paywithcrypto-9283c.web.app
+[debug] [2023-11-22T09:37:07.059Z] Error: Timed out.
+    at Timeout._onTimeout (/Users/caipei/.nvm/versions/node/v19.8.1/lib/node_modules/firebase-tools/lib/utils.js:254:49)
+    at listOnTimeout (node:internal/timers:573:17)
+    at process.processTimers (node:internal/timers:514:7)
+[error] 
+[error] Error: An unexpected error has occurred.
