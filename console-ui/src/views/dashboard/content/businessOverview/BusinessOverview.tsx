@@ -404,7 +404,7 @@ const BusinessOverview = () => {
                                 <PanelItemCard
                                     title="Revenue by day"
                                     titleTooltip="In token price at the time of payment"
-                                    style={{ flexGrow: "1" }}
+                                    style={{ flexGrow: "1", width: "65%" }}
                                 >
                                     <RevenueByDayChart chartData={revenueByDayChartData ?? []} />
                                 </PanelItemCard>
@@ -429,7 +429,7 @@ const BusinessOverview = () => {
                                 <PanelItemCard title="Revenue by product" style={{ width: "48%" }}>
                                     <RevenueByProductIdChart chartData={revenueByProductIdData ?? []} />
                                 </PanelItemCard>
-                                <PanelItemCard title="Payment count in hours" style={{ flexGrow: "1" }}>
+                                <PanelItemCard title="Payment count in hours" style={{ flexGrow: "1", width: "48%" }}>
                                     <PaymentCountInHour chartData={paymentCountInHourData ?? []} />
                                 </PanelItemCard>
                             </div>

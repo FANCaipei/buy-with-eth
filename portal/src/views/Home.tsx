@@ -100,9 +100,11 @@ const Home = () => {
                         <div className="title">Pay as you go, no transaction no fee. No cost for trying</div>
                         <div className="desc">
                             <ul>
-                                <li>$0.10 per transaction for the initial 1,000 transactions each month.</li>
+                                {/* <li>$0.10 per transaction for the initial 1,000 transactions each month.</li>
                                 <li>$0.05 per transaction for the initial 10,000 transactions each month.</li>
-                                <li>$0.03 per transaction for the initial 100,000 transactions each month.</li>
+                                <li>$0.03 per transaction for the initial 100,000 transactions each month.</li> */}
+                                <li>0.2% processing fee + 0 gas fee </li>
+                                <li>You receive exactly the coins user paid, and pay processing fees later </li>
                                 <li>Invoices will be generated on the first day of the upcoming month.</li>
                             </ul>
                         </div>
@@ -281,9 +283,9 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
                 text-align: center;
             }
             .desc {
-                margin-top: 20px;
-                font-size: 16px;
-                line-height: 32px;
+                margin-top: 60px;
+                font-size: 20px;
+                line-height: 48px;
             }
         }
         .support-block {

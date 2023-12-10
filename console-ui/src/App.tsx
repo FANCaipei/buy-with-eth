@@ -6,7 +6,7 @@ import routeConfig from "./common/routes/RouteConfig";
 import { Spin } from "antd";
 import useFirebaseAuth from "./common/zustand/useFirebaseAuth";
 import LoadingIndicator from "./componets/LoadingIndicator";
-import DisableDevtool from "disable-devtool";
+// import DisableDevtool from "disable-devtool";
 import { useEffect } from "react";
 
 // 设置全局spin的indicator
@@ -31,31 +31,27 @@ function Index() {
 
 function App() {
     useEffect(() => {
-        DisableDevtool({
-            clearLog: false,
-        });
-        let letters = "";
-        const targetWords = "enable dev";
-        const enableDevtool = (event: any) => {
-            if (event?.key) {
-                letters = letters + event.key;
-            }
-
-            if (letters === targetWords) {
-                // enable devtool
-                DisableDevtool.isSuspend = true;
-            }
-
-            if (letters.length >= targetWords.length) {
-                letters = "";
-            }
-        };
-
-        window.addEventListener("keyup", enableDevtool);
-
-        return () => {
-            window.removeEventListener("keyup", enableDevtool);
-        };
+        // DisableDevtool({
+        //     clearLog: false,
+        // });
+        // let letters = "";
+        // const targetWords = "enable dev";
+        // const enableDevtool = (event: any) => {
+        //     if (event?.key) {
+        //         letters = letters + event.key;
+        //     }
+        //     if (letters === targetWords) {
+        //         // enable devtool
+        //         DisableDevtool.isSuspend = true;
+        //     }
+        //     if (letters.length >= targetWords.length) {
+        //         letters = "";
+        //     }
+        // };
+        // window.addEventListener("keyup", enableDevtool);
+        // return () => {
+        //     window.removeEventListener("keyup", enableDevtool);
+        // };
     }, []);
 
     return (

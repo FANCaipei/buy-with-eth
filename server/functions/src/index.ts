@@ -192,7 +192,7 @@ export const billPayCallback = onRequest({ cors: true }, async (request, respons
 
 // for api uni test
 
-// export const testScheduledGenerateInvoices = onRequest({ cors: true }, async (request, response) => {
+// export const testScheduledGenerateInvoices2 = onRequest({ cors: true }, async (request, response) => {
 //     try {
 //         await scheduledGenerateAllUserInvoices();
 //         response.send({ success: true });

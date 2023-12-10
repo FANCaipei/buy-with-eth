@@ -176,7 +176,7 @@ const PaymentPreview = () => {
                             label={<CustomFormLabel label="AppId" tip="You need this to init SDK" />}
                         >
                             {/* <Input placeholder="Some thing went wrong" style={{ width: "450px" }} disabled={true} /> */}
-                            <span>{state?.appId}</span>&nbsp;&nbsp;
+                            <span style={{ wordBreak: "break-all" }}>{state?.appId}</span>&nbsp;&nbsp;
                             <Tooltip title="copy app id">
                                 <CopyOutlined
                                     style={{ color: "rgba(0, 0, 0, 0.55)" }}

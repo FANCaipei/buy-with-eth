@@ -91,8 +91,8 @@ const getTransactionDetails = async (
     const result = {
         receiveAddress: "",
         value: -1,
-        currentPrice: -1,
-        valueInUSD: -1,
+        currentPrice: 0,
+        valueInUSD: 0,
         chainId: chainId,
     };
 
@@ -120,8 +120,8 @@ const getTransactionDetails = async (
             result.value = decodeResult.value;
         }
 
-        result.currentPrice = price ?? -1;
-        result.valueInUSD = price != null && price != 0 ? result.value * price : -1;
+        result.currentPrice = price ?? 0;
+        result.valueInUSD = price != null && price != 0 ? result.value * price : 0;
     } catch (error) {
         // do nothing
         logger.error(error);

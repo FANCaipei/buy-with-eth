@@ -50,15 +50,10 @@ window.addEventListener("message", (event) => {
     if (event.origin !== "https://app.ocelotpay.com"){
         return;
     }
-    if (event?.data?.type === "buy-with-crypto" && event?.data?.subType === "buy-with-crypto-request") {
-        switch (event?.data?.data?.method) {
-            case "request_payment":
-                // your code here
-                ...
-                return;
-            default:
-                return;
-        }
+    if (event?.data?.type === "buy-with-crypto" && event?.data?.subType === "buy-with-crypto-response") {
+        // you can access payment result from event.data.data
+        console.log(event?.data?.data);
+        // your code here
     }
 });
 ```

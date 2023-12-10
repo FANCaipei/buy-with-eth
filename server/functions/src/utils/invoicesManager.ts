@@ -93,26 +93,26 @@ const saveInvoicesPaiedState = async (
     return;
 };
 
-const calcBill = (paymentCount: number): number => {
-    const segement1 = 1000;
-    const segement2 = 10000;
-    const segement3 = 100000;
+const calcBill = (paymentValueSum: number): number => {
+    // const segement1 = 1000;
+    // const segement2 = 10000;
+    // const segement3 = 100000;
 
-    const fullTier1: number = 0.1 * segement1;
-    const fullTier2: number = 0.05 * (segement2 - segement1);
-    const fullTier3: number = 0.03 * (segement3 - segement2);
+    // const fullTier1: number = 0.1 * segement1;
+    // const fullTier2: number = 0.05 * (segement2 - segement1);
+    // const fullTier3: number = 0.03 * (segement3 - segement2);
 
-    if (paymentCount > segement3) {
-        return 0.02 * (paymentCount - segement3) + fullTier1 + fullTier2 + fullTier3;
-    }
-    if (paymentCount > segement2) {
-        return 0.03 * (paymentCount - segement2) + fullTier1 + fullTier2;
-    }
-    if (paymentCount > segement1) {
-        return 0.05 * (paymentCount - segement1) + fullTier1;
-    }
+    // if (paymentCount > segement3) {
+    //     return 0.02 * (paymentCount - segement3) + fullTier1 + fullTier2 + fullTier3;
+    // }
+    // if (paymentCount > segement2) {
+    //     return 0.03 * (paymentCount - segement2) + fullTier1 + fullTier2;
+    // }
+    // if (paymentCount > segement1) {
+    //     return 0.05 * (paymentCount - segement1) + fullTier1;
+    // }
 
-    return 0.1 * paymentCount;
+    return 0.002 * paymentValueSum;
 };
 
 const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
@@ -126,9 +126,16 @@ const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
     const qureyResult = await recordsRef
         .where("recordTimestamp", ">=", previewMonthStart)
         .where("recordTimestamp", "<=", previewMonthEnd)
-        .count()
+        // this will be supported after firebase-admin@12.0.0, but current firebase-function only support firebase-admin@^11.0.0
+        // .aggregate({
+        //     totalValueInUSD: AggregateField.sum("population"),
+        // })
         .get();
-    const previewMonthPaymentsCount: number = qureyResult.data().count;
+    let sum = 0;
+    qureyResult.docs.forEach(async docData => {
+        sum += docData.get("recordValueInUSD") ?? 0;
+    });
+    const previewMonthPaymentsCount: number = sum;
 
     // calculate bill
     const bill: number = calcBill(previewMonthPaymentsCount);
