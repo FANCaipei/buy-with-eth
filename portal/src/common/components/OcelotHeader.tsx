@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const OcelotHeader = () => {
     const navigate = useNavigate();
     const [isAtDocPage, setIsAtDocPage] = useState(true);
+    const [currentPath, setCurrentPath] = useState<string>();
     const location = useLocation();
     const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
@@ -18,6 +19,10 @@ const OcelotHeader = () => {
 
     const goDoc = useCallback(() => {
         navigate("/doc");
+    }, [navigate]);
+
+    const goGetStart = useCallback(() => {
+        navigate("/get-start");
     }, [navigate]);
 
     const goConsole = useCallback(() => {
@@ -34,11 +39,12 @@ const OcelotHeader = () => {
     const [dropdownMenus, setDropdownMenus] = useState<MenuProps["items"]>();
 
     useEffect(() => {
-        if (location.pathname?.includes("/doc")) {
+        if (location.pathname?.includes("/doc") || location.pathname?.includes("/get-start")) {
             setIsAtDocPage(true);
         } else {
             setIsAtDocPage(false);
         }
+        setCurrentPath(location.pathname);
     }, [location]);
 
     useEffect(() => {
@@ -163,7 +169,13 @@ const OcelotHeader = () => {
                         </Button>
                     </a>
                 ) : null}
-                {!isAtDocPage ? (
+                {!currentPath?.includes("get-start") ? (
+                    <Button type="text" size="large" onClick={goGetStart}>
+                        GetStart
+                    </Button>
+                ) : null}
+
+                {!currentPath?.includes("doc") ? (
                     <Button type="text" size="large" onClick={goDoc}>
                         Docs
                     </Button>
