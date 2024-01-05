@@ -151,13 +151,29 @@ const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
             paied: bill > 0 ? false : true,
         });
 
+    // get total unpaied bill
+    const invoicesRef = db.collection("invoices").doc(uid).collection("invoices");
+    // query & count payment record of preview month
+    const qResult = await invoicesRef
+        .where("paied", "!=", true)
+        .aggregate({
+            totalBill: AggregateField.sum("bill"),
+        })
+        .get();
+    const totalUnpaiedBill: number = qResult.data().totalBill;
+
     // send bill email, don't await
     if (bill > 0) {
         getAuth()
             .getUser(uid)
             .then(user => {
                 if (user.email) {
-                    sendBillingEmailWithTemplate(invoiceMonthStr, parseFloat(bill.toFixed(2)), user.email);
+                    sendBillingEmailWithTemplate(
+                        invoiceMonthStr,
+                        parseFloat(bill.toFixed(2)),
+                        user.email,
+                        totalUnpaiedBill
+                    );
                 }
             })
             .catch(err => {

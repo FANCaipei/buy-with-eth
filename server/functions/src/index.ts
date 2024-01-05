@@ -192,25 +192,25 @@ export const billPayCallback = onRequest({ cors: true }, async (request, respons
 
 // for api uni test
 
-export const testScheduledGenerateInvoices3 = onRequest({ cors: true }, async (request, response) => {
-    try {
-        await scheduledGenerateAllUserInvoices();
-        response.send({ success: true });
-    } catch (error) {
-        logger.error(error);
-        response.status(500).send(error);
-    }
-});
+// export const testScheduledGenerateInvoices3 = onRequest({ cors: true }, async (request, response) => {
+//     try {
+//         await scheduledGenerateAllUserInvoices();
+//         response.send({ success: true });
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });
 
-export const testScheduledSetUnpaiedState3 = onRequest({ cors: true }, async (request, response) => {
-    try {
-        const result = await scheduledSetUnpaiedState();
-        response.send({ success: true, updateUids: result });
-    } catch (error) {
-        logger.error(error);
-        response.status(500).send(error);
-    }
-});
+// export const testScheduledSetUnpaiedState3 = onRequest({ cors: true }, async (request, response) => {
+//     try {
+//         const result = await scheduledSetUnpaiedState();
+//         response.send({ success: true, updateUids: result });
+//     } catch (error) {
+//         logger.error(error);
+//         response.status(500).send(error);
+//     }
+// });
 
 // export const testSendBillEmail = onRequest({ cors: true }, async (request, response) => {
 //     try {

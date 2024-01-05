@@ -34,7 +34,8 @@ import Configs from "../config";
 const sendBillingEmailWithTemplate = async (
     billPeriod: string,
     billAmount: number,
-    targetEmailAddr: string
+    targetEmailAddr: string,
+    totalUnpaiedBill: number
 ): Promise<void> => {
     await axios.post<any>(
         "https://api.brevo.com/v3/smtp/email",
@@ -48,6 +49,7 @@ const sendBillingEmailWithTemplate = async (
             params: {
                 billPeriod: billPeriod,
                 billAmount: billAmount,
+                totalUnpaiedBill: totalUnpaiedBill,
                 consoleHref: Configs.BillConsoleHref,
             },
         },
