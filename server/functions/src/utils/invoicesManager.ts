@@ -2,7 +2,7 @@ import moment = require("moment");
 import * as logger from "firebase-functions/logger";
 import { getPaymentRecord } from "./firestoreUtils";
 import { decodeReceiptId } from "./general";
-import { getFirestore } from "firebase-admin/firestore";
+import { AggregateField, getFirestore } from "firebase-admin/firestore";
 import { sendBillingEmailWithTemplate } from "./mailManager";
 import { getAuth } from "firebase-admin/auth";
 import Configs from "../config";
@@ -126,19 +126,16 @@ const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
     const qureyResult = await recordsRef
         .where("recordTimestamp", ">=", previewMonthStart)
         .where("recordTimestamp", "<=", previewMonthEnd)
-        // this will be supported after firebase-admin@12.0.0, but current firebase-function only support firebase-admin@^11.0.0
-        // .aggregate({
-        //     totalValueInUSD: AggregateField.sum("population"),
-        // })
+        // this is supported after firebase-admin@12.0.0, so firebase-function must >=4.6.0
+        .aggregate({
+            totalValueInUSD: AggregateField.sum("recordValueInUSD"),
+        })
         .get();
-    let sum = 0;
-    qureyResult.docs.forEach(async docData => {
-        sum += docData.get("recordValueInUSD") ?? 0;
-    });
-    const previewMonthPaymentsCount: number = sum;
+
+    const previewMonthReceiveCount: number = qureyResult.data().totalValueInUSD;
 
     // calculate bill
-    const bill: number = calcBill(previewMonthPaymentsCount);
+    const bill: number = calcBill(previewMonthReceiveCount);
 
     // save invoice
     // create new doc incase it not created
@@ -149,7 +146,7 @@ const generatePreviewMonthInvoice = async (uid: string): Promise<void> => {
         .collection("invoices")
         .doc(invoiceMonthStr)
         .set({
-            paymentCount: previewMonthPaymentsCount,
+            totalReceivedInUSD: previewMonthReceiveCount,
             bill: bill,
             paied: bill > 0 ? false : true,
         });
