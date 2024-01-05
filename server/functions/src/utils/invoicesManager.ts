@@ -182,8 +182,14 @@ const setIfNeedPayBill = async (uid: string): Promise<void> => {
     const db = getFirestore();
     const invoicesRef = db.collection("invoices").doc(uid).collection("invoices");
     // query & count payment record of preview month
-    const qureyResult = await invoicesRef.where("paied", "!=", true).count().get();
-    const hasUnpaied: boolean = qureyResult.data().count > 0;
+    const qureyResult = await invoicesRef
+        .where("paied", "!=", true)
+        .aggregate({
+            totalBill: AggregateField.sum("bill"),
+        })
+        .get();
+    // set unpaied only if unpaied bill > $1
+    const hasUnpaied: boolean = qureyResult.data().totalBill > 1;
     await db.collection("userAppConfigs").doc(`${uid}`).set(
         {
             hasUnpaiedBill: hasUnpaied,

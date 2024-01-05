@@ -202,15 +202,15 @@ export const testScheduledGenerateInvoices3 = onRequest({ cors: true }, async (r
     }
 });
 
-// export const testScheduledSetUnpaiedState = onRequest({ cors: true }, async (request, response) => {
-//     try {
-//         const result = await scheduledSetUnpaiedState();
-//         response.send({ success: true, updateUids: result });
-//     } catch (error) {
-//         logger.error(error);
-//         response.status(500).send(error);
-//     }
-// });
+export const testScheduledSetUnpaiedState3 = onRequest({ cors: true }, async (request, response) => {
+    try {
+        const result = await scheduledSetUnpaiedState();
+        response.send({ success: true, updateUids: result });
+    } catch (error) {
+        logger.error(error);
+        response.status(500).send(error);
+    }
+});
 
 // export const testSendBillEmail = onRequest({ cors: true }, async (request, response) => {
 //     try {
