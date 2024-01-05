@@ -18,7 +18,7 @@ import { Content, Header } from "antd/es/layout/layout";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useFirebaseAuth from "../../common/zustand/useFirebaseAuth";
 import FirebaseManager from "../../common/firebase/FirebaseManager";
-import { collection, getCountFromServer, query, where } from "firebase/firestore";
+import { collection, getAggregateFromServer, query, sum, where } from "firebase/firestore";
 import OcelotLogo from "../../assets/imgs/logos/logo.png";
 
 const { confirm } = Modal;
@@ -111,8 +111,10 @@ const DashboardPage = () => {
                 collection(FirebaseManager.firestore, `invoices/${user.uid}/invoices`),
                 where("paied", "!=", true)
             );
-            const snapshot = await getCountFromServer(q);
-            if (snapshot?.data().count) {
+            const snapshot = await getAggregateFromServer(q, {
+                totalBill: sum("bill"),
+            });
+            if (snapshot?.data().totalBill > 1) {
                 // show confirm modal
                 confirm({
                     title: "Unpaid Bills",

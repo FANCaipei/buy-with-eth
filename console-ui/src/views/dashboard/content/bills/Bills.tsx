@@ -63,8 +63,8 @@ const Bills = () => {
             },
         },
         {
-            title: "Total Successful Payment",
-            dataIndex: "paymentCount",
+            title: "Total Received In USD",
+            dataIndex: "totalReceivedInUSD",
         },
         {
             title: "Bill Paied",
@@ -94,8 +94,8 @@ const Bills = () => {
             },
         },
         {
-            title: "Total Successful Payment",
-            dataIndex: "paymentCount",
+            title: "Total Received In USD",
+            dataIndex: "totalReceivedInUSD",
         },
         {
             title: "Bill",
@@ -246,6 +246,15 @@ const Bills = () => {
         [getUnpaidBills, getHistoryBills, messageApi, user?.uid]
     );
 
+    const getPayTipText = useCallback(() => {
+        const unpaied: number = totalUnpaid ?? 0;
+        if (unpaied > 1) {
+            return "Bills over $1 must be paied to avoid project disablement";
+        } else {
+            return "No payment required for bills under $1";
+        }
+    }, [totalUnpaid]);
+
     useEffect(() => {
         getUnpaidBills();
     }, [getUnpaidBills]);
@@ -325,11 +334,18 @@ const Bills = () => {
                                 <span>${totalUnpaid}</span>
                             </div>
 
+                            <div
+                                className="tip"
+                                style={{ color: (totalUnpaid ?? 0) >= 1 ? "#ff4d4f" : "rgb(71, 98, 130)" }}
+                            >
+                                {getPayTipText()}
+                            </div>
                             <Button
                                 type="primary"
                                 onClick={() => {
                                     payBills(unpaidBills);
                                 }}
+                                disabled={(totalUnpaid ?? 0) < 1}
                             >
                                 Pay Bills
                             </Button>
@@ -380,10 +396,18 @@ const StyledContainer = styled.div.attrs({ className: "bills-content" })`
         .unpaid-table-footer {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            /* justify-content: space-between; */
 
             .text {
                 font-size: 16px;
+                flex-grow: 1;
+            }
+
+            .tip {
+                flex-shrink: 0;
+                font-size: 12px;
+                margin: 0 8px;
+                color: rgb(71, 98, 130);
             }
         }
     }
