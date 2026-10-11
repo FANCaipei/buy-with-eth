@@ -215,30 +215,79 @@ const StyledContainer = styled.div.attrs({ className: "ocelot-header" })`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 52px;
 
     .logo-block {
         cursor: pointer;
         display: flex;
         align-items: center;
-        .logo {
-            width: 32px;
-            height: 32px;
-            margin-right: 10px;
+        transition: opacity var(--apple-duration-fast) var(--apple-ease);
+
+        &:hover {
+            opacity: 0.7;
         }
+
+        .logo {
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+            border-radius: 6px;
+        }
+
         .text {
-            color: rgb(0, 158, 255);
-            font-size: 24px;
-            font-weight: bold;
+            color: var(--apple-text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
     }
 
     .nav-items {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
         @media screen and (max-width: 800px) {
             display: none;
         }
 
-        button {
-            margin-left: 10px;
+        a {
+            text-decoration: none;
+        }
+
+        .ant-btn-text {
+            color: var(--apple-text-secondary) !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            border-radius: var(--apple-radius-sm) !important;
+            padding: 6px 14px !important;
+            transition: all var(--apple-duration-fast) var(--apple-ease) !important;
+
+            &:hover {
+                color: var(--apple-text-primary) !important;
+                background: var(--apple-gray-200) !important;
+            }
+        }
+
+        .ant-btn-primary {
+            background: var(--apple-blue) !important;
+            border: none !important;
+            border-radius: 980px !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 6px 18px !important;
+            height: 32px !important;
+            transition: all var(--apple-duration-fast) var(--apple-ease) !important;
+
+            &:hover {
+                background: var(--apple-blue-hover) !important;
+                transform: scale(1.02);
+            }
+
+            &:active {
+                background: var(--apple-blue-active) !important;
+                transform: scale(0.98);
+            }
         }
     }
 
@@ -246,6 +295,20 @@ const StyledContainer = styled.div.attrs({ className: "ocelot-header" })`
         display: none;
         @media screen and (max-width: 800px) {
             display: block;
+        }
+
+        .anticon {
+            font-size: 18px;
+            color: var(--apple-text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all var(--apple-duration-fast) var(--apple-ease);
+
+            &:hover {
+                background: var(--apple-gray-200);
+                color: var(--apple-text-primary);
+            }
         }
     }
 `;

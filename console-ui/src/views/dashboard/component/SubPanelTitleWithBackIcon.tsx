@@ -28,11 +28,26 @@ const StyledContainer = styled.div.attrs({ className: "sub-title-container" })`
     display: flex;
     align-items: center;
     font-size: 28px;
-    color: rgb(27, 58, 87);
+    font-weight: 600;
+    color: var(--apple-text-primary);
+    letter-spacing: -0.03em;
 
     .back-icon {
-        font-size: 20px;
-        margin-right: 10px;
+        font-size: 18px;
+        margin-right: 12px;
+        color: var(--apple-blue);
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all var(--apple-duration-fast) var(--apple-ease);
+
+        &:hover {
+            background: var(--apple-gray-200);
+        }
     }
 
     .title-tip {
@@ -40,7 +55,12 @@ const StyledContainer = styled.div.attrs({ className: "sub-title-container" })`
         height: 10px;
         margin-left: 8px;
         cursor: pointer;
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--apple-text-tertiary);
+        transition: color var(--apple-duration-fast) var(--apple-ease);
+
+        &:hover {
+            color: var(--apple-blue);
+        }
     }
 `;
 

@@ -67,15 +67,21 @@ const LogoUploader = ({
 };
 
 const StyledContainer = styled.div.attrs({ className: "logo-uploader-container" })`
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--apple-radius-md);
     position: relative;
-    /* background-color: rgba(0, 0, 0, 0.12); */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border: 2px dashed var(--apple-border);
+    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+    &:hover {
+        border-color: var(--apple-blue);
+        background-color: rgba(0, 113, 227, 0.04) !important;
+    }
 
     .file-input {
         position: absolute;
@@ -91,15 +97,19 @@ const StyledContainer = styled.div.attrs({ className: "logo-uploader-container" 
 
     .add-file {
         font-size: 20px;
-        color: rgb(94, 94, 94);
+        color: var(--apple-text-secondary);
         cursor: pointer;
+        transition: color var(--apple-duration-fast) var(--apple-ease);
+    }
+
+    &:hover .add-file {
+        color: var(--apple-blue);
     }
 
     .current-logo {
-        width: 50px;
-        /* height: 50px; */
-        /* border-radius: 50%; */
+        width: 56px;
         border: none;
+        border-radius: var(--apple-radius-md);
         position: absolute;
         left: 50%;
         top: 50%;

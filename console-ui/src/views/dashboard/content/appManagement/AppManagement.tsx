@@ -72,37 +72,52 @@ const AppManagement = () => {
 };
 
 const StyledContainer = styled.div.attrs({ className: "app-management" })`
+    animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
+
     .content {
-        margin-top: 40px;
+        margin-top: 32px;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
+
         .add-app-card {
             width: 300px;
             height: 210px;
-            background-color: #fff;
+            background: var(--apple-surface);
             padding: 20px;
             margin-top: 20px;
             margin-right: 20px;
-            border-radius: 8px;
-            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+            border-radius: var(--apple-radius-lg);
+            border: 2px dashed var(--apple-border);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgb(26, 115, 232);
+            color: var(--apple-blue);
             cursor: pointer;
+            transition: all var(--apple-duration-normal) var(--apple-ease);
 
             &:hover {
-                background-color: rgb(245, 245, 245);
+                border-color: var(--apple-blue);
+                background: rgba(0, 113, 227, 0.04);
+                transform: translateY(-4px);
+                box-shadow: var(--apple-shadow-md);
             }
 
             .add-icon {
-                font-size: 36px;
+                font-size: 32px;
+                transition: transform var(--apple-duration-normal) var(--apple-ease-spring);
             }
+
+            &:hover .add-icon {
+                transform: scale(1.15);
+            }
+
             .text {
                 font-size: 14px;
+                font-weight: 600;
                 margin-top: 10px;
+                letter-spacing: -0.01em;
             }
         }
         .card-container {

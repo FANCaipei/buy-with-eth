@@ -16,9 +16,18 @@ const CustomFormLabel = ({ label, tip }: { label: string; tip?: string }) => {
 };
 
 const StyledContainer = styled.div.attrs({ className: "custom-form-label-container" })`
+    display: inline-flex;
+    align-items: center;
+
     .label-tip {
-        margin-left: 8px;
+        margin-left: 6px;
         cursor: pointer;
+        color: var(--apple-text-tertiary);
+        transition: color var(--apple-duration-fast) var(--apple-ease);
+
+        &:hover {
+            color: var(--apple-blue);
+        }
     }
 `;
 

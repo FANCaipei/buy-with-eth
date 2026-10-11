@@ -32,20 +32,36 @@ const PanelItemCard = ({
 
 const StyledContainer = styled.div`
     height: 400px;
-    padding: 20px;
-    background-color: #fff;
-    border: solid 1px rgb(218, 220, 224);
-    border-radius: 8px;
+    padding: 24px;
+    background: var(--apple-surface);
+    border: 1px solid var(--apple-border-light);
+    border-radius: var(--apple-radius-lg);
     margin: 8px;
+    box-shadow: var(--apple-shadow-sm);
+    transition: all var(--apple-duration-normal) var(--apple-ease);
+
+    &:hover {
+        box-shadow: var(--apple-shadow-md);
+    }
+
     .title {
         font-size: 13px;
-        color: rgba(0, 0, 0, 0.87);
-        margin-bottom: 20px;
+        font-weight: 600;
+        color: var(--apple-text-secondary);
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
+        letter-spacing: -0.01em;
+
         .tooltip {
-            margin-left: 8px;
+            margin-left: 6px;
             cursor: pointer;
+            color: var(--apple-text-tertiary);
+            transition: color var(--apple-duration-fast) var(--apple-ease);
+
+            &:hover {
+                color: var(--apple-blue);
+            }
         }
     }
     .content {

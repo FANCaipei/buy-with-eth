@@ -443,6 +443,8 @@ const BusinessOverview = () => {
 
 const StyledContainer = styled.div.attrs({ className: "business-overview" })`
     height: 100%;
+    animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
+
     .no-app {
         margin-top: 100px;
     }
@@ -453,14 +455,48 @@ const StyledContainer = styled.div.attrs({ className: "business-overview" })`
             align-items: center;
             justify-content: flex-end;
             margin-right: 8px;
+            margin-top: 16px;
 
             .project-select {
-                min-width: 120px;
-                margin-right: 10px;
+                min-width: 140px;
+                margin-right: 12px;
+
+                .ant-select-selector {
+                    border-radius: var(--apple-radius-sm) !important;
+                    height: 36px !important;
+                    border-color: var(--apple-border) !important;
+                    transition: all var(--apple-duration-fast) var(--apple-ease) !important;
+                    font-weight: 500;
+                }
+
+                .ant-select-selector:hover {
+                    border-color: var(--apple-blue) !important;
+                }
+
+                .ant-select-selector.ant-select-focused {
+                    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12) !important;
+                    border-color: var(--apple-blue) !important;
+                }
+            }
+
+            .ant-picker {
+                border-radius: var(--apple-radius-sm) !important;
+                border-color: var(--apple-border) !important;
+                height: 36px !important;
+                transition: all var(--apple-duration-fast) var(--apple-ease) !important;
+
+                &:hover {
+                    border-color: var(--apple-blue) !important;
+                }
+
+                &.ant-picker-focused {
+                    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12) !important;
+                    border-color: var(--apple-blue) !important;
+                }
             }
         }
         .charts-panel {
-            margin-top: 20px;
+            margin-top: 16px;
             padding-bottom: 20px;
             width: 100%;
 

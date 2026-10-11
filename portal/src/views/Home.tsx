@@ -141,29 +141,31 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
     .home-content {
         width: 100%;
         margin: 0 auto;
-        background-color: rgb(248, 249, 250);
+        background-color: var(--apple-surface);
 
         .home-title {
             font-size: 48px;
+            font-weight: 600;
             width: 100%;
-            color: rgba(0, 0, 0, 0.6);
+            color: var(--apple-text-primary);
             text-align: center;
             padding: 50px 0 20px;
+            letter-spacing: -0.03em;
         }
 
         .home-block {
             min-height: 45vh;
             background-size: cover;
             background-repeat: no-repeat;
-            margin-top: 48px;
+            margin-top: 0;
 
             .block-content {
                 min-height: 45vh;
                 height: 100%;
                 max-width: 1200px;
-                /* width: 100%; */
                 width: 100vw;
                 margin: 0 auto;
+                padding: 0 24px;
             }
         }
 
@@ -173,183 +175,275 @@ const StyledContainer = styled.div.attrs({ className: "home" })`
             align-items: center;
             flex-direction: column;
             justify-content: center;
+            animation: apple-fade-in 0.8s var(--apple-ease);
 
-            .title {
-                font-size: 48px;
-                font-weight: bold;
-                color: rgb(0, 158, 255);
-            }
             .slogan {
-                font-size: 32px;
-                font-weight: bold;
-                margin-top: 40px;
+                font-size: 48px;
+                font-weight: 700;
+                margin-top: 0;
                 text-align: center;
-                /* color: rgb(22, 116, 174); */
                 color: #fff;
+                letter-spacing: -0.03em;
+                line-height: 1.15;
+                max-width: 800px;
+
+                @media screen and (max-width: 800px) {
+                    font-size: 32px;
+                    padding: 0 20px;
+                }
             }
+
             .sub-slogan {
-                font-size: 20px;
-                font-weight: bold;
-                margin-top: 20px;
-                /* color: rgba(0, 0, 0, 0.88); */
+                font-size: 21px;
+                font-weight: 400;
+                margin-top: 16px;
                 color: rgba(255, 255, 255, 0.8);
                 text-align: center;
+                letter-spacing: -0.01em;
+                line-height: 1.4;
+
+                @media screen and (max-width: 800px) {
+                    font-size: 17px;
+                    padding: 0 20px;
+                }
             }
         }
+
         .feature-small-title {
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 17px;
+            font-weight: 600;
             text-align: center;
-            color: rgb(255, 177, 22);
-            padding: 48px 0 0px;
+            color: var(--apple-blue);
+            padding: 80px 0 8px;
+            letter-spacing: -0.01em;
         }
+
         .feature-big-title {
-            font-size: 36px;
-            font-weight: bold;
+            font-size: 48px;
+            font-weight: 700;
             text-align: center;
-            color: rgb(11, 22, 63);
+            color: var(--apple-text-primary);
             padding-bottom: 48px;
+            letter-spacing: -0.03em;
+
+            @media screen and (max-width: 800px) {
+                font-size: 32px;
+            }
         }
+
         .feature-block {
             width: 100%;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            /* grid-template-rows: repeat(2, 1fr); */
             column-gap: 20px;
             row-gap: 20px;
-            padding-bottom: 48px;
+            padding-bottom: 80px;
 
             @media screen and (max-width: 800px) {
                 grid-template-columns: 1fr;
+                padding: 0 20px 60px;
             }
 
             .feature-item {
-                padding: 48px;
-                background-color: #fff;
-                border-radius: 16px;
-                box-shadow: rgba(12, 8, 0, 0.3) 0px 2px 8px -1px;
+                padding: 40px;
+                background-color: var(--apple-gray-200);
+                border-radius: var(--apple-radius-lg);
+                transition: all var(--apple-duration-normal) var(--apple-ease);
+
+                &:hover {
+                    transform: translateY(-4px);
+                    box-shadow: var(--apple-shadow-md);
+                    background-color: var(--apple-surface);
+                }
 
                 @media screen and (max-width: 800px) {
-                    padding: 20px;
-                    margin: 0 20px;
+                    padding: 28px;
                 }
 
                 .icon-wrapper {
-                    width: 55px;
-                    height: 55px;
-                    border-radius: 50%;
-                    display: block;
-                    margin-bottom: 30px;
+                    width: 48px;
+                    height: 48px;
+                    border-radius: var(--apple-radius-md);
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    margin-bottom: 20px;
+                    transition: transform var(--apple-duration-normal) var(--apple-ease-spring);
 
                     .icon {
-                        width: 30px;
+                        width: 24px;
                     }
                 }
-                .title {
-                    font-size: 20px;
-                    font-weight: bold;
-                    color: #000;
-                    margin-bottom: 16px;
+
+                &:hover .icon-wrapper {
+                    transform: scale(1.1);
                 }
+
+                .title {
+                    font-size: 19px;
+                    font-weight: 600;
+                    color: var(--apple-text-primary);
+                    margin-bottom: 8px;
+                    letter-spacing: -0.02em;
+                    line-height: 1.3;
+                }
+
                 .desc {
-                    font-size: 16px;
-                    line-height: 24px;
-                    color: rgb(87, 87, 87);
+                    font-size: 15px;
+                    line-height: 1.5;
+                    color: var(--apple-text-secondary);
                 }
             }
         }
+
         .price-block {
             color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding-bottom: 48px;
+            padding: 80px 24px;
 
             .price-home-title {
-                font-size: 20px;
-                font-weight: bold;
+                font-size: 17px;
+                font-weight: 600;
                 width: 100%;
                 text-align: center;
-                color: rgb(255, 107, 107);
-                padding: 48px 0 0px;
+                color: var(--apple-blue);
+                padding: 0 0 8px;
+                letter-spacing: -0.01em;
             }
+
             .title {
-                font-size: 36px;
-                font-weight: bold;
+                font-size: 48px;
+                font-weight: 700;
                 text-align: center;
-            }
-            .desc {
-                margin-top: 60px;
-                font-size: 20px;
-                line-height: 48px;
-            }
-        }
-        .support-block {
-            .logo-containers {
-                width: 100%;
-                filter: grayscale(100%);
-                padding: 40px;
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                grid-column-gap: 20px;
-                justify-items: center;
-                align-items: center;
+                letter-spacing: -0.03em;
+                line-height: 1.15;
+                max-width: 700px;
 
                 @media screen and (max-width: 800px) {
-                    grid-template-columns: 1fr;
+                    font-size: 32px;
+                }
+            }
+
+            .desc {
+                margin-top: 48px;
+                font-size: 19px;
+                line-height: 1.6;
+                font-weight: 400;
+
+                @media screen and (max-width: 800px) {
+                    font-size: 17px;
                 }
 
-                .logo-item {
-                    height: 40px;
+                ul {
+                    list-style: none;
+                    padding: 0;
 
-                    @media screen and (max-width: 800px) {
-                        & + .logo-item {
-                            margin-top: 20px;
+                    li {
+                        padding: 8px 0;
+                        position: relative;
+                        padding-left: 24px;
+
+                        &::before {
+                            content: "";
+                            position: absolute;
+                            left: 0;
+                            top: 16px;
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 50%;
+                            background: rgba(255, 255, 255, 0.5);
                         }
                     }
                 }
             }
         }
+
+        .support-block {
+            padding: 80px 0;
+
+            .logo-containers {
+                width: 100%;
+                max-width: 800px;
+                margin: 0 auto;
+                filter: grayscale(100%);
+                opacity: 0.5;
+                padding: 40px 24px;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-column-gap: 40px;
+                justify-items: center;
+                align-items: center;
+                transition: all var(--apple-duration-normal) var(--apple-ease);
+
+                &:hover {
+                    opacity: 0.8;
+                }
+
+                @media screen and (max-width: 800px) {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 24px;
+                }
+
+                .logo-item {
+                    height: 36px;
+                }
+            }
+        }
+
         .start-block {
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             color: #fff;
+            padding: 80px 24px;
 
             .main-desc {
-                margin-top: 48px;
-                font-size: 24px;
-                font-weight: bold;
+                font-size: 32px;
+                font-weight: 700;
                 text-align: center;
+                letter-spacing: -0.03em;
+                line-height: 1.2;
+                max-width: 700px;
+
+                @media screen and (max-width: 800px) {
+                    font-size: 24px;
+                }
             }
+
             .sub-desc {
-                margin-top: 32px;
-                font-size: 16px;
+                margin-top: 12px;
+                font-size: 19px;
+                font-weight: 400;
+                color: rgba(255, 255, 255, 0.8);
             }
+
             .start-btn {
-                margin-top: 80px;
-                font-size: 18px;
-                font-weight: bold;
+                margin-top: 48px;
+                font-size: 17px;
+                font-weight: 500;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border-radius: 4px;
-                padding: 20px 60px;
-                background-color: rgb(140, 206, 134);
-                border-bottom: 2px solid #6abf62;
-                border-right: 2px solid #6abf62;
-                transition: all 0.3s ease-in-out;
+                border-radius: 980px;
+                padding: 16px 40px;
+                background-color: var(--apple-surface);
+                color: var(--apple-blue);
+                border: none;
+                transition: all var(--apple-duration-normal) var(--apple-ease);
+                letter-spacing: -0.01em;
 
                 &:hover {
-                    background-color: #73b0f4;
-                    border-right: 2px solid #4495f0;
-                    border-bottom: 2px solid #4495f0;
+                    transform: scale(1.04);
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+                }
+
+                &:active {
+                    transform: scale(0.98);
                 }
             }
         }

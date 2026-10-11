@@ -73,39 +73,92 @@ const ResultPage = () => {
 };
 
 const StyledContainer = styled.div.attrs({ className: "result-page" })`
-    padding: 20px;
+    padding: 24px 28px;
+    animation: apple-fade-in var(--apple-duration-slow) var(--apple-ease);
+
     .head {
         font-size: 20px;
+
+        .back-icon {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all var(--apple-duration-fast) var(--apple-ease);
+            color: var(--apple-text-secondary);
+
+            &:hover {
+                background: var(--apple-gray-200);
+                color: var(--apple-text-primary);
+            }
+
+            &:active {
+                transform: scale(0.92);
+            }
+        }
     }
+
     .result-img {
-        padding: 80px 0 40px;
+        padding: 60px 0 24px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 96px;
+        font-size: 80px;
+        animation: apple-scale-in var(--apple-duration-slow) var(--apple-ease-spring);
     }
+
     .title {
         font-size: 24px;
-        font-weight: 500;
+        font-weight: 600;
         text-align: center;
+        letter-spacing: -0.02em;
     }
+
     .desc {
-        margin-top: 10px;
-        font-size: 16px;
+        margin-top: 8px;
+        font-size: 15px;
         text-align: center;
-        color: rgba(0, 0, 0, 0.45);
+        color: var(--apple-text-secondary);
+        line-height: 1.5;
     }
+
     .receipt-container {
-        margin-top: 10px;
+        margin-top: 24px;
         position: relative;
+
+        .ant-input {
+            border-radius: var(--apple-radius-sm) !important;
+            background: var(--apple-gray-200) !important;
+            border: 1px solid var(--apple-border-light) !important;
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, monospace !important;
+            font-size: 12px !important;
+            color: var(--apple-text-secondary) !important;
+            resize: none;
+
+            &:focus {
+                border-color: var(--apple-blue) !important;
+                box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15) !important;
+            }
+        }
 
         .copy-icon {
             position: absolute;
-            right: 10px;
-            bottom: 10px;
+            right: 12px;
+            bottom: 12px;
             font-size: 16px;
-            color: rgba(0, 0, 0, 0.55);
+            color: var(--apple-text-tertiary);
             cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all var(--apple-duration-fast) var(--apple-ease);
+
+            &:hover {
+                background: var(--apple-gray-300);
+                color: var(--apple-blue);
+            }
+
+            &:active {
+                transform: scale(0.9);
+            }
         }
     }
 `;

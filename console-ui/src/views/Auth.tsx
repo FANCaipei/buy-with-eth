@@ -221,9 +221,8 @@ const AuthPage = () => {
 const StyledContainer = styled.div.attrs({ className: "auth-page" })`
     height: 100%;
     width: 100%;
-    background-color: rgb(246, 247, 249);
+    background-color: var(--apple-gray-bg);
     background-size: cover;
-    /* background-position: 0%, center; */
     background-repeat: no-repeat;
 
     .container {
@@ -234,62 +233,134 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
+        animation: apple-fade-in var(--apple-duration-slow) var(--apple-ease);
 
         .title {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 60px;
-            // font-style: italic;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 48px;
             text-align: center;
-            color: rgb(17, 137, 255);
+            width: 100%;
+            color: var(--apple-text-primary);
+            letter-spacing: -0.03em;
         }
         .auth-card {
             margin-top: -8vh;
-            width: 400px;
-            padding: 20px;
-            border-radius: 12px;
-            background-color: #fff;
-            box-shadow: rgba(60, 66, 87, 0.2) 0px 8px 24px;
+            width: 100%;
+            padding: 32px;
+            border-radius: var(--apple-radius-lg);
+            background: var(--apple-surface);
+            box-shadow: var(--apple-shadow-lg);
+            border: 1px solid var(--apple-border-light);
+            transition: box-shadow var(--apple-duration-normal) var(--apple-ease);
+
+            &:hover {
+                box-shadow: var(--apple-shadow-xl);
+            }
 
             .forget-pwd-title-block {
                 position: relative;
                 display: flex;
                 align-items: center;
                 flex-direction: column;
-                margin-bottom: 30px;
+                margin-bottom: 28px;
                 text-align: center;
 
                 .back-icon {
-                    font-size: 20px;
+                    font-size: 18px;
                     cursor: pointer;
                     position: absolute;
                     left: 0;
                     top: 4px;
+                    color: var(--apple-blue);
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        background: var(--apple-gray-200);
+                    }
                 }
                 .title-text {
-                    font-size: 24px;
-                    color: rgba(0, 0, 0, 0.9);
+                    font-size: 22px;
+                    font-weight: 600;
+                    color: var(--apple-text-primary);
+                    letter-spacing: -0.02em;
                 }
                 .sub-text {
-                    margin-top: 20px;
+                    margin-top: 12px;
                     font-size: 14px;
-                    line-height: 18px;
-                    color: rgba(0, 0, 0, 0.6);
+                    line-height: 20px;
+                    color: var(--apple-text-secondary);
                 }
             }
 
             .ant-form {
                 .ant-form-item {
-                    label {
-                        font-size: 14px;
-                        font-weight: bold;
+                    margin-bottom: 20px;
+
+                    .ant-form-item-label > label {
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: var(--apple-text-secondary);
+                        letter-spacing: -0.01em;
+                    }
+                }
+
+                .ant-input {
+                    height: 44px;
+                    border-radius: var(--apple-radius-sm);
+                    border: 1px solid var(--apple-border);
+                    font-size: 15px;
+                    color: var(--apple-text-primary);
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+                    background: var(--apple-gray-100);
+
+                    &::placeholder {
+                        color: var(--apple-text-tertiary);
+                    }
+
+                    &:hover {
+                        border-color: var(--apple-gray-500);
+                    }
+
+                    &:focus {
+                        border-color: var(--apple-blue);
+                        box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+                        background: var(--apple-surface);
                     }
                 }
             }
 
             .form-btn {
                 width: 100%;
-                margin-top: 40px;
+                height: 44px;
+                margin-top: 28px;
+                border-radius: 980px;
+                font-size: 15px;
+                font-weight: 600;
+                background: var(--apple-blue);
+                border-color: var(--apple-blue);
+                letter-spacing: -0.01em;
+                transition: all var(--apple-duration-fast) var(--apple-ease);
+                box-shadow: 0 1px 3px rgba(0, 113, 227, 0.3);
+
+                &:hover {
+                    background: var(--apple-blue-hover);
+                    border-color: var(--apple-blue-hover);
+                    transform: translateY(-1px);
+                    box-shadow: 0 2px 8px rgba(0, 113, 227, 0.35);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                    background: var(--apple-blue-active);
+                    border-color: var(--apple-blue-active);
+                }
             }
         }
         .follow-row {
@@ -303,19 +374,31 @@ const StyledContainer = styled.div.attrs({ className: "auth-page" })`
 
             .toggle-mode-container {
                 .desc {
-                    color: rgba(0, 0, 0, 0.25);
+                    color: var(--apple-text-tertiary);
                 }
                 .toogle-btn {
-                    margin-left: 8px;
+                    margin-left: 4px;
                     cursor: pointer;
-                    color: rgb(84, 105, 212);
+                    color: var(--apple-blue);
+                    font-weight: 500;
+                    transition: color var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        color: var(--apple-blue-hover);
+                    }
                 }
             }
 
             .forget-password {
                 text-align: right;
                 cursor: pointer;
-                color: rgb(84, 105, 212);
+                color: var(--apple-blue);
+                font-weight: 500;
+                transition: color var(--apple-duration-fast) var(--apple-ease);
+
+                &:hover {
+                    color: var(--apple-blue-hover);
+                }
             }
         }
     }

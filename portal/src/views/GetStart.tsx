@@ -78,11 +78,24 @@ const GetStart = () => {
 const StyledContainer = styled.div.attrs({ className: "markdown-doc" })`
     height: 100%;
     position: relative;
+    animation: apple-fade-in var(--apple-duration-slow) var(--apple-ease);
 
     .nav-toggle-icon {
         position: fixed;
-        left: 10px;
-        top: 90px;
+        left: 16px;
+        top: 72px;
+        font-size: 18px;
+        color: var(--apple-text-secondary);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: var(--apple-radius-sm);
+        transition: all var(--apple-duration-fast) var(--apple-ease);
+        z-index: 10;
+
+        &:hover {
+            background: var(--apple-gray-200);
+            color: var(--apple-text-primary);
+        }
 
         @media screen and (min-width: 800px) {
             display: none;
@@ -96,52 +109,100 @@ const StyledContainer = styled.div.attrs({ className: "markdown-doc" })`
         left: 0;
         top: 0;
         bottom: 0;
-        padding-top: 80px;
-        background-color: #fff;
+        padding-top: 72px;
+        background-color: var(--apple-surface);
+        border-right: 1px solid var(--apple-border-light);
 
-        width: 300px !important;
-        min-width: 300px !important;
-        max-width: 300px !important;
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 280px !important;
 
         &.inVisible {
             display: none;
         }
+
+        &::-webkit-scrollbar {
+            width: 0;
+        }
     }
 
     .markdown-content {
-        padding: 0 40px 40px;
-        margin-left: 300px;
+        padding: 24px 48px 48px;
+        margin-left: 280px;
         height: 100%;
+        overflow-y: auto;
+        max-width: 800px;
 
         @media screen and (max-width: 800px) {
             margin-left: 0;
+            padding: 24px 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--apple-text-primary);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-top: 2em;
+        }
+
+        h1 { font-size: 32px; }
+        h2 { font-size: 24px; }
+        h3 { font-size: 20px; }
+
+        p {
+            color: var(--apple-text-secondary);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        a {
+            color: var(--apple-blue);
+            text-decoration: none;
+            transition: color var(--apple-duration-fast) var(--apple-ease);
+
+            &:hover {
+                color: var(--apple-blue-hover);
+                text-decoration: underline;
+            }
         }
     }
 
     img {
         width: 100%;
         max-width: 400px;
+        border-radius: var(--apple-radius-md);
     }
 
     pre {
-        background: #f7f7f7;
-        padding: 15px;
-        border-radius: 12px;
+        background: var(--apple-gray-200);
+        padding: 20px;
+        border-radius: var(--apple-radius-md);
+        border: 1px solid var(--apple-border-light);
+        overflow-x: auto;
     }
+
     code {
         display: inline-block;
         width: 100%;
-        font-family: MyFancyCustomFont, monospace;
-        font-size: inherit;
+        font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, monospace;
+        font-size: 14px;
         word-wrap: break-word;
         box-decoration-break: clone;
-        padding: 0.1rem 0.3rem 0.2rem;
-        border-radius: 0.2rem;
+        padding: 0;
+        border-radius: 0;
         white-space: pre;
-        overflow-x: scroll;
+        overflow-x: auto;
+        color: var(--apple-text-primary);
     }
 
-    .m-nav {
+    p code, li code {
+        display: inline;
+        width: auto;
+        background: var(--apple-gray-200);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: var(--apple-blue);
     }
 `;
 

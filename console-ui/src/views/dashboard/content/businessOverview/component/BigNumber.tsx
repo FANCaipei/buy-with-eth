@@ -19,18 +19,21 @@ const StyledContainer = styled.div`
     justify-content: center;
 
     .revenue {
-        font-size: 64px;
-        color: rgba(0, 0, 0, 0.87);
+        font-size: 56px;
+        font-weight: 700;
+        color: var(--apple-text-primary);
+        letter-spacing: -0.04em;
     }
     .count {
-        font-size: 16px;
-        margin-top: 80px;
+        font-size: 14px;
+        margin-top: 60px;
 
         .label {
-            color: rgb(95, 99, 104);
+            color: var(--apple-text-secondary);
         }
         .value {
-            color: rgba(0, 0, 0, 0.87);
+            color: var(--apple-text-primary);
+            font-weight: 600;
         }
     }
 `;

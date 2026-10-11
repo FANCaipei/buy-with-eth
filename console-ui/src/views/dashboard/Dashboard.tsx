@@ -244,6 +244,14 @@ const DashboardPage = () => {
 const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
     .ant-layout-sider.left-slider {
         height: 100vh;
+        background: var(--sidebar-bg) !important;
+        transition: width var(--apple-duration-normal) var(--apple-ease);
+
+        .ant-layout-sider-children {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 8px;
+        }
 
         &.ant-layout-sider-collapsed {
             .logo-container {
@@ -264,53 +272,200 @@ const StyledContainer = styled.div.attrs({ className: "dashboard-page" })`
         }
 
         .logo-container {
-            margin: 16px;
-            border-radius: 6px;
+            margin: 8px 12px 20px;
+            border-radius: var(--apple-radius-md);
             display: flex;
             align-items: center;
-            height: 32px;
+            height: 36px;
             overflow-y: hidden;
 
             .logo {
                 width: 32px;
                 height: 32px;
-                margin-right: 8px;
+                margin-right: 10px;
+                border-radius: var(--apple-radius-sm);
             }
             .text {
-                font-size: 24px;
+                font-size: 18px;
                 color: #fff;
-                font-weight: bold;
+                font-weight: 600;
+                letter-spacing: -0.02em;
+                white-space: nowrap;
+            }
+        }
+
+        .ant-menu {
+            background: transparent !important;
+            border: none;
+            padding: 0 4px;
+
+            .ant-menu-item {
+                border-radius: var(--apple-radius-sm);
+                margin: 2px 0;
+                height: 40px;
+                line-height: 40px;
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--sidebar-text);
+                transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                .ant-menu-item-icon {
+                    font-size: 17px;
+                    transition: color var(--apple-duration-fast) var(--apple-ease);
+                }
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.08) !important;
+                    color: #fff;
+                }
+
+                &.ant-menu-item-selected {
+                    background: var(--sidebar-active) !important;
+                    color: #fff;
+                    font-weight: 600;
+
+                    .ant-menu-item-icon {
+                        color: #fff;
+                    }
+                }
+            }
+
+            .ant-menu-item::after {
+                display: none;
+            }
+        }
+
+        .ant-layout-sider-trigger {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: none;
+            margin: 0 8px 4px;
+            border-radius: var(--apple-radius-sm);
+            transition: background var(--apple-duration-fast) var(--apple-ease);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.1) !important;
             }
         }
     }
 
     .panel-layout {
         .panel-header {
-            padding: 20px;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: transparent;
-            color: rgb(71, 98, 130);
-            box-shadow: rgba(0, 0, 0, 0.1) 2px 8px 12px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+            color: var(--apple-text-secondary);
+            box-shadow: none;
+            height: 52px;
+            line-height: 52px;
 
             .email {
-                font-size: 14px;
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--apple-text-secondary);
             }
             .action-btns {
                 display: flex;
                 justify-content: flex-end;
                 align-items: center;
+                gap: 4px;
+
+                .ant-btn {
+                    border-radius: var(--apple-radius-sm);
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        background: var(--apple-gray-200);
+                    }
+                }
 
                 .ant-btn-icon {
-                    color: rgb(71, 98, 130);
+                    color: var(--apple-text-secondary);
+                    font-size: 16px;
                 }
             }
         }
         .panel-content {
-            padding: 40px 20px;
-            max-height: calc(100vh - 60px);
-            overflow-y: scroll;
+            padding: 32px 24px;
+            max-height: calc(100vh - 52px);
+            overflow-y: auto;
+            background: var(--apple-gray-bg);
+            animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
+
+            &::-webkit-scrollbar {
+                width: 6px;
+            }
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: var(--apple-gray-400);
+                border-radius: 3px;
+            }
+        }
+    }
+
+    .change-pwd-modal {
+        .ant-modal-content {
+            border-radius: var(--apple-radius-lg);
+            overflow: hidden;
+            padding: 0;
+
+            .ant-modal-header {
+                padding: 20px 24px 0;
+                border: none;
+            }
+
+            .ant-modal-title {
+                font-size: 17px;
+                font-weight: 600;
+                color: var(--apple-text-primary);
+                letter-spacing: -0.02em;
+            }
+
+            .ant-modal-body {
+                padding: 20px 24px;
+            }
+
+            .ant-modal-footer {
+                padding: 0 24px 20px;
+                border: none;
+
+                .ant-btn {
+                    border-radius: 980px;
+                    font-weight: 500;
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+                }
+
+                .ant-btn-primary {
+                    background: var(--apple-blue);
+                    border-color: var(--apple-blue);
+
+                    &:hover {
+                        background: var(--apple-blue-hover);
+                        border-color: var(--apple-blue-hover);
+                    }
+                }
+            }
+
+            .ant-form-item-label > label {
+                font-weight: 500;
+                color: var(--apple-text-secondary);
+            }
+
+            .ant-input {
+                border-radius: var(--apple-radius-sm);
+                transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                &:focus {
+                    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+                    border-color: var(--apple-blue);
+                }
+            }
         }
     }
 `;

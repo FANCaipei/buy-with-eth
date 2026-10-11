@@ -370,13 +370,14 @@ const GlobalStyle = createGlobalStyle`
     .pay-modal{
         .ant-modal-content{
             padding: 0;
-            border-radius: 12px;
+            border-radius: var(--apple-radius-lg);
+            overflow: hidden;
 
             .ant-modal-body{
-                border-radius: 12px;
+                border-radius: var(--apple-radius-lg);
 
                 iframe{
-                    border-radius: 12px;
+                    border-radius: var(--apple-radius-lg);
                 }
             }
         }
@@ -384,33 +385,107 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const StyledContainer = styled.div.attrs({ className: "bills-content" })`
+    animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
+
     .title {
-        margin-top: 40px;
-        margin-bottom: 20px;
-        font-size: 16px;
-        font-weight: 500;
-        /* padding: 0 20px; */
+        margin-top: 32px;
+        margin-bottom: 16px;
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--apple-text-primary);
+        letter-spacing: -0.02em;
     }
 
-    .ant-table-footer {
-        .unpaid-table-footer {
-            display: flex;
-            align-items: center;
-            /* justify-content: space-between; */
+    .ant-table {
+        border-radius: var(--apple-radius-lg);
+        overflow: hidden;
+        border: 1px solid var(--apple-border-light);
+        box-shadow: var(--apple-shadow-sm);
 
-            .text {
-                font-size: 16px;
-                flex-grow: 1;
-            }
+        .ant-table-thead > tr > th {
+            background: var(--apple-gray-200);
+            border-bottom: 1px solid var(--apple-border-light);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--apple-text-secondary);
+            letter-spacing: -0.01em;
+            padding: 14px 16px;
+        }
 
-            .tip {
-                flex-shrink: 0;
-                font-size: 12px;
-                margin: 0 8px;
-                color: rgb(71, 98, 130);
+        .ant-table-tbody > tr > td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: var(--apple-text-primary);
+            border-bottom: 1px solid var(--apple-border-light);
+            transition: background var(--apple-duration-fast) var(--apple-ease);
+        }
+
+        .ant-table-tbody > tr:last-child > td {
+            border-bottom: none;
+        }
+
+        .ant-table-tbody > tr:hover > td {
+            background: var(--apple-gray-100);
+        }
+
+        .ant-table-footer {
+            background: var(--apple-gray-100);
+            border-top: 1px solid var(--apple-border-light);
+            padding: 16px;
+
+            .unpaid-table-footer {
+                display: flex;
+                align-items: center;
+
+                .text {
+                    font-size: 16px;
+                    font-weight: 600;
+                    flex-grow: 1;
+                    color: var(--apple-text-primary);
+                    letter-spacing: -0.02em;
+                }
+
+                .tip {
+                    flex-shrink: 0;
+                    font-size: 12px;
+                    font-weight: 500;
+                    margin: 0 12px;
+                    color: var(--apple-text-secondary);
+                }
+
+                .ant-btn-primary {
+                    border-radius: 980px;
+                    font-weight: 600;
+                    height: 36px;
+                    padding: 0 24px;
+                    background: var(--apple-blue);
+                    border-color: var(--apple-blue);
+                    box-shadow: 0 1px 3px rgba(0, 113, 227, 0.3);
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        background: var(--apple-blue-hover);
+                        border-color: var(--apple-blue-hover);
+                        transform: translateY(-1px);
+                        box-shadow: 0 2px 8px rgba(0, 113, 227, 0.35);
+                    }
+
+                    &:active {
+                        transform: translateY(0);
+                        background: var(--apple-blue-active);
+                        border-color: var(--apple-blue-active);
+                    }
+
+                    &:disabled {
+                        opacity: 0.5;
+                        transform: none;
+                        box-shadow: none;
+                    }
+                }
             }
         }
     }
+
 `;
 
 export default Bills;

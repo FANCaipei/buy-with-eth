@@ -115,30 +115,33 @@ const StyledContainer = styled.div.attrs({ className: "email-verify-page" })`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    animation: apple-fade-in var(--apple-duration-slow) var(--apple-ease);
 
     .logo {
         width: 80px;
         height: 80px;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
+        border-radius: var(--apple-radius-lg);
     }
     .title {
         font-size: 32px;
+        font-weight: 700;
+        color: var(--apple-text-primary);
+        letter-spacing: -0.03em;
     }
     .desc {
-        font-size: 16px;
-        margin-top: 20px;
+        font-size: 15px;
+        margin-top: 16px;
         text-align: center;
-        color: rgba(0, 0, 0, 0.6);
-        line-height: 24px;
+        color: var(--apple-text-secondary);
+        line-height: 22px;
 
         .email {
-            font-weight: bold;
-            font-style: italic;
+            font-weight: 600;
+            color: var(--apple-text-primary);
         }
     }
-    /* .spacer {
-        height: 100px;
-    } */
+
     @keyframes moveArrow {
         from {
             transform: translateX(0);
@@ -148,16 +151,19 @@ const StyledContainer = styled.div.attrs({ className: "email-verify-page" })`
         }
     }
     .go-console-block {
-        font-size: 16px;
-        color: #1677ff;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--apple-blue);
         cursor: pointer;
-        margin-right: 8px;
-        margin: 0px 0 40px;
+        margin: 0 0 40px;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: color var(--apple-duration-fast) var(--apple-ease);
 
         &:hover {
+            color: var(--apple-blue-hover);
+
             .go-console-icon {
                 animation-play-state: paused;
             }
@@ -184,6 +190,32 @@ const StyledContainer = styled.div.attrs({ className: "email-verify-page" })`
 
         .action-btn {
             width: 45%;
+            border-radius: 980px;
+            font-weight: 600;
+            height: 44px;
+            transition: all var(--apple-duration-fast) var(--apple-ease);
+        }
+
+        .ant-btn-primary {
+            background: var(--apple-blue);
+            border-color: var(--apple-blue);
+            box-shadow: 0 1px 3px rgba(0, 113, 227, 0.3);
+
+            &:hover {
+                background: var(--apple-blue-hover);
+                border-color: var(--apple-blue-hover);
+                transform: translateY(-1px);
+            }
+        }
+
+        .ant-btn-default {
+            border-radius: 980px;
+            border-color: var(--apple-border);
+
+            &:hover {
+                border-color: var(--apple-blue);
+                color: var(--apple-blue);
+            }
         }
     }
 `;

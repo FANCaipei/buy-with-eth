@@ -8,23 +8,27 @@ import OcelotHeader from "./common/components/OcelotHeader";
 
 function Index() {
     const element = useRoutes(routeConfig);
-    // use ErrorBoundary in components rather than in antd alter
     return (
         <ErrorBoundary>
             <Header
                 style={{
                     position: "fixed",
                     top: 0,
-                    zIndex: 1,
+                    zIndex: 100,
                     width: "100vw",
                     display: "flex",
                     alignItems: "center",
-                    backgroundColor: "#fff",
+                    backgroundColor: "rgba(255, 255, 255, 0.72)",
+                    backdropFilter: "saturate(180%) blur(20px)",
+                    WebkitBackdropFilter: "saturate(180%) blur(20px)",
+                    borderBottom: "0.5px solid rgba(0, 0, 0, 0.1)",
+                    height: "52px",
+                    lineHeight: "52px",
                 }}
             >
                 <OcelotHeader />
             </Header>
-            <Content style={{ height: "100%", paddingTop: "64px" }}>{element}</Content>
+            <Content style={{ height: "100%", paddingTop: "52px" }}>{element}</Content>
         </ErrorBoundary>
     );
 }

@@ -96,15 +96,19 @@ const AppCard = ({ appData, onDelete }: { appData: any; onDelete?: (appData: any
 const StyledContainer = styled.div.attrs({ className: "app-card-container" })`
     width: 300px;
     height: 210px;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
+    background: var(--apple-surface);
+    padding: 24px;
+    border-radius: var(--apple-radius-lg);
     cursor: pointer;
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    border: 1px solid var(--apple-border-light);
+    box-shadow: var(--apple-shadow-sm);
     position: relative;
+    transition: all var(--apple-duration-normal) var(--apple-ease);
 
     &:hover {
-        background-color: rgb(245, 245, 245);
+        transform: translateY(-4px);
+        box-shadow: var(--apple-shadow-md);
+        border-color: var(--apple-blue);
     }
 
     .title-block {
@@ -114,21 +118,27 @@ const StyledContainer = styled.div.attrs({ className: "app-card-container" })`
 
         .left-side {
             .title {
-                font-size: 20px;
-                font-weight: 500;
-                color: rgba(0, 0, 0, 0.87);
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--apple-text-primary);
+                letter-spacing: -0.02em;
             }
             .address {
-                margin-top: 10px;
-                font-size: 14px;
-                color: rgba(0, 0, 0, 0.6);
+                margin-top: 8px;
+                font-size: 13px;
+                color: var(--apple-text-secondary);
+                font-family: "SF Mono", SFMono-Regular, ui-monospace, monospace;
             }
         }
         .logo-img {
-            width: 50px;
-            /* height: 50px; */
-            /* border-radius: 8px; */
+            width: 44px;
+            border-radius: var(--apple-radius-sm);
+            transition: transform var(--apple-duration-normal) var(--apple-ease-spring);
         }
+    }
+
+    &:hover .logo-img {
+        transform: scale(1.08);
     }
 
     .action-icons {
@@ -137,8 +147,18 @@ const StyledContainer = styled.div.attrs({ className: "app-card-container" })`
         position: absolute;
         bottom: 20px;
 
+        .ant-btn {
+            border-radius: var(--apple-radius-sm);
+            transition: all var(--apple-duration-fast) var(--apple-ease);
+
+            &:hover {
+                background: var(--apple-gray-200);
+            }
+        }
+
         .ant-btn-icon {
-            color: rgba(0, 0, 0, 0.55);
+            color: var(--apple-text-secondary);
+            font-size: 15px;
         }
     }
 `;

@@ -10,10 +10,11 @@ PanelTitle.propTypes = {
 };
 
 const StyledContainer = styled.div.attrs({ className: "panel-title-container" })`
-    font-size: 28px;
-    /* font-weight: bold; */
-    color: rgb(27, 58, 87);
-    padding: 0px 0;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--apple-text-primary);
+    letter-spacing: -0.03em;
+    padding: 0;
 `;
 
 export default PanelTitle;

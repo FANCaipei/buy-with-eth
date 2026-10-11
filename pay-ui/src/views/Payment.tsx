@@ -393,21 +393,121 @@ const GlobalStyle = createGlobalStyle`
         width: 120px;
 
         .token-logo {
-            width: 16px;
-            height: 16px;
-            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
             border-radius: 50%;
         }
         .token-symbol {
+            font-weight: 500;
+            color: var(--apple-text-primary);
         }
     }
 
-    .ant-spin-nested-loading{
+    .ant-spin-nested-loading {
         height: 100%;
 
-        .ant-spin-container{
+        .ant-spin-container {
             height: 100%;
         }
+    }
+
+    .ant-select {
+        .ant-select-selector {
+            border-radius: var(--apple-radius-sm) !important;
+            border-color: var(--apple-border) !important;
+            transition: all var(--apple-duration-normal) var(--apple-ease) !important;
+            height: 44px !important;
+            padding: 0 12px !important;
+
+            &:hover {
+                border-color: var(--apple-blue) !important;
+            }
+        }
+
+        &.ant-select-focused .ant-select-selector {
+            border-color: var(--apple-blue) !important;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15) !important;
+        }
+    }
+
+    .ant-input-affix-wrapper,
+    .ant-input {
+        border-radius: var(--apple-radius-sm) !important;
+        border-color: var(--apple-border) !important;
+        transition: all var(--apple-duration-normal) var(--apple-ease) !important;
+        height: 44px !important;
+        font-size: 15px !important;
+
+        &:hover {
+            border-color: var(--apple-gray-500) !important;
+        }
+
+        &:focus,
+        &-focused {
+            border-color: var(--apple-blue) !important;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15) !important;
+        }
+    }
+
+    .ant-input-group-addon {
+        border-radius: var(--apple-radius-sm) 0 0 var(--apple-radius-sm) !important;
+        border-color: var(--apple-border) !important;
+        background: var(--apple-gray-200) !important;
+        font-weight: 500 !important;
+        color: var(--apple-text-secondary) !important;
+        font-size: 14px !important;
+    }
+
+    .ant-input:disabled {
+        background: var(--apple-gray-200) !important;
+        color: var(--apple-text-secondary) !important;
+    }
+
+    .ant-btn-primary {
+        background: var(--apple-blue) !important;
+        border: none !important;
+        border-radius: var(--apple-radius-sm) !important;
+        height: 48px !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        letter-spacing: -0.01em !important;
+        transition: all var(--apple-duration-normal) var(--apple-ease) !important;
+        box-shadow: 0 1px 3px rgba(0, 113, 227, 0.3) !important;
+
+        &:hover {
+            background: var(--apple-blue-hover) !important;
+            box-shadow: 0 2px 8px rgba(0, 113, 227, 0.4) !important;
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            background: var(--apple-blue-active) !important;
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 113, 227, 0.3) !important;
+        }
+
+        &:disabled {
+            background: var(--apple-gray-400) !important;
+            box-shadow: none !important;
+            transform: none !important;
+            opacity: 0.7;
+        }
+    }
+
+    .ant-btn-link {
+        color: var(--apple-blue) !important;
+        font-weight: 500 !important;
+        transition: all var(--apple-duration-fast) var(--apple-ease) !important;
+
+        &:hover {
+            color: var(--apple-blue-hover) !important;
+        }
+    }
+
+    .ant-divider-vertical {
+        border-color: var(--apple-border-light) !important;
+        border-width: 1.5px !important;
     }
 `;
 
@@ -415,46 +515,43 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    padding: 20px;
+    padding: 32px 28px 20px;
     height: 100%;
+    animation: apple-fade-in var(--apple-duration-slow) var(--apple-ease);
 
     .logo-container {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 50px;
+        margin-bottom: 40px;
 
         .divider {
-            margin: 0 20px;
-            height: 40px;
-            background-color: rgba(0, 0, 0, 0.1);
+            margin: 0 16px;
+            height: 32px;
+            border-color: var(--apple-border-light);
         }
 
         .logo-img {
-            width: 50px;
-            /* height: 50px; */
-            /* border-radius: 12px; */
+            width: 44px;
+            height: 44px;
+            border-radius: var(--apple-radius-sm);
+            object-fit: contain;
+            transition: transform var(--apple-duration-normal) var(--apple-ease);
+
+            &:hover {
+                transform: scale(1.05);
+            }
         }
     }
+
     .token-selector-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 16px;
 
         .token-selector {
-            .token-option {
-                display: flex;
-                align-items: center;
-
-                .token-logo {
-                    width: 16px;
-                    height: 16px;
-                    margin-right: 8px;
-                    border-radius: 50%;
-                }
-                .token-symbol {
-                }
-            }
+            flex: 1;
         }
 
         .ant-spin-container {
@@ -467,54 +564,102 @@ const StyledContainer = styled.div.attrs({ className: "payment-page" })`
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            font-size: 16px;
-            color: rgba(0, 0, 0, 0.6);
+            font-size: 15px;
+            color: var(--apple-text-secondary);
+            font-weight: 500;
 
             .price {
                 margin-right: 8px;
+                font-variant-numeric: tabular-nums;
             }
+
             .refresh-icon {
-                font-size: 12px;
+                font-size: 14px;
                 cursor: pointer;
-                color: #1677ff;
+                color: var(--apple-blue);
+                padding: 6px;
+                border-radius: 50%;
+                transition: all var(--apple-duration-normal) var(--apple-ease);
+
+                &:hover {
+                    background: rgba(0, 113, 227, 0.1);
+                    transform: rotate(180deg);
+                }
+
+                &:active {
+                    transform: rotate(180deg) scale(0.9);
+                }
             }
         }
     }
+
     .total-value-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 16px;
+        font-size: 15px;
+        padding: 16px 20px;
+        background: var(--apple-gray-200);
+        border-radius: var(--apple-radius-sm);
+
+        .label {
+            color: var(--apple-text-secondary);
+            font-weight: 500;
+        }
+
+        .value {
+            font-weight: 600;
+            color: var(--apple-text-primary);
+            font-size: 18px;
+            font-variant-numeric: tabular-nums;
+        }
     }
+
     .item-wrapper {
-        margin-top: 30px;
+        margin-top: 20px;
 
         .no-price {
             text-align: center;
-            color: rgba(0, 0, 0, 0.45);
+            color: var(--apple-text-tertiary);
+            font-size: 14px;
+            padding: 12px;
+            background: rgba(255, 149, 0, 0.08);
+            border-radius: var(--apple-radius-sm);
+            border: 1px solid rgba(255, 149, 0, 0.2);
         }
     }
+
     .reconnect-wallet {
-        margin-top: 10px;
-        font-size: 16px;
+        margin-top: 12px;
+        font-size: 14px;
         display: flex;
         justify-content: center;
     }
+
     .spacer {
         flex-grow: 1;
     }
+
     .bottom-block {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(0, 0, 0, 0.45);
+        padding-top: 16px;
+        border-top: 1px solid var(--apple-border-light);
 
         .text {
-            font-size: 14px;
-            margin-right: 8px;
+            font-size: 13px;
+            color: var(--apple-text-tertiary);
+            font-weight: 500;
 
-            .logo-img {
-                height: 20px;
+            a {
+                color: var(--apple-blue);
+                text-decoration: none;
+                transition: color var(--apple-duration-fast) var(--apple-ease);
+
+                &:hover {
+                    color: var(--apple-blue-hover);
+                }
             }
         }
     }

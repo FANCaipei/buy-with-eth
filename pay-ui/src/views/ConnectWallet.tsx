@@ -84,73 +84,104 @@ const StyledContainer = styled.div.attrs({ className: "connect-wallet-page" })`
     align-items: center;
     flex-direction: column;
     height: 100%;
-    padding-bottom: 20px;
+    padding: 0 28px 20px;
+    animation: apple-fade-in var(--apple-duration-slow) var(--apple-ease);
 
     .title {
-        font-size: 24px;
-        font-weight: 500;
-        margin-top: 100px;
+        font-size: 28px;
+        font-weight: 600;
+        margin-top: 80px;
         text-align: center;
+        color: var(--apple-text-primary);
+        letter-spacing: -0.02em;
     }
 
     .wallets-contianer {
-        margin-top: 80px;
+        margin-top: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 24px;
 
         .wallet-logo-wrapper {
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 0 40px;
+            padding: 32px 40px;
+            border-radius: var(--apple-radius-lg);
+            background: var(--apple-surface);
+            border: 1px solid var(--apple-border-light);
+            transition: all var(--apple-duration-normal) var(--apple-ease);
+            min-width: 160px;
 
             &:hover {
-                position: relative;
-                top: -10px;
-                transition: top 0.5s ease-in-out;
+                transform: translateY(-4px);
+                box-shadow: var(--apple-shadow-md);
+                border-color: var(--apple-blue);
 
                 .not-detected {
                     opacity: 1;
                 }
             }
 
+            &:active {
+                transform: translateY(-2px) scale(0.98);
+            }
+
             img {
-                width: 80px;
-                height: 80px;
+                width: 72px;
+                height: 72px;
+                transition: transform var(--apple-duration-normal) var(--apple-ease-spring);
+            }
+
+            &:hover img {
+                transform: scale(1.08);
             }
 
             .wallet-name {
-                margin-top: 20px;
-                font-size: 16;
-                font-weight: 500;
+                margin-top: 16px;
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--apple-text-primary);
             }
 
             .not-detected {
-                margin-top: 4px;
+                margin-top: 6px;
                 font-size: 12px;
                 height: 16px;
-                color: rgba(0, 0, 0, 0.45);
+                color: var(--apple-text-tertiary);
                 opacity: 0;
+                transition: opacity var(--apple-duration-normal) var(--apple-ease);
             }
         }
     }
+
     .spacer {
         flex-grow: 1;
     }
+
     .bottom-block {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(0, 0, 0, 0.45);
+        padding-top: 16px;
+        border-top: 1px solid var(--apple-border-light);
+        width: 100%;
 
         .text {
-            font-size: 14px;
-            margin-right: 8px;
+            font-size: 13px;
+            color: var(--apple-text-tertiary);
+            font-weight: 500;
 
-            .logo-img {
-                height: 20px;
+            a {
+                color: var(--apple-blue);
+                text-decoration: none;
+                transition: color var(--apple-duration-fast) var(--apple-ease);
+
+                &:hover {
+                    color: var(--apple-blue-hover);
+                }
             }
         }
     }

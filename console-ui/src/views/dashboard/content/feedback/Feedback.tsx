@@ -36,12 +36,19 @@ const StyledContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
 
     .iframe-wrapper {
         width: 100%;
         height: 50vh;
         max-width: 50vw;
         margin: 10vh auto 0;
+        background: var(--apple-surface);
+        border-radius: var(--apple-radius-lg);
+        border: 1px solid var(--apple-border-light);
+        box-shadow: var(--apple-shadow-sm);
+        overflow: hidden;
+
         .feedback-iframe {
             width: 100%;
             height: 100%;

@@ -333,35 +333,57 @@ const ProjectEdit = () => {
 };
 
 const StyledContainer = styled.div.attrs({ className: "project-edit-container" })`
+    animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
+
     .content-block {
         display: flex;
-        margin-top: 40px;
+        margin-top: 32px;
 
         .form-wrapper {
             flex-grow: 1;
             max-width: 800px;
-            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 24px;
+            box-shadow: var(--apple-shadow-md);
+            background: var(--apple-surface);
+            border-radius: var(--apple-radius-lg);
+            border: 1px solid var(--apple-border-light);
+            padding: 32px;
+            transition: box-shadow var(--apple-duration-normal) var(--apple-ease);
+
+            &:hover {
+                box-shadow: var(--apple-shadow-lg);
+            }
 
             .ant-form-item {
-                margin-bottom: 40px;
+                margin-bottom: 32px;
+
                 label {
-                    font-size: 16px;
-                    color: rgba(0, 0, 0, 0.55);
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--apple-text-secondary);
                     width: 210px;
                     flex-shrink: 0;
+                    letter-spacing: -0.01em;
                 }
+
                 .text-value-input {
-                    color: rgba(0, 0, 0, 0.87);
-                    border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+                    color: var(--apple-text-primary);
+                    border-bottom: 1px solid var(--apple-border);
                     border-radius: 0;
                     box-shadow: none;
                     padding-left: 0;
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        border-color: var(--apple-gray-500);
+                    }
+
+                    &:focus {
+                        border-color: var(--apple-blue);
+                        box-shadow: 0 2px 0 var(--apple-blue);
+                    }
 
                     &[readonly] {
-                        color: rgba(0, 0, 0, 0.4);
+                        color: var(--apple-text-tertiary);
                         cursor: not-allowed;
                     }
                 }
@@ -372,31 +394,78 @@ const StyledContainer = styled.div.attrs({ className: "project-edit-container" }
                 justify-content: flex-end;
 
                 .save-btn {
-                    width: 80px;
-                    margin-top: 40px;
+                    width: 100px;
+                    height: 40px;
+                    margin-top: 32px;
                     align-self: flex-end;
+                    border-radius: 980px;
+                    font-weight: 600;
+                    background: var(--apple-blue);
+                    border-color: var(--apple-blue);
+                    box-shadow: 0 1px 3px rgba(0, 113, 227, 0.3);
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        background: var(--apple-blue-hover);
+                        border-color: var(--apple-blue-hover);
+                        transform: translateY(-1px);
+                        box-shadow: 0 2px 8px rgba(0, 113, 227, 0.35);
+                    }
+
+                    &:active {
+                        transform: translateY(0);
+                        background: var(--apple-blue-active);
+                    }
                 }
             }
         }
 
         .tips {
             flex-grow: 0;
-            margin-left: 20px;
-            font-size: 16px;
-            color: #1677ffaa;
-            max-width: 350px;
+            margin-left: 24px;
+            font-size: 14px;
+            color: var(--apple-text-secondary);
+            max-width: 320px;
+            background: var(--apple-surface);
+            border-radius: var(--apple-radius-lg);
+            border: 1px solid var(--apple-border-light);
+            padding: 24px;
+            box-shadow: var(--apple-shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: 32px;
+            transition: all var(--apple-duration-normal) var(--apple-ease);
 
             .tip-title {
-                font-size: 18px;
-                font-weight: 500;
-                margin-bottom: 40px;
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 16px;
+                color: var(--apple-text-primary);
+                letter-spacing: -0.02em;
             }
             .tip-desc {
-                color: #1677ffaa;
+                color: var(--apple-text-secondary);
+                padding-left: 0;
+                list-style: none;
+
                 li {
-                    margin-top: 20px;
+                    margin-top: 12px;
                     word-break: break-word;
-                    line-height: 24px;
+                    line-height: 22px;
+                    padding-left: 16px;
+                    position: relative;
+                    font-size: 13px;
+
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 8px;
+                        width: 5px;
+                        height: 5px;
+                        border-radius: 50%;
+                        background: var(--apple-blue);
+                    }
                 }
             }
         }

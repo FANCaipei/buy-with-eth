@@ -304,54 +304,132 @@ const PaymentPreview = () => {
 };
 
 const StyledContainer = styled.div.attrs({ className: "payment-preview-container" })`
+    animation: apple-fade-in var(--apple-duration-normal) var(--apple-ease);
+
     .content {
-        margin-top: 40px;
+        margin-top: 32px;
         display: flex;
         align-items: flex-start;
 
         .config-container {
             width: 600px;
-            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 24px;
+            box-shadow: var(--apple-shadow-md);
+            background: var(--apple-surface);
+            border-radius: var(--apple-radius-lg);
+            border: 1px solid var(--apple-border-light);
+            padding: 28px;
+            transition: box-shadow var(--apple-duration-normal) var(--apple-ease);
+
+            &:hover {
+                box-shadow: var(--apple-shadow-lg);
+            }
+
+            .ant-form-item-label > label {
+                font-weight: 600;
+                color: var(--apple-text-secondary);
+            }
+
+            .ant-input,
+            .ant-select-selector {
+                border-radius: var(--apple-radius-sm) !important;
+                border-color: var(--apple-border) !important;
+                transition: all var(--apple-duration-fast) var(--apple-ease) !important;
+
+                &:hover {
+                    border-color: var(--apple-blue) !important;
+                }
+
+                &:focus,
+                &.ant-select-focused {
+                    box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12) !important;
+                    border-color: var(--apple-blue) !important;
+                }
+            }
+
+            .ant-input-textarea textarea {
+                border-radius: var(--apple-radius-sm) !important;
+            }
+
+            .ant-divider {
+                border-color: var(--apple-border-light);
+            }
 
             .right-layout-items {
                 width: 100%;
                 display: flex;
                 justify-content: flex-end;
             }
+
             .generate-btn {
                 margin-top: 10px;
+                border-radius: 980px;
+                font-weight: 600;
+                background: var(--apple-blue);
+                border-color: var(--apple-blue);
+                box-shadow: 0 1px 3px rgba(0, 113, 227, 0.3);
+                transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                &:hover {
+                    background: var(--apple-blue-hover);
+                    border-color: var(--apple-blue-hover);
+                    transform: translateY(-1px);
+                }
             }
+
             .url-textarea-wrapper {
                 margin-top: 20px;
                 position: relative;
 
                 .label {
                     margin-bottom: 10px;
-                    font-size: 16px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: var(--apple-text-secondary);
                 }
 
                 .copy-icon {
                     position: absolute;
-                    right: 10px;
-                    bottom: 10px;
-                    font-size: 16px;
-                    color: rgba(0, 0, 0, 0.55);
+                    right: 12px;
+                    bottom: 12px;
+                    font-size: 15px;
+                    color: var(--apple-text-secondary);
                     cursor: pointer;
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                    &:hover {
+                        background: var(--apple-gray-200);
+                        color: var(--apple-blue);
+                    }
                 }
             }
             .iframe-code-container {
-                margin-top: 10px;
+                margin-top: 12px;
+                border-radius: var(--apple-radius-sm);
+                overflow: hidden;
             }
             .decode-btn {
-                margin-top: 40px;
-                background-color: rgb(22, 156, 117);
+                margin-top: 32px;
+                border-radius: 980px;
+                font-weight: 600;
+                background: var(--apple-green);
+                border-color: var(--apple-green);
+                box-shadow: 0 1px 3px rgba(52, 199, 89, 0.3);
+                transition: all var(--apple-duration-fast) var(--apple-ease);
+
+                &:hover {
+                    transform: translateY(-1px);
+                    filter: brightness(1.05);
+                }
             }
         }
         .iframe-container {
-            margin-left: 40px;
+            margin-left: 32px;
             width: 480px;
             height: 550px;
 
@@ -360,8 +438,13 @@ const StyledContainer = styled.div.attrs({ className: "payment-preview-container
                 width: 480px;
                 height: 550px;
                 overflow: hidden;
-                border-radius: 16px;
-                box-shadow: 2px 2px 16px #8f8f8f66;
+                border-radius: var(--apple-radius-lg);
+                box-shadow: var(--apple-shadow-lg);
+                transition: box-shadow var(--apple-duration-normal) var(--apple-ease);
+
+                &:hover {
+                    box-shadow: var(--apple-shadow-xl);
+                }
             }
         }
     }

@@ -28,6 +28,8 @@ const StyledContainer = styled.div.attrs({ className: "buffer-page" })`
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    background: var(--apple-surface);
 `;
 
 export default BufferPage;
